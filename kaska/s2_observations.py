@@ -331,14 +331,14 @@ class Sentinel2Observations(object):
         )
         # Now read angles
         sun_angles = reproject_data(
-            str(current_folder / "ANG_DATA/SAA_SZA.tif"),
+            str(current_folder.parent / "ANG_DATA/SAA_SZA.tif"),
             target_img=self.state_mask,
             xRes=20,
             yRes=20,
             resample=0,
         ).data
         view_angles = reproject_data(
-            str(current_folder / "ANG_DATA/VAA_VZA_B05.tif"),
+            str(current_folder.parent / "ANG_DATA/VAA_VZA_B05.tif"),
             target_img=self.state_mask,
             xRes=20,
             yRes=20,
