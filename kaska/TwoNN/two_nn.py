@@ -2,20 +2,9 @@
 """A general Two layer neural net class
 
 Code by Feng Yin
-
-Raises:
-    IOError: [description]
-    NameError: [description]
-    NameError: [description]
-    NameError: [description]
-    NameError: [description]
-
-Returns:
-    [type] -- [description]
 """
 
 import numpy as np
-from numba import jit
 from numba import jit
 import tensorflow as tf              
 from tensorflow import keras         
@@ -39,6 +28,7 @@ def affine_forward(x, w, b):
     cache = (x, w)
     return out, cache
 
+
 @jit(nopython=True)
 def affine_backward(dout, cache):
     """
@@ -47,12 +37,14 @@ def affine_backward(dout, cache):
     :param cache: Tuple of:
       - x: Input data, of shape (D, )
       - w: Weights, of shape (D, M)
-    :return the jacobian matrix containing derivatives of the O neural network outputs with respect to
-            this layer's inputs, evaluated at x, of shape (O, D)
+    :return the jacobian matrix containing derivatives of the O neural network
+            outputs with respect to this layer's inputs, evaluated at x, of 
+            shape (O, D)
     """
     x, w = cache
     dx = np.dot(dout, w.T)
     return dx
+
 
 @jit(nopython=True)
 def relu_forward(x):
@@ -62,21 +54,26 @@ def relu_forward(x):
     cache = x
     return out, cache
 
+
 @jit(nopython=True)
 def relu_backward(dout, cache):
     """
     Backward pass of ReLU
     :param dout: Upstream Jacobian
     :param cache: the cached input for this layer
-    :return: the jacobian matrix containing derivatives of the O neural network outputs with respect to
-             this layer's inputs, evaluated at x.
+    :return: the jacobian matrix containing derivatives of the O neural 
+              network outputs with respect tothis layer's inputs,
+              evaluated at x.
     """
     x = cache
-    dx = dout * np.where(x > 0, np.ones(x.shape).astype(np.float32), np.zeros(x.shape).astype(np.float32))
+    dx = dout * np.where(x > 0, np.ones(x.shape).astype(np.float32), 
+                        np.zeros(x.shape).astype(np.float32))
     return dx
 
-def forward_backward(x, Hidden_Layers, Output_Layers, cal_jac=False): 
-    layer_to_cache = dict()  # for each layer, we store the cache needed for backward pass 
+
+def forward_backward(x, Hidden_Layers, Output_Layers, cal_jac=False):
+    layer_to_cache = dict()  
+    # for each layer, we store the cache needed for backward pass 
     [[w1, b1], [w2, b2]] = Hidden_Layers
     a1, cache_a1 = affine_forward(x, w1, b1) 
     r1, cache_r1 = relu_forward(a1) 
@@ -99,6 +96,7 @@ def forward_backward(x, Hidden_Layers, Output_Layers, cal_jac=False):
         rets.append(ret)
     return rets
 
+
 def training(X, targs, epochs = 2000):
     inputs = layers.Input(shape=(X.shape[1],))    
     x = layers.Dense(64, activation='relu')(inputs)
@@ -107,16 +105,22 @@ def training(X, targs, epochs = 2000):
     for i in range(targs.shape[1]):
         outputs.append(layers.Dense(1)(x))
     model = tf.keras.Model(inputs=inputs, outputs=outputs)
-    optimizer = tf.keras.optimizers.Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
+    optimizer = tf.keras.optimizers.Adam(lr=0.001, beta_1=0.9, beta_2=0.999,
+                                         epsilon=None, decay=0.0, 
+                                         amsgrad=False)
     model.compile(optimizer=optimizer,   
                   loss='mean_squared_error',
                   metrics=['mean_squared_error', 'mean_absolute_error'])
-    history = model.fit(X, [targs[:,i] for i in range(targs.shape[1])], epochs=epochs, batch_size=60)
+    history = model.fit(X, [targs[:,i] for i in range(targs.shape[1])], 
+                        epochs=epochs, batch_size=60)
     return model, history
 
+
 def relearn(X, targs, model, epochs = 2000):
-    history = model.fit(X, [targs[:,i] for i in range(targs.shape[1])], epochs=epochs, batch_size=60)
+    history = model.fit(X, [targs[:,i] for i in range(targs.shape[1])], 
+                        epochs=epochs, batch_size=60)
     return model, history
+
 
 def get_layers(model):
     l1 = model.get_layer(index=1).get_weights()
@@ -129,20 +133,25 @@ def get_layers(model):
 
     return Hidden_Layers, Output_Layers
 
+
 def save_tf_model(model, fname):
     model.save(fname)
+
 
 def load_tf_Model(fname):
     model  = tf.keras.models.load_model(fname)
     return model
 
+
 def save_np_model(fname, Hidden_Layers, Output_Layers):
-    np.savez(fname, Hidden_Layers = Hidden_Layers, Output_Layers = Output_Layers)
+    np.savez(fname, Hidden_Layers=Hidden_Layers,
+             Output_Layers=Output_Layers)
+
 
 def load_np_model(fname):
     f = np.load(fname)
-    Hidden_Layers=f.f.Hidden_Layers 
-    Output_Layers=f.f.Output_Layers
+    Hidden_Layers = f.f.Hidden_Layers 
+    Output_Layers = f.f.Output_Layers
     return Hidden_Layers, Output_Layers
 
 
@@ -166,18 +175,22 @@ class Two_NN(object):
        
         if np_model_file is not None:
             self.np_model_file = np_model_file
-            self.Hidden_Layers, self.Output_Layers = load_np_model(np_model_file)
+            self.Hidden_Layers, self.Output_Layers = load_np_model(
+                                                        np_model_file)
 
         if (Hidden_Layers is not None) & (Output_Layers is not None):
             self.Hidden_Layers = Hidden_Layers 
             self.Output_Layers = Output_Layers 
     
-    def train(self, X, targs, iterations = 2000, tf_fname = ("model.json", "model.h5"), save_tf_model = False):
+    def train(self, X, targs, iterations = 2000, 
+             tf_fname = ("model.json", "model.h5"), save_tf_model = False):
         #self.X, self.targs = X, targs 
         #self.iterations = iterations
         if (X is not None) & (targs is not None):
-            self.tf_model, self.history = training(X, targs, epochs = iterations)
-            self.Hidden_Layers, self.Output_Layers = get_layers(self.tf_model)
+            self.tf_model, self.history = training(X, targs,
+                                                   epochs = iterations)
+            self.Hidden_Layers, self.Output_Layers = get_layers(
+                                                    self.tf_model)
             if save_tf_model:
                 save_tf_model(model, tf_fname)
         else:
@@ -185,15 +198,18 @@ class Two_NN(object):
 
     def relearn(self, X, targs, iterations = 2000):
         if hasattr(self, 'tf_model'):
-            self.tf_model, self.history = relearn(X, targs, self.tf_model, epochs = iterations)
-            self.Hidden_Layers, self.Output_Layers = get_layers(self.tf_model)
+            self.tf_model, self.history = relearn(X, targs, 
+                                    self.tf_model, epochs = iterations)
+            self.Hidden_Layers, self.Output_Layers = get_layers(
+                                    self.tf_model)
         else:
             raise NameError('No tf model to relearn.')
 
     def predict(self, x, cal_jac = False):
         if hasattr(self, 'Hidden_Layers') and hasattr(self, 'Output_Layers'):
             x = x.astype(np.float32)
-            rets = forward_backward(x, self.Hidden_Layers, self.Output_Layers, cal_jac=cal_jac)
+            rets = forward_backward(x, self.Hidden_Layers, 
+                                    self.Output_Layers, cal_jac=cal_jac)
         else:
             raise NameError('Hidden_Layers and Output_Layers have not yet been defined, and please try to train or load a model first.')
         return rets
@@ -206,16 +222,22 @@ class Two_NN(object):
         else:
             raise NameError('No tf model to save.')
     def save_np_model(self, fname):
-        if hasattr(self, 'Hidden_Layers') and hasattr(self, 'Output_Layers'):
-            np.savez(fname, Hidden_Layers = self.Hidden_Layers, Output_Layers = self.Output_Layers)
+        if hasattr(self, 'Hidden_Layers') and hasattr(self, 
+                            'Output_Layers'):
+            np.savez(fname, 
+                     Hidden_Layers = self.Hidden_Layers,
+                     Output_Layers = self.Output_Layers)
             self.np_model_file = fname
         else:
-            raise NameError('Hidden_Layers and Output_Layers have not yet been defined, and please try to train or load a model first.')
+            raise NameError('Hidden_Layers and Output_Layers ' +
+                            'have not yet been defined, and please ' + 
+                            'try to train or load a model first.')
 
 if __name__ == '__main__' :
     f = np.load('/home/ucfafyi/DATA/Prosail/prosail_2NN.npz')
     v = np.load('/home/ucfafyi/DATA/Prosail/vals.npz')
-    tnn = Two_NN(Hidden_Layers=f.f.Hidden_Layers, Output_Layers=f.f.Output_Layers)
+    tnn = Two_NN(Hidden_Layers=f.f.Hidden_Layers, 
+                Output_Layers=f.f.Output_Layers)
     
     refs = tnn.predict(v.f.vals_x)
     from scipy.stats import linregress 
