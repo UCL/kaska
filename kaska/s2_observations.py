@@ -25,9 +25,9 @@ S2MSIdata = namedtuple(
 
 class reproject_data(object):
     """
-    A function uses a source and a target images and
-    and clip the source image to match the extend,
-    projection and resolution as the target image.
+    A class that uses a source and a target images to
+    reproject & clip the source image to match the extent,
+    projection and resolution of the target image.
 
     """
 
@@ -175,7 +175,8 @@ class Sentinel2Observations(object):
         if not emulator_file.exists():
             LOG.info(f"Emulator file: {emulator_file}")
             raise IOError("Emulator file doesn't exist")
-        self.band_map = ["02", "03", "04", "05", "06", "07", "8A", "11", "12"]
+        self.band_map = ['B01', 'B02', 'B03', 'B04', 'B05', 'B06', 'B07',
+                        'B08', 'B8A', 'B09', 'B10','B11', 'B12']
         # self.band_map = ['05', '08']
 
         self.parent = parent_folder
@@ -237,6 +238,8 @@ class Sentinel2Observations(object):
                 )
                 for f in test_files
             ]
+        # Sort dates by time, as currently S2A/S2B will be part of ordering
+        self.dates = sorted(self.dates)
         self.date_data = dict(zip(self.dates, [f.parent for f in test_files]))
         self.bands_per_observation = {}
         LOG.info(f"Found {len(test_files):d} S2 granules")
@@ -280,6 +283,8 @@ class Sentinel2Observations(object):
         return s2_obs
 
     def read_granule(self, timestep):
+        """NOTE: Currently reads in sequentially. It's better to gather
+        all the filenames and read them in parallel using parmap.py"""
         current_folder = self.date_data[timestep]
 
         fname_prefix = [
@@ -299,7 +304,7 @@ class Sentinel2Observations(object):
         rho_unc = []
         for the_band in self.band_map:
             original_s2_file = current_folder / (
-                f"{fname_prefix:s}" + f"B{the_band:s}_sur.tif"
+                f"{fname_prefix:s}" + f"{the_band:s}_sur.tif"
             )
             LOG.debug(f"Original file {str(original_s2_file):s}")
             rho = reproject_data(
@@ -308,7 +313,7 @@ class Sentinel2Observations(object):
             mask = mask * (rho > 0)
             rho_surface.append(rho)
             original_s2_file = current_folder / (
-                f"{fname_prefix:s}" + f"B{the_band:s}_sur_unc.tif"
+                f"{fname_prefix:s}" + f"{the_band:s}_sur_unc.tif"
             )
             LOG.debug(f"Uncertainty file {str(original_s2_file):s}")
             unc = reproject_data(
@@ -361,3 +366,5 @@ if __name__ == "__main__":
         band_prob_threshold=20,
         chunk=None,
     )
+    retval = s2_obs.read_time_series([dt.datetime(2017,1,1,0,0),
+                                      dt.datetime(2017, 12,31, 0, 0)])
