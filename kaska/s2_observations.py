@@ -11,7 +11,7 @@ import gdal
 import numpy as np
 import osr
 
-from Two_NN import Two_NN
+from TwoNN import Two_NN
 
 gdal.UseExceptions()
 
@@ -164,6 +164,7 @@ class Sentinel2Observations(object):
         state_mask,
         band_prob_threshold=20,
         chunk=None,
+        time_grid=None
     ):
         self.band_prob_threshold = band_prob_threshold
         parent_folder = Path(parent_folder)
@@ -183,7 +184,7 @@ class Sentinel2Observations(object):
         self.emulator_folder = emulator_file
         self.original_mask = state_mask
         self.state_mask = state_mask
-        self._find_granules(self.parent)
+        self._find_granules(self.parent, time_grid)
         f = np.load(str(emulator_file))
         self.emulator = Two_NN(
             Hidden_Layers=f.f.Hidden_Layers, Output_Layers=f.f.Output_Layers
@@ -219,7 +220,7 @@ class Sentinel2Observations(object):
         # new_geoT[3] = new_geoT[3] + self.uly*new_geoT[5]
         return proj, geoT.tolist()  # new_geoT.tolist()
 
-    def _find_granules(self, parent_folder):
+    def _find_granules(self, parent_folder, time_grid=None):
         """Finds granules. Currently does so by checking for
         Feng's AOT file."""
         # this is needed to follow symlinks
@@ -227,19 +228,26 @@ class Sentinel2Observations(object):
             x for f in parent_folder.iterdir() for x in f.rglob("**/*_aot.tif")
         ]
         try:
-            self.dates = [
-                dt.datetime(*(list(map(int, f.parts[-5:-2]))))
-                for f in test_files
-            ]
+            dates = [
+                    dt.datetime(*(list(map(int, f.parts[-5:-2]))))
+                    for f in test_files
+                ]
         except ValueError:
-            self.dates = [
+            dates = [
                 dt.datetime.strptime(
                     f.parts[-1].split("_")[1], "%Y%m%dT%H%M%S"
                 )
                 for f in test_files
             ]
         # Sort dates by time, as currently S2A/S2B will be part of ordering
-        self.dates = sorted(self.dates)
+        dates = sorted(dates)
+        if time_grid is not None:
+            start_date = time_grid[0]
+            end_date = time_grid[-1]
+            self.dates = [d.replace(hour=0, minute=0, second=0) for d in dates
+                            if (d >= start_date) and (d <= end_date)] 
+        else:
+            self.dates = [x.replace(hour=0,minute=0, second=0) for x in dates]
         self.date_data = dict(zip(self.dates, [f.parent for f in test_files]))
         self.bands_per_observation = {}
         LOG.info(f"Found {len(test_files):d} S2 granules")
@@ -359,12 +367,19 @@ class Sentinel2Observations(object):
 
 
 if __name__ == "__main__":
+    time_grid = []
+    today = dt.datetime(2017,1,1)
+    while (today <= dt.datetime(2017, 12, 31)):
+        time_grid.append(today)
+        today += dt.timedelta(days=5)
+
     s2_obs = Sentinel2Observations(
         "/home/ucfajlg/Data/python/KaFKA_Validation/LMU/s2_obs/",
         "/home/ucfafyi/DATA/Prosail/prosail_2NN.npz",
         "/home/ucfajlg/Data/python/KaFKA_Validation/LMU/carto/ESU.tif",
         band_prob_threshold=20,
         chunk=None,
+        time_grid=time_grid
     )
-    retval = s2_obs.read_time_series([dt.datetime(2017,1,1,0,0),
-                                      dt.datetime(2017, 12,31, 0, 0)])
+    retval = s2_obs.read_time_series([dt.datetime(2017, 1, 1),
+                                      dt.datetime(2017,12,31)])
