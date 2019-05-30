@@ -5,7 +5,7 @@ import datetime as dt
 import numpy as np
 import tensorflow as tf
 
-from .s2_observations import Sentinel2Observations
+from s2_observations import Sentinel2Observations
 
 
 # This stuff should go on its own file....
@@ -29,39 +29,42 @@ class NNParameterInversion(object):
         ]
         self.b_ind = np.array([1, 2, 3, 4, 5, 6, 7, 8])
 
-    def invert_observations(self, data, sel_dates=None):
+    def invert_observations(self, data, date):
         """Main method to invert observations using a NN inverter."""
         # The solved parameters are stored indexed by time step.
         # On each time step, one will get a bunch of parameters
         # This is inverter dependent.
         # We can also restrict the time period if it makes sense
-        solved_params = {}
-        for istep, date in enumerate(data.time):
-            if (sel_dates is not None) and (date in sel_dates):
-                # Current date not in selection
-                continue
-            # We extract the reflectance and relevant metadata etc
-            rho = data.observations[istep][self.band_ind]
-            sza, vza, raa = data.metadata[istep]
-            mask = data.mask[istep]
+        # We extract the reflectance and relevant metadata etc
+        print(f"Extracting {str(date):s}")
+        rho, mask, sza, vza, raa, rho_unc = data.read_granule(date)
+        if rho is not None:
+            rho = np.array(rho)[self.b_ind]
+            nbands, ny, nx = rho.shape
             X = rho[:, mask]
             n_clr_pxls = mask.sum()
             # Stack the input of the inverter
             X = np.vstack(
-                rho[:, mask],
+                [rho[:, mask],
                 np.ones(n_clr_pxls) * sza,
                 np.ones(n_clr_pxls) * vza,
-                np.ones(n_clr_pxls) * raa,
+                np.ones(n_clr_pxls) * raa],
             )
             # Run the inversion, probably returns a tuple
-            retval = self.inverse_param_model.predict(X)
-            solved_params[date] = retval
-
-
+            print("\tInverting...")
+            retval = self.inverse_param_model.predict(X.T)
+            n_cells, n_params = retval.shape
+            params = np.zeros((n_params, ny, nx))
+            for i in range(n_params):
+                params[i, mask] = retval[:, i]
+            return params
+        else:
+            return None  # No clear pixels!
+            
 def define_temporal_grid(start_date, end_date, temporal_grid_space):
     """Creates a temporal grid"""
     temporal_grid = [start_date + i*dt.timedelta(days=temporal_grid_space) 
-                    for i in range(int(ceil(366/temporal_grid_space)))
+                    for i in range(int(np.ceil(366/temporal_grid_space)))
                     if start_date + i*dt.timedelta(days=temporal_grid_space)
                                     <= end_date]
     return temporal_grid
@@ -77,13 +80,14 @@ class KaSKA(object):
         self.output_folder = output_folder
         self.inverter = NNParameterInversion(approx_inverter)
 
-    def _run_approx_inversion(self, sel_dates=None):
-        # Make sure we pass a list fo the inverter...
-        if sel_dates is not None and not isinstance(sel_dates, list):
-            sel_dates = list(sel_dates)
-        retval = self.inverter.invert_observations(self.observations,
-                                                   sel_dates=sel_dates)
-        return retval  # Probably needs jiggery pokery
+    def first_pass_inversion(self):
+        S = {}
+        for k in self.observations.dates:
+            retval = self.inverter.invert_observations(self.observations, k)
+            if retval is not None:
+                S[k] = retval
+        return S
+
 
     def run_smoother(self, ):
         # Questions here are how to solve things...
@@ -109,8 +113,10 @@ if __name__ == "__main__":
         "/home/ucfajlg/Data/python/KaFKA_Validation/LMU/carto/ESU.tif",
         band_prob_threshold=20,
         chunk=None,
+        time_grid=temporal_grid,
     )
     state_mask = "/home/ucfajlg/Data/python/KaFKA_Validation/LMU/carto/ESU.tif"
     approx_inverter = "/home/ucfafyi/DATA/Prosail/Prosail_5_paras.h5"
-    kaska = KaSKA(observations, time_grid, state_mask, approx_inverter,
+    kaska = KaSKA(s2_obs, temporal_grid, state_mask, approx_inverter,
                  "/tmp/")
+    S=kaska.first_pass_inversion()
