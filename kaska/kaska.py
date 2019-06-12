@@ -5,8 +5,9 @@ import datetime as dt
 import numpy as np
 import tensorflow as tf
 
-from s2_observations import Sentinel2Observations
+from s2_observations import  Sentinel2Observations
 
+from smoothn import smoothn
 
 # This stuff should go on its own file....
 class NNParameterInversion(object):
@@ -81,12 +82,36 @@ class KaSKA(object):
         self.inverter = NNParameterInversion(approx_inverter)
 
     def first_pass_inversion(self):
+        """A first pass inversion. Could be anything, from a quick'n'dirty
+        LUT, a regressor, ..."""
         S = {}
         for k in self.observations.dates:
             retval = self.inverter.invert_observations(self.observations, k)
             if retval is not None:
                 S[k] = retval
         return S
+
+    def _process_first_pass(self, first_passer_dict):
+        """Aim of this method is to get the first pass estimates into a regular
+        grid, and (possibly!), interpolate and smooth them out. Like a boss."""
+        dates = [k for k in first_passer_dict.keys()]
+        n_params, nx, ny = first_passer_dict[dates[0]].shape
+        param_grid = np.zeros((n_params, len(self.time_grid), nx, ny))
+        idx = np.argmin(np.abs(self.time_grid -
+                        np.array(dates)[:, None]), axis=1)
+
+        for ii, tstep in enumerate(self.time_grid):
+            ## Number of observations in current time step
+            #n_obs_tstep = list(idx).count(ii)
+            # Keys for the current time step
+            sel_keys = list(np.array(dates)[idx == ii])
+            for p in range(n_params):
+                arr = np.array([first_passer_dict[k][p] for k in sel_keys])
+                arr[arr < 0] = np.nan
+                param_grid[p, ii, :, :] = np.nanmean(arr, axis=0)
+        return param_grid
+                
+
 
 
     def run_smoother(self, ):
@@ -99,7 +124,8 @@ class KaSKA(object):
         # a bunch of pixels together (e.g. a 9x9 or something)
         # It might be a good idea to explore pre-conditioning, as we
         # expect contighous pixels to evolve similarly...
-        pass
+        retval = self._process_first_pass(self.first_pass_inversion())
+        return retval
 
 
 if __name__ == "__main__":
@@ -119,4 +145,4 @@ if __name__ == "__main__":
     approx_inverter = "/home/ucfafyi/DATA/Prosail/Prosail_5_paras.h5"
     kaska = KaSKA(s2_obs, temporal_grid, state_mask, approx_inverter,
                  "/tmp/")
-    S=kaska.first_pass_inversion()
+    KK = kaska.run_smoother()
