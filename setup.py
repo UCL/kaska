@@ -2,8 +2,12 @@
 # -*- coding: utf-8 -*-
 
 """The setup script."""
-
+import os
 from setuptools import setup, find_packages
+
+# Need this to extract package version number
+here = os.path.abspath(os.path.dirname(__file__)) 
+exec(open(os.path.join(here, 'kaska/version.py')).read())
 
 with open('README.rst') as readme_file:
     readme = readme_file.read()
@@ -45,6 +49,6 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/jgomezdans/kaska',
-    version='0.0.1',
+    version=__version__,
     zip_safe=False,
 )
