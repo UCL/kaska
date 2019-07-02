@@ -318,7 +318,7 @@ class Sentinel2Observations(object):
             rho = reproject_data(
                 str(original_s2_file), target_img=self.state_mask
             ).data
-            mask = mask * (rho > 0)
+            
             rho_surface.append(rho)
             original_s2_file = current_folder / (
                 f"{fname_prefix:s}" + f"{the_band:s}_sur_unc.tif"
@@ -328,13 +328,26 @@ class Sentinel2Observations(object):
                 str(original_s2_file), target_img=self.state_mask
             ).data
             rho_unc.append(unc)
+        # For reference...
+        #bands = ['B01', 'B02', 'B03', 'B04', 'B05', 'B06', 'B07', 'B08',
+        #         'B8A', 'B09', 'B10','B11', 'B12']
+        # b_ind = np.array([1, 2, 3, 4, 5, 6, 7, 8])
+        
+        rho_surface = np.array(rho_surface)
+        
+        
+        mask1 = np.all(rho_surface[[1, 2, 3, 4, 5, 6, 7, 8, ]] > 0,
+                       axis=0) & (~mask)
+        mask = ~mask1
+        rho_surface = rho_surface / 10000.0
+        
+        #mask = np.all(rho_surface > 0, axis=0) & (~mask)
 
         rho_unc = np.array(rho_unc) / 10000.0
-        rho_unc[:, ~mask] = np.nan
+        rho_unc[:, mask] = np.nan
         # Average uncertainty over the image
         rho_unc = np.nanmean(rho_unc, axis=(1, 2))
-        rho_surface = np.array(rho_surface) / 10000.0
-        rho_surface[:, ~mask] = np.nan
+        rho_surface[:, mask1] = np.nan
         if mask.sum() == 0:
             LOG.info("No clear observations")
             return None, None, None, None, None, None
