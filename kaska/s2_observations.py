@@ -9,9 +9,10 @@ from pathlib import Path
 
 import gdal
 import numpy as np
-import osr
 
 from TwoNN import Two_NN
+
+from utils import reproject_data
 
 gdal.UseExceptions()
 
@@ -21,139 +22,6 @@ LOG = logging.getLogger(__name__ + ".Sentinel2_Observations")
 S2MSIdata = namedtuple(
     "S2MSIdata", "time observations uncertainty mask metadata emulator"
 )
-
-
-class reproject_data(object):
-    """
-    A class that uses a source and a target images to
-    reproject & clip the source image to match the extent,
-    projection and resolution of the target image.
-
-    """
-
-    def __init__(
-        self,
-        source_img,
-        target_img=None,
-        dstSRS=None,
-        srcNodata=np.nan,
-        dstNodata=np.nan,
-        outputType=None,
-        verbose=False,
-        xmin=None,
-        xmax=None,
-        ymin=None,
-        ymax=None,
-        xRes=None,
-        yRes=None,
-        xSize=None,
-        ySize=None,
-        resample=1,
-    ):
-
-        self.source_img = source_img
-        self.target_img = target_img
-        self.verbose = verbose
-        self.dstSRS = dstSRS
-        self.srcNodata = srcNodata
-        self.dstNodata = dstNodata
-        self.outputType = (
-            gdal.GDT_Unknown if outputType is None else outputType
-        )
-        self.xmin = xmin
-        self.xmax = xmax
-        self.ymin = ymin
-        self.ymax = ymax
-        self.xRes = xRes
-        self.yRes = yRes
-        self.xSize = xSize
-        self.ySize = ySize
-        self.resample = resample
-        if self.srcNodata is None:
-            try:
-                self.srcNodata = " ".join(
-                    [
-                        i.split("=")[1]
-                        for i in gdal.Info(self.source_img).split("\n")
-                        if " NoData" in i
-                    ]
-                )
-            except RuntimeError:
-                self.srcNodata = None
-        if (self.target_img is None) & (self.dstSRS is None):
-            raise IOError(
-                "Projection should be specified ether from "
-                + "a file or a projection code."
-            )
-        elif self.target_img is not None:
-            try:
-                g = gdal.Open(self.target_img)
-            except RuntimeError:
-                g = target_img
-            geo_t = g.GetGeoTransform()
-            x_size, y_size = g.RasterXSize, g.RasterYSize
-
-            if self.xRes is None:
-                self.xRes = abs(geo_t[1])
-            if self.yRes is None:
-                self.yRes = abs(geo_t[5])
-
-            if self.xSize is not None:
-                x_size = 1.0 * self.xSize * self.xRes / abs(geo_t[1])
-            if self.ySize is not None:
-                y_size = 1.0 * self.ySize * self.yRes / abs(geo_t[5])
-
-            xmin, xmax = (
-                min(geo_t[0], geo_t[0] + x_size * geo_t[1]),
-                max(geo_t[0], geo_t[0] + x_size * geo_t[1]),
-            )
-            ymin, ymax = (
-                min(geo_t[3], geo_t[3] + y_size * geo_t[5]),
-                max(geo_t[3], geo_t[3] + y_size * geo_t[5]),
-            )
-            dstSRS = osr.SpatialReference()
-            raster_wkt = g.GetProjection()
-            dstSRS.ImportFromWkt(raster_wkt)
-            self.g = gdal.Warp(
-                "",
-                self.source_img,
-                format="MEM",
-                outputBounds=[xmin, ymin, xmax, ymax],
-                dstNodata=self.dstNodata,
-                warpOptions=["NUM_THREADS=ALL_CPUS"],
-                xRes=self.xRes,
-                yRes=self.yRes,
-                dstSRS=dstSRS,
-                outputType=self.outputType,
-                srcNodata=self.srcNodata,
-                resampleAlg=self.resample,
-            )
-
-        else:
-            self.g = gdal.Warp(
-                "",
-                self.source_img,
-                format="MEM",
-                outputBounds=[self.xmin, self.ymin, self.xmax, self.ymax],
-                xRes=self.xRes,
-                yRes=self.yRes,
-                dstSRS=self.dstSRS,
-                warpOptions=["NUM_THREADS=ALL_CPUS"],
-                copyMetadata=True,
-                outputType=self.outputType,
-                dstNodata=self.dstNodata,
-                srcNodata=self.srcNodata,
-                resampleAlg=self.resample,
-            )
-        if self.g.RasterCount <= 3:
-            self.data = self.g.ReadAsArray()
-            # return self.data
-        elif self.verbose:
-            print(
-                "There are %d bands in this file, use "
-                + "g.GetRasterBand(<band>) to avoid reading the whole file."
-                % self.g.RasterCount
-            )
 
 
 class Sentinel2Observations(object):
@@ -301,7 +169,7 @@ class Sentinel2Observations(object):
         cloud_mask = current_folder.parent / f"cloud.tif"
         cloud_mask = reproject_data(
             str(cloud_mask), target_img=self.state_mask
-        ).data
+        ).ReadAsArray()
         mask = cloud_mask <= self.band_prob_threshold
         if mask.sum() == 0:
             # No pixels! Pointless to carry on reading!
@@ -317,7 +185,7 @@ class Sentinel2Observations(object):
             LOG.debug(f"Original file {str(original_s2_file):s}")
             rho = reproject_data(
                 str(original_s2_file), target_img=self.state_mask
-            ).data
+            ).ReadAsArray()
             
             rho_surface.append(rho)
             original_s2_file = current_folder / (
@@ -326,7 +194,7 @@ class Sentinel2Observations(object):
             LOG.debug(f"Uncertainty file {str(original_s2_file):s}")
             unc = reproject_data(
                 str(original_s2_file), target_img=self.state_mask
-            ).data
+            ).ReadAsArray()
             rho_unc.append(unc)
         # For reference...
         #bands = ['B01', 'B02', 'B03', 'B04', 'B05', 'B06', 'B07', 'B08',
@@ -362,14 +230,14 @@ class Sentinel2Observations(object):
             xRes=20,
             yRes=20,
             resample=0,
-        ).data
+        ).ReadAsArray()
         view_angles = reproject_data(
             str(current_folder.parent / "ANG_DATA/VAA_VZA_B05.tif"),
             target_img=self.state_mask,
             xRes=20,
             yRes=20,
             resample=0,
-        ).data
+        ).ReadAsArray()
         sza = np.cos(np.deg2rad(sun_angles[1].mean() / 100.0))
         vza = np.cos(np.deg2rad(view_angles[1].mean() / 100.0))
         saa = sun_angles[0].mean() / 100.0
