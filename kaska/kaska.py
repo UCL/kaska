@@ -10,8 +10,6 @@ from s2_observations import Sentinel2Observations
 
 from smoothn import smoothn
 
-from TwoNN import Two_NN
-
 # This stuff should go on its own file....
 
             
@@ -27,13 +25,12 @@ class KaSKA(object):
     """The main KaSKA object"""
 
     def __init__(self, observations, time_grid, state_mask, approx_inverter,
-                emulator, output_folder):
+                output_folder):
         self.time_grid = time_grid
         self.observations = observations
         self.state_mask = state_mask
         self.output_folder = output_folder
         self.inverter = NNParameterInversion(approx_inverter)
-        self.emulator = emulator
 
     def first_pass_inversion(self):
         """A first pass inversion. Could be anything, from a quick'n'dirty
@@ -71,7 +68,7 @@ class KaSKA(object):
 
 
 
-    def run_smoother(self, ):
+    def run_retrieval(self, ):
         # Questions here are how to solve things...
         # Two main options:
         # 1. NL solver using TRMs -> Should be feasible, but not there yet
@@ -82,9 +79,6 @@ class KaSKA(object):
         # It might be a good idea to explore pre-conditioning, as we
         # expect contighous pixels to evolve similarly...
         dates, retval = self._process_first_pass(self.first_pass_inversion())
-        x0 = retval * 1.0
-        np.savez_compressed("data_dumper.npz", tsteps=self.time_grid,
-                            parameters=retval)
         print("Burp!")
         for param in range(retval.shape[0]):
             S = retval[param]*1
@@ -92,11 +86,7 @@ class KaSKA(object):
             x0[param, :, :] = ss[0]
         return x0
 
-def read_emulator(emulator_file="/home/ucfafyi/DATA/Prosail/prosail_2NN.npz"):
-    f = np.load(str(emulator_file))
-    emulator = Two_NN(Hidden_Layers=f.f.Hidden_Layers,
-                      Output_Layers=f.f.Output_Layers)
-    return emulator
+
 
 if __name__ == "__main__":
     start_date = dt.datetime(2017, 5, 1)
@@ -114,7 +104,6 @@ if __name__ == "__main__":
     )
     state_mask = "/home/ucfajlg/Data/python/KaFKA_Validation/LMU/carto/ESU.tif"
     approx_inverter = "/home/ucfafyi/DATA/Prosail/Prosail_5_paras.h5"
-    emulator = read_emulator() # Read default emulator
-    kaska = KaSKA(s2_obs, temporal_grid, state_mask, approx_inverter, emulator,
-                 "/tmp/")
-    KK = kaska.run_smoother()
+    kaska = KaSKA(s2_obs, temporal_grid, state_mask, approx_inverter,
+                     "/tmp/")
+    KK = kaska.run_retrieval()
