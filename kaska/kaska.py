@@ -3,7 +3,8 @@
 """Main module."""
 import datetime as dt
 import numpy as np
-import tensorflow as tf
+
+from NNParameterInversion import NNParameterInversion
 
 from s2_observations import Sentinel2Observations
 
@@ -12,59 +13,7 @@ from smoothn import smoothn
 from TwoNN import Two_NN
 
 # This stuff should go on its own file....
-class NNParameterInversion(object):
-    def __init__(self, NN_file):
-        self.inverse_param_model = tf.keras.models.load_model(NN_file)
-        self.bands = [
-            "B01",
-            "B02",
-            "B03",
-            "B04",
-            "B05",
-            "B06",
-            "B07",
-            "B08",
-            "B8A",
-            "B09",
-            "B10",
-            "B11",
-            "B12",
-        ]
-        self.b_ind = np.array([1, 2, 3, 4, 5, 6, 7, 8])
-        
 
-    def invert_observations(self, data, date):
-        """Main method to invert observations using a NN inverter."""
-        # The solved parameters are stored indexed by time step.
-        # On each time step, one will get a bunch of parameters
-        # This is inverter dependent.
-        # We can also restrict the time period if it makes sense
-        # We extract the reflectance and relevant metadata etc
-        print(f"Extracting {str(date):s}")
-        rho, mask, sza, vza, raa, rho_unc = data.read_granule(date)
-        if rho is not None:
-            rho = np.array(rho)[self.b_ind]
-            nbands, ny, nx = rho.shape
-            X = rho[:, mask]
-            n_clr_pxls = mask.sum()
-            # Stack the input of the inverter
-            X = np.vstack(
-                [rho[:, mask],
-                np.ones(n_clr_pxls) * sza,
-                np.ones(n_clr_pxls) * vza,
-                np.ones(n_clr_pxls) * raa],
-            )
-            # Run the inversion, probably returns a tuple
-            print("\tInverting...")
-            retval = self.inverse_param_model.predict(X.T)
-            
-            n_cells, n_params = retval.shape
-            params = np.zeros((n_params, ny, nx))
-            for i in range(n_params):
-                params[i, mask] = retval[:, i]
-            return params
-        else:
-            return None  # No clear pixels!
             
 def define_temporal_grid(start_date, end_date, temporal_grid_space):
     """Creates a temporal grid"""
@@ -141,29 +90,7 @@ class KaSKA(object):
             S = retval[param]*1
             ss = smoothn(S, isrobust=True, s=1, TolZ=1e-6, axis=0)
             x0[param, :, :] = ss[0]
-        # Should read first and pass pointers to refletance around
-        # refactor: go into its own function
-        for date in dates:
-            print(f"Extracting {str(date):s}")
-            rhoi, maski, szai, vzai, raai, rho_unci = \
-                                           self.observations.read_granule(date)
-        
-        S2_obs = s2_obs(np.array(obs_doy),
-                    np.ones_like(obs_doy, dtype=np.bool)*True,
-                    np.array(s2_refl).mean(axis=(2,3)),
-                    np.array(sza), np.array(vza), np.array(raa),
-                    np.array(s2_refl).mean(axis=(2,3))*0.005)
-
-        cost_wrapper = CostWrapper(time_grid, S2_obs,
-                                   [0, 500000, 0, 100000, 0, 0, 1000, 0,
-                                   100000,100000], emu, mu_prior, A)
-
-        retval = minimize(cost_wrapper.calc_cost, mu_prior,  jac=True,
-                          method="L-BFGS-B", bounds=bounds,
-                          options={"iprint":1, "maxcor":400, "maxiter":500,})
-
-        return retval
-
+        return x0
 
 def read_emulator(emulator_file="/home/ucfafyi/DATA/Prosail/prosail_2NN.npz"):
     f = np.load(str(emulator_file))
