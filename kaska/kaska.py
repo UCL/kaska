@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 """Main module."""
+import logging
+
 import datetime as dt
 import numpy as np
 
@@ -10,7 +12,8 @@ from s2_observations import Sentinel2Observations
 
 from smoothn import smoothn
 
-# This stuff should go on its own file....
+LOG = logging.getLogger(__name__ + ".KaSKA")
+
 
             
 def define_temporal_grid(start_date, end_date, temporal_grid_space):
@@ -34,7 +37,8 @@ class KaSKA(object):
 
     def first_pass_inversion(self):
         """A first pass inversion. Could be anything, from a quick'n'dirty
-        LUT, a regressor, ..."""
+        LUT, a regressor. As coded, we use the `self.inverter` method, which
+        in this case, will call the ANN inversion."""
         S = {}
         for k in self.observations.dates:
             retval = self.inverter.invert_observations(self.observations, k)
@@ -43,43 +47,45 @@ class KaSKA(object):
         return S
 
     def _process_first_pass(self, first_passer_dict):
-        """Aim of this method is to get the first pass estimates into a regular
-        grid, and (possibly!), interpolate and smooth them out. Like a boss."""
+        """This methods takes the first pass estimates of surface parameters
+        (stored as a dictionary) and assembles them into an
+        `(n_params, n_times, nx, ny)` grid. The assumption here is the 
+        dictionary is indexed by dates (e.g. datetime objects) and that for
+        each date, we have a list of parameters.
+        
+        Parameters
+        ----------
+        first_passer_dict: dict
+            A dictionary with first pass guesses in an irregular temporal grid
+        
+        """
         dates = [k for k in first_passer_dict.keys()]
         n_params, nx, ny = first_passer_dict[dates[0]].shape
         param_grid = np.zeros((n_params, len(self.time_grid), nx, ny))
         idx = np.argmin(np.abs(self.time_grid -
                         np.array(dates)[:, None]), axis=1)
-        
+        LOG.info("Re-arranging first pass solutions into an array")
         for ii, tstep in enumerate(self.time_grid):
             ## Number of observations in current time step
             #n_obs_tstep = list(idx).count(ii)
             # Keys for the current time step
             sel_keys = list(np.array(dates)[idx == ii])
-            print(f"Doing timestep {str(tstep):s}")
+            LOG.info(f"Doing timestep {str(tstep):s}")
             for k in sel_keys:
-                print(f"\t {str(k):s}")
+                LOG.info(f"\t {str(k):s}")
             for p in range(n_params):
                 arr = np.array([first_passer_dict[k][p] for k in sel_keys])
                 arr[arr < 0] = np.nan
                 param_grid[p, ii, :, :] = np.nanmean(arr, axis=0)
         return dates, param_grid
-                
 
-
-
-    def run_retrieval(self, ):
-        # Questions here are how to solve things...
-        # Two main options:
-        # 1. NL solver using TRMs -> Should be feasible, but not there yet
-        # 2. Linearised solver using sparse matrices
-        # (3). NL solver (this probably first implementation as a test)
-        # Other things to worry about is chunking... We can probably solve  
-        # a bunch of pixels together (e.g. a 9x9 or something)
-        # It might be a good idea to explore pre-conditioning, as we
-        # expect contighous pixels to evolve similarly...
+    def run_retrieval(self):
+        """Runs the retrieval for all time-steps. It proceeds by first 
+        inverting on a observation by observation fashion, and then performs
+        a per pixel smoothing/interpolation."""
         dates, retval = self._process_first_pass(self.first_pass_inversion())
-        print("Burp!")
+        LOG.info("Burp!")
+        x0 = np.zeros_like(retval)
         for param in range(retval.shape[0]):
             S = retval[param]*1
             ss = smoothn(S, isrobust=True, s=1, TolZ=1e-6, axis=0)
