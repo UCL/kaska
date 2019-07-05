@@ -13,7 +13,15 @@ from s2_observations import Sentinel2Observations
 from smoothn import smoothn
 
 LOG = logging.getLogger(__name__ + ".KaSKA")
-
+LOG.setLevel(logging.DEBUG)
+if not LOG.handlers:
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.DEBUG)
+    formatter = logging.Formatter('%(asctime)s - %(name)s - ' +
+                                  '%(levelname)s - %(message)s')
+    ch.setFormatter(formatter)
+    LOG.addHandler(ch)
+LOG.propagate = False
 
             
 def define_temporal_grid(start_date, end_date, temporal_grid_space):
@@ -88,7 +96,7 @@ class KaSKA(object):
         x0 = np.zeros_like(retval)
         for param in range(retval.shape[0]):
             S = retval[param]*1
-            ss = smoothn(S, isrobust=True, s=1, TolZ=1e-6, axis=0)
+            ss = smoothn(S, isrobust=True, s=1, TolZ=1e-2, axis=0)
             x0[param, :, :] = ss[0]
         return x0
 
@@ -97,7 +105,7 @@ class KaSKA(object):
 if __name__ == "__main__":
     start_date = dt.datetime(2017, 5, 1)
     end_date = dt.datetime(2017, 9, 1)
-    temporal_grid_space = 10
+    temporal_grid_space = 5
     temporal_grid = define_temporal_grid(start_date, end_date,
                                         temporal_grid_space)
     s2_obs = Sentinel2Observations(
