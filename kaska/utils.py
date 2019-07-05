@@ -4,6 +4,13 @@ import gdal
 import osr
 import numpy as np
 
+
+def read_emulator(emulator_file="/home/ucfafyi/DATA/Prosail/prosail_2NN.npz"):
+    f = np.load(str(emulator_file))
+    emulator = Two_NN(Hidden_Layers=f.f.Hidden_Layers,
+                      Output_Layers=f.f.Output_Layers)
+    return emulator
+
 def reproject_data(source_img,
         target_img=None,
         dstSRS=None,
