@@ -50,6 +50,11 @@ def reproject_data(source_img,
                 )
             except RuntimeError:
                 srcNodata = None
+    # If the output type is intenger and destination nodata is nan
+    # set it to 0 to avoid warnings
+    if outputType <= 5 and np.isnan(dstNodata):
+        dstNodata = 0
+
     if (target_img is None) & (dstSRS is None):
             raise IOError(
                 "Projection should be specified ether from "

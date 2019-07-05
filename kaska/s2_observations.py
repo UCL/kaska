@@ -17,10 +17,10 @@ from utils import reproject_data
 gdal.UseExceptions()
 
 LOG = logging.getLogger(__name__ + ".Sentinel2_Observations")
-LOG.setLevel(logging.DEBUG)
+LOG.setLevel(logging.INFO)
 if not LOG.handlers:
     ch = logging.StreamHandler()
-    ch.setLevel(logging.DEBUG)
+    ch.setLevel(logging.INFO)
     formatter = logging.Formatter('%(asctime)s - %(name)s - ' +
                                   '%(levelname)s - %(message)s')
     ch.setFormatter(formatter)
@@ -226,10 +226,10 @@ class Sentinel2Observations(object):
         rho_unc = np.nanmean(rho_unc, axis=(1, 2))
         rho_surface[:, mask1] = np.nan
         if mask.sum() == 0:
-            LOG.info("No clear observations")
+            LOG.info(f"{str(timestep):s} -> No clear observations")
             return None, None, None, None, None, None
         LOG.info(
-            f"Total of {mask.sum():d} clear pixels "
+            f"{str(timestep):s} -> Total of {mask.sum():d} clear pixels "
             + f"({100.*mask.sum()/np.prod(mask.shape):f}%)"
         )
         # Now read angles
