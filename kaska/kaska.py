@@ -6,6 +6,8 @@ import logging
 import datetime as dt
 import numpy as np
 
+from scipy.interpolate import interp1d
+
 from NNParameterInversion import NNParameterInversion
 
 from s2_observations import Sentinel2Observations
@@ -69,22 +71,26 @@ class KaSKA(object):
         """
         dates = [k for k in first_passer_dict.keys()]
         n_params, nx, ny = first_passer_dict[dates[0]].shape
-        param_grid = np.zeros((n_params, len(self.time_grid), nx, ny))
-        idx = np.argmin(np.abs(self.time_grid -
-                        np.array(dates)[:, None]), axis=1)
-        LOG.info("Re-arranging first pass solutions into an array")
-        for ii, tstep in enumerate(self.time_grid):
-            ## Number of observations in current time step
-            #n_obs_tstep = list(idx).count(ii)
-            # Keys for the current time step
-            sel_keys = list(np.array(dates)[idx == ii])
-            LOG.info(f"Doing timestep {str(tstep):s}")
-            for k in sel_keys:
-                LOG.info(f"\t {str(k):s}")
-            for p in range(n_params):
-                arr = np.array([first_passer_dict[k][p] for k in sel_keys])
-                arr[arr < 0] = np.nan
-                param_grid[p, ii, :, :] = np.nanmean(arr, axis=0)
+        param_grid = np.zeros((n_params, len(dates), nx, ny))
+        for i, k in enumerate(dates):
+            for j in range(n_params):
+                    param_grid[j, i, :, :] = first_passer_dict[k][j]
+        # param_grid = np.zeros((n_params, len(self.time_grid), nx, ny))
+        # idx = np.argmin(np.abs(self.time_grid -
+        #                 np.array(dates)[:, None]), axis=1)
+        # LOG.info("Re-arranging first pass solutions into an array")
+        # for ii, tstep in enumerate(self.time_grid):
+        #     ## Number of observations in current time step
+        #     #n_obs_tstep = list(idx).count(ii)
+        #     # Keys for the current time step
+        #     sel_keys = list(np.array(dates)[idx == ii])
+        #     LOG.info(f"Doing timestep {str(tstep):s}")
+        #     for k in sel_keys:
+        #         LOG.info(f"\t {str(k):s}")
+        #     for p in range(n_params):
+        #         arr = np.array([first_passer_dict[k][p] for k in sel_keys])
+        #         arr[arr < 0] = np.nan
+        #         param_grid[p, ii, :, :] = np.nanmean(arr, axis=0)
         return dates, param_grid
 
     def run_retrieval(self):
@@ -93,12 +99,51 @@ class KaSKA(object):
         a per pixel smoothing/interpolation."""
         dates, retval = self._process_first_pass(self.first_pass_inversion())
         LOG.info("Burp!")
-        x0 = np.zeros_like(retval)
-        for param in range(retval.shape[0]):
-            S = retval[param]*1
-            ss = smoothn(S, isrobust=True, s=1, TolZ=1e-2, axis=0)
-            x0[param, :, :] = ss[0]
-        return x0
+        return self._run_smoother(dates, retval)
+        #x0 = np.zeros_like(retval)
+        #for param in range(retval.shape[0]):
+        #    S = retval[param]*1
+        #    ss = smoothn(S, isrobust=True, s=1, TolZ=1e-2, axis=0)
+        #    x0[param, :, :] = ss[0]
+        #return x0
+
+    def _run_smoother(self, dates, parameter_block):
+        """Very specific method that applies some parameter transformations
+        to the data in a very unrobust way."""
+        # This needs to be abstracted up...
+        lai = -2 * np.log(parameter_block[-2, :, :, :])
+        cab = -100*np.log(parameter_block[1, :, :, :])
+        cbrown = parameter_block[2, :, :, :]
+        # Basically, remove weird values outside of boundaries, nans and stuff
+        lai[~np.isfinite(lai)] = 0
+        cab[~np.isfinite(cab)] = 0
+        cbrown[~np.isfinite(cbrown)] = 0
+        lai[~(lai > 0)] = 0
+        cab[~(cab > 0)] = 0
+        cbrown[~(cbrown > 0)] = 0
+        # Create a mask
+        mask = np.all(lai == 0, axis=(0))
+        LOG.info("Smoothing data like a boss")
+        doys = np.array([int(x.strftime('%j')) for x in dates])
+        doy_grid = np.array([int(x.strftime('%j')) for x in self.time_grid]) 
+        f = interp1d(doys, lai, axis=0, bounds_error=False,
+                     fill_value=0)
+        laii = f(doy_grid)
+        slai = smoothn(np.array(laii), W=np.array(laii), isrobust=True, s=1,
+                       TolZ=1e-6, axis=0)[0]
+        slai[slai < 0] = 0
+        f = interp1d(doys, cab, axis=0, bounds_error=False)
+        cabi = f(doy_grid)
+        scab = smoothn(np.array(cabi), W=slai, isrobust=True, s=1,
+                        TolZ=1e-6, axis=0)[0]
+        f = interp1d(doys, cbrown, axis=0, bounds_error=False)                                        
+        cbrowni = f(doy_grid)
+        scbrown = smoothn(np.array(cbrowni) * slai, W=slai, isrobust=True, s=1,
+                    TolZ=1e-6, axis=0)[0] / slai
+        slai[:,mask] = 0
+        scab[:,mask] = 0
+        scbrown[:, mask] = 0
+        return (slai, scab, scbrown)
 
 
 
@@ -120,4 +165,4 @@ if __name__ == "__main__":
     approx_inverter = "/home/ucfafyi/DATA/Prosail/Prosail_5_paras.h5"
     kaska = KaSKA(s2_obs, temporal_grid, state_mask, approx_inverter,
                      "/tmp/")
-    KK = kaska.run_retrieval()
+    slai, scab, scbrown = kaska.run_retrieval()
