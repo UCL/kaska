@@ -98,7 +98,7 @@ class KaSKA(object):
         inverting on a observation by observation fashion, and then performs
         a per pixel smoothing/interpolation."""
         dates, retval = self._process_first_pass(self.first_pass_inversion())
-        LOG.info("Burp!")
+        LOG.info("Burp! Now doing temporal smoothing")
         return self._run_smoother(dates, retval)
         #x0 = np.zeros_like(retval)
         #for param in range(retval.shape[0]):
@@ -111,27 +111,39 @@ class KaSKA(object):
         """Very specific method that applies some parameter transformations
         to the data in a very unrobust way."""
         # This needs to be abstracted up...
+        # Note that in general, we don't know what parameters we are dealing
+        # with. We probably want a data structure here with the parameter list,
+        # transformation function, as well as boundaries, which could be
+        # associated with the NN
         lai = -2 * np.log(parameter_block[-2, :, :, :])
         cab = -100*np.log(parameter_block[1, :, :, :])
         cbrown = parameter_block[2, :, :, :]
         # Basically, remove weird values outside of boundaries, nans and stuff
+        # Could be done simply with the previously stated data structure, as
+        # this is a bit of an adhoc piece of code.
         lai[~np.isfinite(lai)] = 0
         cab[~np.isfinite(cab)] = 0
         cbrown[~np.isfinite(cbrown)] = 0
         lai[~(lai > 0)] = 0
         cab[~(cab > 0)] = 0
         cbrown[~(cbrown > 0)] = 0
-        # Create a mask
+        # Create a mask where we have no (LAI) data
         mask = np.all(lai == 0, axis=(0))
         LOG.info("Smoothing data like a boss")
+        # Time axes in days of year
         doys = np.array([int(x.strftime('%j')) for x in dates])
-        doy_grid = np.array([int(x.strftime('%j')) for x in self.time_grid]) 
+        doy_grid = np.array([int(x.strftime('%j')) for x in self.time_grid])
+        # Linear 3D stack interpolator. Assuming dimension 0 is time. Note use
+        # of fill_value to indicate missing data (0)
         f = interp1d(doys, lai, axis=0, bounds_error=False,
                      fill_value=0)
         laii = f(doy_grid)
         slai = smoothn(np.array(laii), W=np.array(laii), isrobust=True, s=1,
                        TolZ=1e-6, axis=0)[0]
         slai[slai < 0] = 0
+        # The last bit is to fix LAI to 0
+        # going forward, use LAI as weighting to try to dampen flappiness in
+        # pigments when no leaf area is present.
         f = interp1d(doys, cab, axis=0, bounds_error=False)
         cabi = f(doy_grid)
         scab = smoothn(np.array(cabi), W=slai, isrobust=True, s=1,
@@ -140,8 +152,10 @@ class KaSKA(object):
         cbrowni = f(doy_grid)
         scbrown = smoothn(np.array(cbrowni) * slai, W=slai, isrobust=True, s=1,
                     TolZ=1e-6, axis=0)[0] / slai
-        slai[:,mask] = 0
-        scab[:,mask] = 0
+        # Could also set them to nan
+        
+        slai[:, mask] = 0
+        scab[:, mask] = 0
         scbrown[:, mask] = 0
         return (slai, scab, scbrown)
 
