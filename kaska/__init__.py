@@ -8,3 +8,4 @@ __email__ = 'j.gomez-dans@ucl.ac.uk'
 from .version import __version__
 from .TwoNN import Two_NN
 from .smoothn import smoothn
+from .NNParameterInversion import NNParameterInversion
