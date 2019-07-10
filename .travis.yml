@@ -7,6 +7,13 @@ dist: xenial
 python:
   - 3.7
 
+# Install and update conda to provide a not-broken version of GDAL
+before_install:
+  - wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+  - bash ./miniconda.sh -b -p $HOME/miniconda
+  - export PATH="$HOME/miniconda/bin:$PATH"
+  - conda update --yes conda  # Update CONDA without command line prompt
+
 # Command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
 # And update pip to latest version
 install:
