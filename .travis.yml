@@ -19,7 +19,7 @@ before_install:
 install:
   - python -m pip install -U pip
   - pip install -U tox-travis
-  - conda install --yes gdal
+  - conda install --yes gdal numba scipy tensorflow
 
 # Command to run tests, e.g. python setup.py test
 script: tox
