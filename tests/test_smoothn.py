@@ -35,6 +35,25 @@ def test_robust1d():
     assert np.abs(np.max(np.abs(res)) -  unrobust_target) < prec
     assert np.abs(np.max(np.abs(resr)) -  robust_target) < prec
     
+def test_sd_weights():
+    x = np.linspace(0, 100, 256)
+    y_base = np.cos(x/10) + (x/50.)**2
+    
+    sd = np.abs(np.random.randn(len(x)))
+    noise = np.random.randn(len(x))/10.
+    sd_noise = sd * noise
+    
+    y_noise = y_base + sd_noise
+    
+    w = sd**(-2)
+    
+    (z_sd, s, flag, wtot) = smoothn.smoothn(y_noise, sd=sd)
+    (z_w, s, flag, wtot) = smoothn.smoothn(y_noise, W=w)
+    
+    # should be identical
+    prec = 1e-15
+    assert(np.sqrt(np.mean((z_sd - z_w)**2)) < prec)
+    
 # A test emulating the way smoothn is used in KaSKA
 def test_time_txy():
     (d, w) = txy_data()
