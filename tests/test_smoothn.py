@@ -54,6 +54,9 @@ def test_sd_weights():
     prec = 1e-15
     assert(np.sqrt(np.mean((z_sd - z_w)**2)) < prec)
     
+def test_masked_array():
+    pass
+    
 # A test emulating the way smoothn is used in KaSKA
 def test_time_txy():
     (d, w) = txy_data()
