@@ -30,7 +30,7 @@ def test_robust1d():
     robust_target = 0.18943656067148762
     
     #prec = 1e-12
-    prec = 1e-6
+    prec = 1e-5
     
     assert np.abs(np.max(np.abs(res)) -  unrobust_target) < prec
     assert np.abs(np.max(np.abs(resr)) -  robust_target) < prec
