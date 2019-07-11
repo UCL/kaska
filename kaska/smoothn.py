@@ -5,6 +5,7 @@ from numpy.linalg import norm
 from scipy.fftpack.realtransforms import dct,idct
 import numpy as np
 import numpy.ma as ma
+from scipy.linalg._flinalg import sdet_c
 
 def H(y,t0=0):
   '''
@@ -184,12 +185,9 @@ def smoothn(y,nS0=10,axis=None,smoothOrder=2.0,sd=None,verbose=False,\
     y[mask] = np.nan
     
   if np.any(sd != None):
-    sd_ = np.array(sd)
-    mask = (sd > 0.)
-    W = np.zeros_like(sd_)
-    W[mask] = 1./sd_[mask]**2
-    sd = None
+    W = weights_from_sd(sd)
 
+# Normalize weights to a mximum of 1
   if np.any(W != None):
     W = W/W.max()
 
@@ -413,6 +411,15 @@ def smoothn(y,nS0=10,axis=None,smoothOrder=2.0,sd=None,verbose=False,\
 def warning(s1,s2):
   print(s1)
   print(s2[0])
+
+def weights_from_sd(sd):
+    """Take the standard deviation values and produce a set of weights."""
+    sd = np.array(sd)
+    mask = sd > 0.
+    w = np.zeros_like(sd)
+    w[mask] = sd[mask]**(-2)
+    sd = None
+    return w
 
 ## GCV score
 #---
