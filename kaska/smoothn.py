@@ -187,7 +187,7 @@ def smoothn(y,nS0=10,axis=None,smoothOrder=2.0,sd=None,verbose=False,\
   if np.any(sd != None):
     W = weights_from_sd(sd)
 
-# Normalize weights to a mximum of 1
+# Normalize weights to a maximum of 1
   if np.any(W != None):
     W = W/W.max()
 
