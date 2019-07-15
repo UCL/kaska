@@ -1,15 +1,25 @@
 # Config file for automatic testing at travis-ci.org
 
 language: python
+
+dist: xenial
+
 python:
-  - 3.6
-  - 3.5
+  - 3.7
+
+# Install and update conda to provide a not-broken version of GDAL
+before_install:
+  - wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+  - bash ./miniconda.sh -b -p $HOME/miniconda
+  - export PATH="$HOME/miniconda/bin:$PATH"
+  - conda update --yes conda  # Update CONDA without command line prompt
 
 # Command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
 # And update pip to latest version
 install:
   - python -m pip install -U pip
   - pip install -U tox-travis
+  - conda install --yes gdal numba scipy tensorflow pytest
 
 # Command to run tests, e.g. python setup.py test
 script: tox
