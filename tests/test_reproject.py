@@ -10,7 +10,7 @@ sys.path.append("../kaska")
 
 from kaska.utils import reproject_data
 
-def test_reprojection():
+def test_reproject_data():
     """Test than when reprojecting a file to match another,
     the output has the same extent and size as the "target"
     one."""
@@ -20,4 +20,5 @@ def test_reprojection():
     g = gdal.Open(target)
     assert g.RasterXSize == gg.RasterXSize
     assert g.RasterYSize == gg.RasterYSize
+    # Not sure about this one... Should be tested...
     assert np.allclose(gg.GetGeoTransform(), g.GetGeoTransform())
