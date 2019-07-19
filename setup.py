@@ -9,6 +9,7 @@ setup(name="kaska",
       author = "Jose Gomez-Dans",
       author_email = "j.gomez-dans@ucl.ac.uk",
       license = "GNU General Public License v3",
-      packages = find_packages(include=['kaska']),
+#      packages = find_packages(include=['kaska']),
+      packages = ['kaska', 'kaska.TwoNN', 'kaska.NNParameterInversion'],
       zip_safe=False
       )
