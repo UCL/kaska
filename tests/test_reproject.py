@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Test rerpoject_data"""
+"""Test reproject data"""
 import os
 
 import sys
