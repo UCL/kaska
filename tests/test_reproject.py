@@ -3,7 +3,7 @@
 import os
 
 import sys
-sys.path.append("../kaska")
+sys.path.append("../")
 
 import pytest
 import gdal
