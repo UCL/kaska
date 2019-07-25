@@ -36,7 +36,7 @@ class Sentinel2Observations(object):
     def __init__(
         self,
         parent_folder,
-        emulator_file,
+        emulator,
         state_mask,
         band_prob_threshold=20,
         chunk=None,
@@ -44,27 +44,23 @@ class Sentinel2Observations(object):
     ):
         self.band_prob_threshold = band_prob_threshold
         parent_folder = Path(parent_folder)
-        emulator_file = Path(emulator_file)
         if not parent_folder.exists():
             LOG.info(f"S2 data folder: {parent_folder}")
             raise IOError("S2 data folder doesn't exist")
-
-        if not emulator_file.exists():
-            LOG.info(f"Emulator file: {emulator_file}")
-            raise IOError("Emulator file doesn't exist")
         self.band_map = ['B01', 'B02', 'B03', 'B04', 'B05', 'B06', 'B07',
                         'B08', 'B8A', 'B09', 'B10','B11', 'B12']
         # self.band_map = ['05', '08']
 
         self.parent = parent_folder
-        self.emulator_folder = emulator_file
         self.original_mask = state_mask
         self.state_mask = state_mask
-        self._find_granules(self.parent, time_grid)
-        f = np.load(str(emulator_file))
+
+        f = np.load(emulator)
         self.emulator = Two_NN(
             Hidden_Layers=f.f.Hidden_Layers, Output_Layers=f.f.Output_Layers
         )
+        LOG.debug("Read emulator in")
+        self._find_granules(self.parent, time_grid)
         self.chunk = chunk
 
     def apply_roi(self, ulx, uly, lrx, lry):
@@ -116,15 +112,24 @@ class Sentinel2Observations(object):
                 for f in test_files
             ]
         # Sort dates by time, as currently S2A/S2B will be part of ordering
-        dates = sorted(dates)
+        
+        #test_files = sorted(test_files, key=lambda x:dates[test_files.index(x)])
+        #dates = sorted(dates)
         if time_grid is not None:
             start_date = time_grid[0]
             end_date = time_grid[-1]
             self.dates = [d.replace(hour=0, minute=0, second=0) for d in dates
                             if (d >= start_date) and (d <= end_date)] 
+            test_files = [test_files[i] for i, d in enumerate(dates)
+                            if (d >= start_date) and (d <= end_date)]
         else:
             self.dates = [x.replace(hour=0,minute=0, second=0) for x in dates]
-        self.date_data = dict(zip(self.dates, [f.parent for f in test_files]))
+        temp_dict = dict(zip(self.dates, [f.parent for f in test_files]))
+        dates = sorted(self.dates)
+        self.date_data = {k:temp_dict[k] for k in dates}
+        self.dates = dates
+        
+        #self.date_data = dict(zip(self.dates, [f.parent for f in test_files]))
         self.bands_per_observation = {}
         LOG.info(f"Found {len(test_files):d} S2 granules")
         LOG.info(
