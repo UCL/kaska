@@ -170,23 +170,30 @@ def smoothn(y,nS0=10,axis=None,smoothOrder=2.0,sd=None,verbose=False,\
 
   z0=None,W=None,s=None,MaxIter=100,TolZ=1e-3
   '''
-  if type(y) == ma.core.MaskedArray:  # masked array
-    is_masked = True
-    mask = y.mask
-    y = np.array(y)
-    y[mask] = 0.
-    if np.any(W != None):
-      W  = np.array(W)
-      W[mask] = 0.
-    if np.any(sd != None):
-      W = np.array(1./sd**2)
-      W[mask] = 0.
-      sd = None
-    y[mask] = np.nan
-    
+#   if type(y) == ma.core.MaskedArray:  # masked array
+#     is_masked = True
+#     mask = y.mask
+#     y = np.array(y)
+#     y[mask] = 0.
+#     if np.any(W != None):
+#       W  = np.array(W)
+#       W[mask] = 0.
+#     if np.any(sd != None):
+#       W = np.array(1./sd**2)
+#       W[mask] = 0.
+#       sd = None
+#     y[mask] = np.nan
+#     
+#   if np.any(sd != None):
+#     W = weights_from_sd(sd)
+
   if np.any(sd != None):
     W = weights_from_sd(sd)
 
+  if (type(y) == ma.core.MaskedArray):
+    (y, W) = unmask_array(y, W)
+
+    
 # Normalize weights to a maximum of 1
   if np.any(W != None):
     W = W/W.max()
@@ -420,6 +427,15 @@ def weights_from_sd(sd):
     w[mask] = sd[mask]**(-2)
     sd = None
     return w
+
+def unmask_array(m, w):
+    mask = m.mask
+    y = np.array(m)
+    if np.any(w != None):
+        w = np.array(w)
+    w[mask] = 0.
+    y[mask] = np.nan
+    return (y, w)
 
 ## GCV score
 #---
