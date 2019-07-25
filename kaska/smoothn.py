@@ -173,7 +173,7 @@ def smoothn(y,nS0=10,axis=None,smoothOrder=2.0,sd=None,verbose=False,\
 
   (y, W) = preprocessing(y, W, sd)  
 
-  sizy = y.shape;
+  sizy = y.shape
 
   # sort axis
   if axis == None:
@@ -182,7 +182,8 @@ def smoothn(y,nS0=10,axis=None,smoothOrder=2.0,sd=None,verbose=False,\
   noe = y.size # number of elements
   if noe<2:
     z = y
-    exitflag = 0;Wtot=0
+    exitflag = 0
+    Wtot=0
     return z,s,exitflag,Wtot
 
   #---
@@ -195,20 +196,21 @@ def smoothn(y,nS0=10,axis=None,smoothOrder=2.0,sd=None,verbose=False,\
   nof = np.sum(is_finite) # number of finite elements
   #---
   # Weighted or missing data?
-  isweighted = any(W != 1);
+  isweighted = any(W != 1)
   #---
   # Robust smoothing?
   #isrobust
   #---
   # Automatic smoothing?
-  isauto = not s;
+  isauto = not s
   #---
   # DCTN and IDCTN are required
   try:
     from scipy.fftpack.realtransforms import dct,idct
   except:
     z = y
-    exitflag = -1;Wtot=0
+    exitflag = -1
+    Wtot=0
     return z,s,exitflag,Wtot
 
   ## Creation of the Lambda tensor
@@ -216,20 +218,20 @@ def smoothn(y,nS0=10,axis=None,smoothOrder=2.0,sd=None,verbose=False,\
   # Lambda contains the eingenvalues of the difference matrix used in this
   # penalized least squares process.
   axis = tuple(np.array(axis).flatten())
-  d =  y.ndim;
-  Lambda = zeros(sizy);
+  d =  y.ndim
+  Lambda = zeros(sizy)
   for i in axis:
     # create a 1 x d array (so e.g. [1,1] for a 2D case
-    siz0 = ones((1,y.ndim))[0].astype(int);
-    siz0[i] = sizy[i];
+    siz0 = ones((1,y.ndim))[0].astype(int)
+    siz0[i] = sizy[i]
     # cos(pi*(reshape(1:sizy(i),siz0)-1)/sizy(i)))
     # (arange(1,sizy[i]+1).reshape(siz0) - 1.)/sizy[i]
     Lambda = Lambda + (cos(pi*(arange(1,sizy[i]+1) - 1.)/sizy[i]).reshape(siz0))
     #else:
     #  Lambda = Lambda + siz0
-  Lambda = -2.*(len(axis)-Lambda);
+  Lambda = -2.*(len(axis)-Lambda)
   if not isauto:
-    Gamma = 1./(1+(s*abs(Lambda))**smoothOrder);
+    Gamma = 1./(1+(s*abs(Lambda))**smoothOrder)
 
   ## Upper and lower bound for the smoothness parameter
   # The average leverage (h) is by definition in [0 1]. Weak smoothing occurs
@@ -237,21 +239,22 @@ def smoothn(y,nS0=10,axis=None,smoothOrder=2.0,sd=None,verbose=False,\
   # and lower bounds for h are given to avoid under- or over-smoothing. See
   # equation relating h to the smoothness parameter (Equation #12 in the
   # referenced CSDA paper).
-  N = sum(array(sizy) != 1); # tensor rank of the y-array
-  hMin = 1e-6; hMax = 0.99;
+  N = sum(array(sizy) != 1) # tensor rank of the y-array
+  hMin = 1e-6
+  hMax = 0.99
   # (h/n)**2 = (1 + a)/( 2 a)
   # a = 1/(2 (h/n)**2 -1) 
   # where a = sqrt(1 + 16 s)
   # (a**2 -1)/16
   try:
-    sMinBnd = np.sqrt((((1+sqrt(1+8*hMax**(2./N)))/4./hMax**(2./N))**2-1)/16.);
-    sMaxBnd = np.sqrt((((1+sqrt(1+8*hMin**(2./N)))/4./hMin**(2./N))**2-1)/16.);
+    sMinBnd = np.sqrt((((1+sqrt(1+8*hMax**(2./N)))/4./hMax**(2./N))**2-1)/16.)
+    sMaxBnd = np.sqrt((((1+sqrt(1+8*hMin**(2./N)))/4./hMin**(2./N))**2-1)/16.)
   except:
     sMinBnd = None
     sMaxBnd = None
   ## Initialize before iterating
   #---
-  Wtot = W;
+  Wtot = W
   #--- Initial conditions for z
   if isweighted:
     #--- With weighted/missing data
@@ -260,25 +263,25 @@ def smoothn(y,nS0=10,axis=None,smoothOrder=2.0,sd=None,verbose=False,\
     # smoothing are performed.
     #---
     if z0 != None: # an initial guess (z0) has been provided
-        z = z0;
+        z = z0
     else:
         z = np.where(is_finite, y, 0.) #InitialGuess(y,IsFinite);
 #         z[~np.isfinite(y)] = 0.
   else:
-    z = zeros(sizy);
+    z = zeros(sizy)
   #---
-  z0 = z;
-  y[~is_finite] = 0; # arbitrary values for missing y-data
+  z0 = z
+  y[~is_finite] = 0 # arbitrary values for missing y-data
   #---
-  tol = 1.;
-  RobustIterativeProcess = True;
-  RobustStep = 1;
-  nit = 0;
+  tol = 1.
+  RobustIterativeProcess = True
+  RobustStep = 1
+  nit = 0
   #--- Error on p. Smoothness parameter s = 10^p
-  errp = 0.1;
+  errp = 0.1
   #opt = optimset('TolX',errp);
   #--- Relaxation factor RF: to speedup convergence
-  RF = 1 + 0.75*isweighted;
+  RF = 1 + 0.75*isweighted
   # ??
   ## Main iterative process
   #---
@@ -291,13 +294,13 @@ def smoothn(y,nS0=10,axis=None,smoothOrder=2.0,sd=None,verbose=False,\
     xpost = array([log10(s)])
   while RobustIterativeProcess:
     #--- "amount" of weights (see the function GCVscore)
-    aow = sum(Wtot)/noe; # 0 < aow <= 1
+    aow = sum(Wtot)/noe # 0 < aow <= 1
     #---
     while tol>TolZ and nit<MaxIter:
         if verbose:
           print('tol',tol,'nit',nit)
-        nit = nit+1;
-        DCTy = dctND(Wtot*(y-z)+z,f=dct);
+        nit = nit+1
+        DCTy = dctND(Wtot*(y-z)+z,f=dct)
         if isauto and not remainder(log2(nit),1):
             #---
             # The generalized cross-validation (GCV) method is used.
@@ -330,33 +333,35 @@ def smoothn(y,nS0=10,axis=None,smoothOrder=2.0,sd=None,verbose=False,\
             xpost,f,d = lbfgsb.fmin_l_bfgs_b(gcv,xpost,fprime=None,factr=1e7,\
                approx_grad=True,bounds=[(log10(sMinBnd),log10(sMaxBnd))],\
                args=(Lambda,aow,DCTy,is_finite,Wtot,y,nof,noe,smoothOrder))
-        s = 10**xpost[0];
+        s = 10**xpost[0]
         # update the value we use for the initial s estimate
         s0 = xpost[0]
 
-        Gamma = 1./(1+(s*abs(Lambda))**smoothOrder);
+        Gamma = 1./(1+(s*abs(Lambda))**smoothOrder)
 
-        z = RF*dctND(Gamma*DCTy,f=idct) + (1-RF)*z;
+        z = RF*dctND(Gamma*DCTy,f=idct) + (1-RF)*z
         # if no weighted/missing data => tol=0 (no iteration)
-        tol = isweighted*norm(z0-z)/norm(z);
+        tol = isweighted*norm(z0-z)/norm(z)
        
-        z0 = z; # re-initialization
-    exitflag = nit<MaxIter;
+        z0 = z # re-initialization
+    exitflag = nit<MaxIter
 
     if isrobust: #-- Robust Smoothing: iteratively re-weighted process
         #--- average leverage
-        h = sqrt(1+16.*s); 
-        h = sqrt(1+h)/sqrt(2)/h; 
-        h = h**N;
+        h = sqrt(1+16.*s)
+        h = sqrt(1+h)/sqrt(2)/h
+        h = h**N
         #--- take robust weights into account
-        Wtot = W*RobustWeights(y-z,is_finite,h,weightstr);
+        Wtot = W*RobustWeights(y-z,is_finite,h,weightstr)
         #--- re-initialize for another iterative weighted process
-        isweighted = True; tol = 1; nit = 0; 
+        isweighted = True
+        tol = 1
+        nit = 0
         #---
-        RobustStep = RobustStep+1;
-        RobustIterativeProcess = RobustStep<3; # 3 robust steps are enough.
+        RobustStep = RobustStep+1
+        RobustIterativeProcess = RobustStep<3 # 3 robust steps are enough.
     else:
-        RobustIterativeProcess = False; # stop the whole process
+        RobustIterativeProcess = False # stop the whole process
 
   ## Warning messages
   #---
@@ -410,16 +415,16 @@ def preprocessing(y, w, sd):
     if np.any(w != None):
         w = w/w.max()
 
-    sizy = y.shape;
+    sizy = y.shape
     
 # Set the weights to unity if there are none defined
     if np.all(w == None):
-        w = ones(sizy);
+        w = ones(sizy)
 
 # Unweight non-finite values
     is_finite = np.isfinite(y)
 #    nof = is_finite.sum() # number of finite elements
-    w = w*is_finite;
+    w = w*is_finite
     if np.any(w < 0):
         error('smoothn:NegativeWeights',\
               'Weights must all be >=0')
@@ -433,35 +438,38 @@ def preprocessing(y, w, sd):
 def gcv(p,Lambda,aow,DCTy,IsFinite,Wtot,y,nof,noe,smoothOrder):
     # Search the smoothing parameter s that minimizes the GCV score
     #---
-    s = 10**p;
-    Gamma = 1./(1+(s*abs(Lambda))**smoothOrder);
+    s = 10**p
+    Gamma = 1./(1+(s*abs(Lambda))**smoothOrder)
     #--- RSS = Residual sum-of-squares
     if aow>0.9: # aow = 1 means that all of the data are equally weighted
         # very much faster: does not require any inverse DCT
-        RSS = norm(DCTy*(Gamma-1.))**2;
+        RSS = norm(DCTy*(Gamma-1.))**2
     else:
         # take account of the weights to calculate RSS:
-        yhat = dctND(Gamma*DCTy,f=idct);
-        RSS = norm(sqrt(Wtot[IsFinite])*(y[IsFinite]-yhat[IsFinite]))**2;
+        yhat = dctND(Gamma*DCTy,f=idct)
+        RSS = norm(sqrt(Wtot[IsFinite])*(y[IsFinite]-yhat[IsFinite]))**2
     #---
-    TrH = sum(Gamma);
-    GCVscore = RSS/float(nof)/(1.-TrH/float(noe))**2;
+    TrH = sum(Gamma)
+    GCVscore = RSS/float(nof)/(1.-TrH/float(noe))**2
     return GCVscore
 
 ## Robust weights
 #function W = RobustWeights(r,I,h,wstr)
 def RobustWeights(r,I,h,wstr):
     # weights for robust smoothing.
-    MAD = median(abs(r[I]-median(r[I]))); # median absolute deviation
-    u = abs(r/(1.4826*MAD)/sqrt(1-h)); # studentized residuals
+    MAD = median(abs(r[I]-median(r[I]))) # median absolute deviation
+    u = abs(r/(1.4826*MAD)/sqrt(1-h)) # studentized residuals
     if wstr == 'cauchy':
-        c = 2.385; W = 1./(1+(u/c)**2); # Cauchy weights
+        c = 2.385
+        W = 1./(1+(u/c)**2) # Cauchy weights
     elif wstr == 'talworth':
-        c = 2.795; W = u<c; # Talworth weights
+        c = 2.795
+        W = u<c # Talworth weights
     else:
-        c = 4.685; W = (1-(u/c)**2)**2.*((u/c)<1); # bisquare weights
+        c = 4.685
+        W = (1-(u/c)**2)**2.*((u/c)<1) # bisquare weights
 
-    W[isnan(W)] = 0;
+    W[isnan(W)] = 0
     return W
 
 ## Initial Guess with weighted/missing data
@@ -474,16 +482,16 @@ def InitialGuess(y,I):
           #if license('test','image_toolbox')
           #[z,L] = bwdist(I);
           L = distance_transform_edt(1-I)
-          z = y;
-          z[~I] = y[L[~I]];
+          z = y
+          z[~I] = y[L[~I]]
         except:
           # If BWDIST does not exist, NaN values are all replaced with the
           # same scalar. The initial guess is not optimal and a warning
           # message thus appears.
-          z = y;
-          z[~I] = mean(y[I]);
+          z = y
+          z[~I] = mean(y[I])
     else:
-        z = y;
+        z = y
     # coarse fast smoothing
     z = dctND(z,f=dct)
     k = array(z.shape)
