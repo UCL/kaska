@@ -170,33 +170,8 @@ def smoothn(y,nS0=10,axis=None,smoothOrder=2.0,sd=None,verbose=False,\
 
   z0=None,W=None,s=None,MaxIter=100,TolZ=1e-3
   '''
-#   if type(y) == ma.core.MaskedArray:  # masked array
-#     is_masked = True
-#     mask = y.mask
-#     y = np.array(y)
-#     y[mask] = 0.
-#     if np.any(W != None):
-#       W  = np.array(W)
-#       W[mask] = 0.
-#     if np.any(sd != None):
-#       W = np.array(1./sd**2)
-#       W[mask] = 0.
-#       sd = None
-#     y[mask] = np.nan
-#     
-#   if np.any(sd != None):
-#     W = weights_from_sd(sd)
 
-  if np.any(sd != None):
-    W = weights_from_sd(sd)
-
-  if (type(y) == ma.core.MaskedArray):
-    (y, W) = unmask_array(y, W)
-
-    
-# Normalize weights to a maximum of 1
-  if np.any(W != None):
-    W = W/W.max()
+  (y, W) = preprocessing(y, W, sd)  
 
   sizy = y.shape;
 
@@ -209,15 +184,6 @@ def smoothn(y,nS0=10,axis=None,smoothOrder=2.0,sd=None,verbose=False,\
     z = y
     exitflag = 0;Wtot=0
     return z,s,exitflag,Wtot
-  #---
-  # Smoothness parameter and weights
-  #if s != None:
-  #  s = []
-  if np.all(W == None):
-    W = ones(sizy);
-
-  #if z0 == None:
-  #  z0 = y.copy()
 
   #---
   # "Weighting function" criterion
@@ -225,15 +191,8 @@ def smoothn(y,nS0=10,axis=None,smoothOrder=2.0,sd=None,verbose=False,\
   #---
   # Weights. Zero weights are assigned to not finite values (Inf or NaN),
   # (Inf/NaN values = missing data).
-  IsFinite = np.array(isfinite(y)).astype(bool);
-  nof = IsFinite.sum() # number of finite elements
-  W = W*IsFinite;
-  if any(W<0):
-    raise RuntimeError('smoothn:NegativeWeights',\
-        'Weights must all be >=0')
-  else:
-      #W = W/np.max(W)
-      pass
+  is_finite = np.isfinite(y)
+  nof = np.sum(is_finite) # number of finite elements
   #---
   # Weighted or missing data?
   isweighted = any(W != 1);
@@ -303,13 +262,13 @@ def smoothn(y,nS0=10,axis=None,smoothOrder=2.0,sd=None,verbose=False,\
     if z0 != None: # an initial guess (z0) has been provided
         z = z0;
     else:
-        z = y #InitialGuess(y,IsFinite);
-        z[~IsFinite] = 0.
+        z = np.where(is_finite, y, 0.) #InitialGuess(y,IsFinite);
+#         z[~np.isfinite(y)] = 0.
   else:
     z = zeros(sizy);
   #---
   z0 = z;
-  y[~IsFinite] = 0; # arbitrary values for missing y-data
+  y[~is_finite] = 0; # arbitrary values for missing y-data
   #---
   tol = 1.;
   RobustIterativeProcess = True;
@@ -360,7 +319,7 @@ def smoothn(y,nS0=10,axis=None,smoothOrder=2.0,sd=None,verbose=False,\
               ss = np.arange(nS0)*(1./(nS0-1.))*(log10(sMaxBnd)-log10(sMinBnd))+ log10(sMinBnd)
               g = np.zeros_like(ss)
               for i,p in enumerate(ss):
-                g[i] = gcv(p,Lambda,aow,DCTy,IsFinite,Wtot,y,nof,noe,smoothOrder)
+                g[i] = gcv(p,Lambda,aow,DCTy,is_finite,Wtot,y,nof,noe,smoothOrder)
                 #print 10**p,g[i]
               xpost = [ss[g==g.min()]]
               #print '==============='
@@ -370,7 +329,7 @@ def smoothn(y,nS0=10,axis=None,smoothOrder=2.0,sd=None,verbose=False,\
               xpost = [s0]
             xpost,f,d = lbfgsb.fmin_l_bfgs_b(gcv,xpost,fprime=None,factr=1e7,\
                approx_grad=True,bounds=[(log10(sMinBnd),log10(sMaxBnd))],\
-               args=(Lambda,aow,DCTy,IsFinite,Wtot,y,nof,noe,smoothOrder))
+               args=(Lambda,aow,DCTy,is_finite,Wtot,y,nof,noe,smoothOrder))
         s = 10**xpost[0];
         # update the value we use for the initial s estimate
         s0 = xpost[0]
@@ -390,7 +349,7 @@ def smoothn(y,nS0=10,axis=None,smoothOrder=2.0,sd=None,verbose=False,\
         h = sqrt(1+h)/sqrt(2)/h; 
         h = h**N;
         #--- take robust weights into account
-        Wtot = W*RobustWeights(y-z,IsFinite,h,weightstr);
+        Wtot = W*RobustWeights(y-z,is_finite,h,weightstr);
         #--- re-initialize for another iterative weighted process
         isweighted = True; tol = 1; nit = 0; 
         #---
@@ -435,6 +394,37 @@ def unmask_array(m, w):
         w = np.array(w)
     w[mask] = 0.
     y[mask] = np.nan
+    return (y, w)
+
+def preprocessing(y, w, sd):
+    """Condition the inputs to return data and weight arrays ready to be used
+       by the main algorithm"""
+
+    if np.any(sd != None):
+        w = weights_from_sd(sd)
+
+    if (type(y) == ma.core.MaskedArray):
+        (y, w) = unmask_array(y, w)
+
+# Normalize weights to a maximum of 1
+    if np.any(w != None):
+        w = w/w.max()
+
+    sizy = y.shape;
+    
+# Set the weights to unity if there are none defined
+    if np.all(w == None):
+        w = ones(sizy);
+
+# Unweight non-finite values
+    is_finite = np.isfinite(y)
+#    nof = is_finite.sum() # number of finite elements
+    w = w*is_finite;
+    if np.any(w < 0):
+        error('smoothn:NegativeWeights',\
+              'Weights must all be >=0')
+
+    
     return (y, w)
 
 ## GCV score
