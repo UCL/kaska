@@ -56,8 +56,9 @@ class NNParameterInversion(object):
         # Read in the data and return a bunch of numpy arrays
         rho, mask, sza, vza, raa, rho_unc = data.read_granule(date)
         # rho will be None if there are no data available.
-        LOG.info(f"{mask.sum():d} pixels to be processed")
+        
         if rho is not None:
+            LOG.info(f"{mask.sum():d} pixels to be processed")
             # Subset the bands that we want to use for our inversion
             rho = np.array(rho)[self.b_ind]
             # Get some shapes of pixels
@@ -82,4 +83,5 @@ class NNParameterInversion(object):
                 params[i, mask] = retval[:, i]
             return params
         else:
+            LOG.info(f"No clear pixels")
             return None  # No clear pixels!

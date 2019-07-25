@@ -112,15 +112,24 @@ class Sentinel2Observations(object):
                 for f in test_files
             ]
         # Sort dates by time, as currently S2A/S2B will be part of ordering
-        dates = sorted(dates)
+        
+        #test_files = sorted(test_files, key=lambda x:dates[test_files.index(x)])
+        #dates = sorted(dates)
         if time_grid is not None:
             start_date = time_grid[0]
             end_date = time_grid[-1]
             self.dates = [d.replace(hour=0, minute=0, second=0) for d in dates
                             if (d >= start_date) and (d <= end_date)] 
+            test_files = [test_files[i] for i, d in enumerate(dates)
+                            if (d >= start_date) and (d <= end_date)]
         else:
             self.dates = [x.replace(hour=0,minute=0, second=0) for x in dates]
-        self.date_data = dict(zip(self.dates, [f.parent for f in test_files]))
+        temp_dict = dict(zip(self.dates, [f.parent for f in test_files]))
+        dates = sorted(self.dates)
+        self.date_data = {k:temp_dict[k] for k in dates}
+        self.dates = dates
+        
+        #self.date_data = dict(zip(self.dates, [f.parent for f in test_files]))
         self.bands_per_observation = {}
         LOG.info(f"Found {len(test_files):d} S2 granules")
         LOG.info(
