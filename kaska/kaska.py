@@ -165,7 +165,7 @@ if __name__ == "__main__":
     import pkgutil
     from io import BytesIO
 
-    start_date = dt.datetime(2017, 5, 1)
+    start_date = dt.datetime(2017, 3, 1)
     end_date = dt.datetime(2017, 9, 1)
     temporal_grid_space = 5
     temporal_grid = define_temporal_grid(start_date, end_date,
@@ -185,4 +185,7 @@ if __name__ == "__main__":
                     "inverters/Prosail_5_paras.h5"))
     kaska = KaSKA(s2_obs, temporal_grid, state_mask, approx_inverter,
                      "/tmp/")
+    
     slai, scab, scbrown = kaska.run_retrieval()
+    np.savez("temporary_dump.npz", slai=slai, scab=scab,
+     scbrown=scbrown, temporal_grid=temporal_grid) 
