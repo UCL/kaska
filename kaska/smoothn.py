@@ -241,13 +241,8 @@ def smoothn(y,nS0=10,axis=None,smoothOrder=2.0,sd=None,verbose=False,\
   # ??
   ## Main iterative process
   #---
-  if isauto:
-    try:
-      xpost = array([(0.9*log10(s_min_bnd) + log10(s_max_bnd)*0.1)])
-    except:
-      array([100.])
-  else:
-    xpost = array([log10(s)])
+  xpost = init_xpost(s, s_min_bnd, s_max_bnd, isauto)
+
   while robust_iterative_process:
     #--- "amount" of weights (see the function GCVscore)
     aow = sum(w_tot)/noe # 0 < aow <= 1
@@ -446,7 +441,15 @@ def initial_z(y, z0, is_weighted):
     
     return z
 
-
+def init_xpost(s, s_min_bnd, s_max_bnd, is_auto):
+    if is_auto:
+        try:
+            return array([(0.9*log10(s_min_bnd) + log10(s_max_bnd)*0.1)])
+        except:
+            return array([100.])
+    else:
+        return array([log10(s)])
+    
 ## GCV score
 #---
 #function GCVscore = gcv(p)
