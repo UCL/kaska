@@ -213,25 +213,7 @@ def smoothn(y,nS0=10,axis=None,smoothOrder=2.0,sd=None,verbose=False,\
   except:
     return y, s, EXIT_LIB_NOT_FOUND, W_TOT_DEFAULT
 
-  ## Creation of the Lambda tensor
-  #---
-  # Lambda contains the eingenvalues of the difference matrix used in this
-  # penalized least squares process.
-  axis = tuple(np.array(axis).flatten())
-  d =  y.ndim
-  lambda_ = zeros(sizy)
-  for i in axis:
-    # create a 1 x d array (so e.g. [1,1] for a 2D case
-    siz0 = ones((1,y.ndim))[0].astype(int)
-    siz0[i] = sizy[i]
-    # cos(pi*(reshape(1:sizy(i),siz0)-1)/sizy(i)))
-    # (arange(1,sizy[i]+1).reshape(siz0) - 1.)/sizy[i]
-    lambda_ = lambda_ + (cos(pi*(arange(1,sizy[i]+1) - 1.)/sizy[i]).reshape(siz0))
-    #else:
-    #  lambda_ = lambda_ + siz0
-  lambda_ = -2.*(len(axis)-lambda_)
-  if not isauto:
-    gamma = 1./(1+(s*abs(lambda_))**smoothOrder)
+  lambda_ = define_lambda(y, axis)
 
   ## Upper and lower bound for the smoothness parameter
   # The average leverage (h) is by definition in [0 1]. Weak smoothing occurs
@@ -431,6 +413,22 @@ def preprocessing(y, w, sd):
 
     
     return (y, w)
+
+## Creation of the Lambda tensor
+def define_lambda(y, axis):
+  # Lambda contains the eingenvalues of the difference matrix used in this
+  # penalized least squares process.
+    axis_tuple = tuple(np.array(axis).flatten())
+    
+    lam = zeros(y.shape)
+    for i in axis_tuple:
+        siz0 = ones((1, y.ndim))[0].astype(int)
+        siz0[i] = y.shape[i]
+        lam = lam + (cos(pi*(arange(1, y.shape[i] + 1) - 1)/y.shape[i]).reshape(siz0))
+    
+    lam = -2. * (len(axis_tuple) - lam)
+    
+    return lam
 
 ## GCV score
 #---
