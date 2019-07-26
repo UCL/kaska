@@ -224,19 +224,7 @@ def smoothn(y,nS0=10,axis=None,smoothOrder=2.0,sd=None,verbose=False,\
   #---
   w_tot = w
   #--- Initial conditions for z
-  if isweighted:
-    #--- With weighted/missing data
-    # An initial guess is provided to ensure faster convergence. For that
-    # purpose, a nearest neighbor interpolation followed by a coarse
-    # smoothing are performed.
-    #---
-    if z0 != None: # an initial guess (z0) has been provided
-        z = z0
-    else:
-        z = np.where(is_finite, y, 0.) #initial_guess(y,IsFinite);
-#         z[~np.isfinite(y)] = 0.
-  else:
-    z = zeros(sizy)
+  z = initial_z(y, z0, isweighted)
   #---
   z0 = z
   y[~is_finite] = 0 # arbitrary values for missing y-data
@@ -439,6 +427,24 @@ def smoothness_bounds(y):
         s_max_bnd = None
 
     return (s_min_bnd, s_max_bnd)
+
+#--- Initial conditions for z
+def initial_z(y, z0, is_weighted):
+    if is_weighted:
+    #--- With weighted/missing data
+    # An initial guess is provided to ensure faster convergence. For that
+    # purpose, a nearest neighbor interpolation followed by a coarse
+    # smoothing are performed.
+    #---
+        if z0 != None: # an initial guess (z0) has been provided
+            z = z0
+        else:
+            z = np.where(np.isfinite(y), y, 0.) #initial_guess(y,IsFinite);
+#         z[~np.isfinite(y)] = 0.
+    else:
+        z = np.zeros_like(y)
+    
+    return z
 
 
 ## GCV score
