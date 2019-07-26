@@ -7,6 +7,12 @@ import numpy as np
 import numpy.ma as ma
 from scipy.linalg._flinalg import sdet_c
 
+# Exit codes
+exit_success = 0
+exit_lib_not_found = -1
+
+w_tot_default = 0
+
 def H(y,t0=0):
   '''
   Step fn with step at t0
@@ -181,10 +187,7 @@ def smoothn(y,nS0=10,axis=None,smoothOrder=2.0,sd=None,verbose=False,\
 
   noe = y.size # number of elements
   if noe<2:
-    z = y
-    exitflag = 0
-    Wtot=0
-    return z,s,exitflag,Wtot
+    return y, s, exit_success, w_tot_default
 
   #---
   # "Weighting function" criterion
@@ -208,10 +211,7 @@ def smoothn(y,nS0=10,axis=None,smoothOrder=2.0,sd=None,verbose=False,\
   try:
     from scipy.fftpack.realtransforms import dct,idct
   except:
-    z = y
-    exitflag = -1
-    Wtot=0
-    return z,s,exitflag,Wtot
+    return y, s, exit_lib_not_found, w_tot_default
 
   ## Creation of the Lambda tensor
   #---
@@ -377,7 +377,7 @@ def smoothn(y,nS0=10,axis=None,smoothOrder=2.0,sd=None,verbose=False,\
     #warning('MATLAB:smoothn:MaxIter',\
     #    ['Maximum number of iterations (%d'%(MaxIter) + ') has '\
     #    + 'been exceeded. Increase MaxIter option or decrease TolZ value.'])
-  return z,s,exitflag,Wtot
+  return z, s, exitflag, Wtot
 
 def warning(s1,s2):
   print(s1)
