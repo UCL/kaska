@@ -49,7 +49,7 @@ def test_sd_weights():
     w = sd**(-2)
     
     (z_sd, s, flag, wtot) = smoothn.smoothn(y_noise, sd=sd)
-    (z_w, s, flag, wtot) = smoothn.smoothn(y_noise, W=w)
+    (z_w, s, flag, wtot) = smoothn.smoothn(y_noise, w=w)
     
     # should be identical
     prec = 1e-15
@@ -58,7 +58,7 @@ def test_sd_weights():
 def test_masked_array():
     (d, w) = txy_data()
     masky = ma.array(d, mask = (w == 0.))
-    (s, ess, flag, wtot) = smoothn.smoothn(masky, W = w, axis=0, isrobust=True)
+    (s, ess, flag, wtot) = smoothn.smoothn(masky, w = w, axis=0, isrobust=True)
     
     target_maximum_residuals = np.array([[0.19063412, 1.63927078, 3.22016034],
                                          [2.86830946, 3.3060494 , 5.26835424],
@@ -73,7 +73,7 @@ def test_masked_array():
 # A test emulating the way smoothn is used in KaSKA
 def test_time_txy():
     (d, w) = txy_data()
-    (s, ess, flag, wtot) = smoothn.smoothn(d, W = w, axis=0, isrobust=True)
+    (s, ess, flag, wtot) = smoothn.smoothn(d, w = w, axis=0, isrobust=True)
     
     target_maximum_residuals = np.array([[0.18979927, 1.63548774, 3.21602835],
                                          [2.87126492, 3.30231171, 5.26648978],
@@ -87,7 +87,7 @@ def test_time_txy():
 
 def test_cauchy():
     (d, w) = txy_data()
-    (s, ess, flag, wtot) = smoothn.smoothn(d, W = w, axis=0, isrobust=True, weightstr='cauchy')
+    (s, ess, flag, wtot) = smoothn.smoothn(d, w = w, axis=0, isrobust=True, weightstr='cauchy')
     
     target_maximum_residuals = np.array([[0.20149125, 1.72772566, 3.42323339],
                                          [2.78516476, 3.45869778, 5.50720599],
@@ -101,7 +101,7 @@ def test_cauchy():
 
 def test_talworth():
     (d, w) = txy_data()
-    (s, ess, flag, wtot) = smoothn.smoothn(d, W = w, axis=0, isrobust=True, weightstr='talworth')
+    (s, ess, flag, wtot) = smoothn.smoothn(d, w = w, axis=0, isrobust=True, weightstr='talworth')
     
     target_maximum_residuals = np.array([[0.14892761, 1.347204  , 2.69440801],
                                          [3.3310566 , 3.13332464, 5.24182578],
