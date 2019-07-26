@@ -367,11 +367,11 @@ def smoothn(y,nS0=10,axis=None,smoothOrder=2.0,sd=None,verbose=False,\
   #---
   if isauto:
     if abs(log10(s)-log10(sMinBnd))<errp:
-        warning('MATLAB:smoothn:SLowerBound',\
+        warning('smoothn:SLowerBound',\
             ['s = %.3f '%(s) + ': the lower bound for s '\
             + 'has been reached. Put s as an input variable if required.'])
     elif abs(log10(s)-log10(sMaxBnd))<errp:
-        warning('MATLAB:smoothn:SUpperBound',\
+        warning('smoothn:SUpperBound',\
             ['s = %.3f '%(s) + ': the upper bound for s '\
             + 'has been reached. Put s as an input variable if required.'])
     #warning('MATLAB:smoothn:max_iter',\
