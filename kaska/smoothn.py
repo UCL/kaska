@@ -213,28 +213,14 @@ def smoothn(y,nS0=10,axis=None,smoothOrder=2.0,sd=None,verbose=False,\
   except:
     return y, s, EXIT_LIB_NOT_FOUND, W_TOT_DEFAULT
 
+## Creation of the Lambda tensor
   lambda_ = define_lambda(y, axis)
 
   ## Upper and lower bound for the smoothness parameter
-  # The average leverage (h) is by definition in [0 1]. Weak smoothing occurs
-  # if h is close to 1, while over-smoothing appears when h is near 0. Upper
-  # and lower bounds for h are given to avoid under- or over-smoothing. See
-  # equation relating h to the smoothness parameter (Equation #12 in the
-  # referenced CSDA paper).
-  n = sum(array(sizy) != 1) # tensor rank of the y-array
-  hMin = 1e-6
-  hMax = 0.99
-  # (h/n)**2 = (1 + a)/( 2 a)
-  # a = 1/(2 (h/n)**2 -1) 
-  # where a = sqrt(1 + 16 s)
-  # (a**2 -1)/16
-  try:
-    sMinBnd = np.sqrt((((1+sqrt(1+8*hMax**(2./n)))/4./hMax**(2./n))**2-1)/16.)
-    sMaxBnd = np.sqrt((((1+sqrt(1+8*hMin**(2./n)))/4./hMin**(2./n))**2-1)/16.)
-  except:
-    sMinBnd = None
-    sMaxBnd = None
+  (s_min_bnd, s_max_bnd) = smoothness_bounds(y)
+
   ## Initialize before iterating
+  y_tensor_rank = sum(array(sizy) != 1) # tensor rank of the y-array
   #---
   w_tot = w
   #--- Initial conditions for z
@@ -269,7 +255,7 @@ def smoothn(y,nS0=10,axis=None,smoothOrder=2.0,sd=None,verbose=False,\
   #---
   if isauto:
     try:
-      xpost = array([(0.9*log10(sMinBnd) + log10(sMaxBnd)*0.1)])
+      xpost = array([(0.9*log10(s_min_bnd) + log10(s_max_bnd)*0.1)])
     except:
       array([100.])
   else:
@@ -294,14 +280,14 @@ def smoothn(y,nS0=10,axis=None,smoothOrder=2.0,sd=None,verbose=False,\
             # errp in here somewhere
             
             #xpost,f,d = lbfgsb.fmin_l_bfgs_b(gcv,xpost,fprime=None,factr=10.,\
-            #   approx_grad=True,bounds=[(log10(sMinBnd),log10(sMaxBnd))],\
+            #   approx_grad=True,bounds=[(log10(s_min_bnd),log10(s_max_bnd))],\
             #   args=(lambda_,aow,dct_y,IsFinite,w_tot,y,nof,noe))
 
             # if we have no clue what value of s to use, better span the
             # possible range to get a reasonable starting point ...
             # only need to do it once though. nS0 is teh number of samples used
             if not s0:
-              ss = np.arange(nS0)*(1./(nS0-1.))*(log10(sMaxBnd)-log10(sMinBnd))+ log10(sMinBnd)
+              ss = np.arange(nS0)*(1./(nS0-1.))*(log10(s_max_bnd)-log10(s_min_bnd))+ log10(s_min_bnd)
               g = np.zeros_like(ss)
               for i,p in enumerate(ss):
                 g[i] = gcv(p,lambda_,aow,dct_y,is_finite,w_tot,y,nof,noe,smoothOrder)
@@ -313,7 +299,7 @@ def smoothn(y,nS0=10,axis=None,smoothOrder=2.0,sd=None,verbose=False,\
             else:
               xpost = [s0]
             xpost,f,d = lbfgsb.fmin_l_bfgs_b(gcv,xpost,fprime=None,factr=1e7,\
-               approx_grad=True,bounds=[(log10(sMinBnd),log10(sMaxBnd))],\
+               approx_grad=True,bounds=[(log10(s_min_bnd),log10(s_max_bnd))],\
                args=(lambda_,aow,dct_y,is_finite,w_tot,y,nof,noe,smoothOrder))
         s = 10**xpost[0]
         # update the value we use for the initial s estimate
@@ -332,7 +318,7 @@ def smoothn(y,nS0=10,axis=None,smoothOrder=2.0,sd=None,verbose=False,\
         #--- average leverage
         h = sqrt(1+16.*s)
         h = sqrt(1+h)/sqrt(2)/h
-        h = h**n
+        h = h**y_tensor_rank
         #--- take robust weights into account
         w_tot = w*robust_weights(y-z,is_finite,h,weightstr)
         #--- re-initialize for another iterative weighted process
@@ -348,11 +334,11 @@ def smoothn(y,nS0=10,axis=None,smoothOrder=2.0,sd=None,verbose=False,\
   ## Warning messages
   #---
   if isauto:
-    if abs(log10(s)-log10(sMinBnd))<errp:
+    if abs(log10(s)-log10(s_min_bnd))<errp:
         warning('smoothn:SLowerBound',\
             ['s = %.3f '%(s) + ': the lower bound for s '\
             + 'has been reached. Put s as an input variable if required.'])
-    elif abs(log10(s)-log10(sMaxBnd))<errp:
+    elif abs(log10(s)-log10(s_max_bnd))<errp:
         warning('smoothn:SUpperBound',\
             ['s = %.3f '%(s) + ': the upper bound for s '\
             + 'has been reached. Put s as an input variable if required.'])
@@ -429,6 +415,31 @@ def define_lambda(y, axis):
     lam = -2. * (len(axis_tuple) - lam)
     
     return lam
+
+## Upper and lower bound for the smoothness parameter
+def smoothness_bounds(y):
+  # The average leverage (h) is by definition in [0 1]. Weak smoothing occurs
+  # if h is close to 1, while over-smoothing appears when h is near 0. Upper
+  # and lower bounds for h are given to avoid under- or over-smoothing. See
+  # equation relating h to the smoothness parameter (Equation #12 in the
+  # referenced CSDA paper).
+    rnk = sum(array(y.shape) != 1)
+    H_MIN = 1e-6
+    H_MAX = 0.99
+    
+  # (h/rnk)**2 = (1 + a)/( 2 a)
+  # a = 1/(2 (h/rnk)**2 -1) 
+  # where a = sqrt(1 + 16 s)
+  # (a**2 -1)/16
+    try:
+        s_min_bnd = np.sqrt((((1+sqrt(1+8*H_MAX**(2./rnk)))/4./H_MAX**(2./rnk))**2-1)/16.)
+        s_max_bnd = np.sqrt((((1+sqrt(1+8*H_MIN**(2./rnk)))/4./H_MIN**(2./rnk))**2-1)/16.)
+    except:
+        s_min_bnd = None
+        s_max_bnd = None
+
+    return (s_min_bnd, s_max_bnd)
+
 
 ## GCV score
 #---
