@@ -12,7 +12,7 @@ import numpy as np
 
 from TwoNN import Two_NN
 
-from utils import reproject_data
+from utils import reproject_data, define_temporal_grid
 
 gdal.UseExceptions()
 

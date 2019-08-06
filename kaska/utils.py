@@ -1,8 +1,18 @@
 #!/usr/bin/env python
+import datetime as dt 
 
 import gdal
 import osr
+
 import numpy as np
+
+def define_temporal_grid(start_date, end_date, temporal_grid_space):
+    """Creates a temporal grid"""
+    temporal_grid = [start_date + i*dt.timedelta(days=temporal_grid_space) 
+                    for i in range(int(np.ceil(366/temporal_grid_space)))
+                    if start_date + i*dt.timedelta(days=temporal_grid_space)
+                                    <= end_date]
+    return temporal_grid 
 
 
 def read_emulator(emulator_file="/home/ucfafyi/DATA/Prosail/prosail_2NN.npz"):
@@ -14,9 +24,11 @@ def read_emulator(emulator_file="/home/ucfafyi/DATA/Prosail/prosail_2NN.npz"):
 def reproject_data(source_img,
         target_img=None,
         dstSRS=None,
+        srcSRS=None,
         srcNodata=np.nan,
         dstNodata=np.nan,
         outputType=None,
+        output_format="MEM",
         verbose=False,
         xmin=None,
         xmax=None,
@@ -55,6 +67,14 @@ def reproject_data(source_img,
     if outputType <= 5 and np.isnan(dstNodata):
         dstNodata = 0
 
+    if srcSRS is not None:
+        _srcSRS = osr.SpatialReference()
+        try:
+            _srcSRS.ImportFromEPSG(int(srcSRS.split(":")[1]))
+        except:
+            _srcSRS.ImportFromWkt(srcSRS)
+        
+
     if (target_img is None) & (dstSRS is None):
             raise IOError(
                 "Projection should be specified ether from "
@@ -92,7 +112,7 @@ def reproject_data(source_img,
             gg = gdal.Warp(
                 "",
                 source_img,
-                format="MEM",
+                format=output_format,
                 outputBounds=[xmin, ymin, xmax, ymax],
                 dstNodata=dstNodata,
                 warpOptions=["NUM_THREADS=ALL_CPUS"],
@@ -102,13 +122,14 @@ def reproject_data(source_img,
                 outputType=outputType,
                 srcNodata=srcNodata,
                 resampleAlg=resample,
+                srcSRS=_srcSRS
             )
 
     else:
             gg = gdal.Warp(
                 "",
                 source_img,
-                format="MEM",
+                format=output_format,
                 outputBounds=[xmin, ymin, xmax, ymax],
                 xRes=xRes,
                 yRes=yRes,
@@ -119,6 +140,7 @@ def reproject_data(source_img,
                 dstNodata=dstNodata,
                 srcNodata=srcNodata,
                 resampleAlg=resample,
+                srcSRS=_srcSRS
             )
     if verbose:
         print("There are %d bands in this file, use "
