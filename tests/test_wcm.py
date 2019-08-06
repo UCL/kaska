@@ -31,7 +31,7 @@ def test_wcm_jac():
     A, B, C, V1, V2, sigma_soil = -12,  0.05, 0.02, np.ones(2)*4, np.ones(2)*4, np.ones(2)*0.1
     x = np.r_[A, B, C, V1, V2, sigma_soil]
     jj = wcm_jac(x)
-    retval = np.array([jj[0].sum(), jj[1].sum(), jj[2].sum(), *jj[3]])
+    retval = np.array([jj[0].sum(), jj[1].sum(), jj[2].sum(), *(jj[3])])
     expected = np.array([2.959217508268818, -559.9411675286623,
                         1.2601956229327955, 0.63009781, 0.63009781])
     assert np.allclose( retval, expected)

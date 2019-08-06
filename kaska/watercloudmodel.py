@@ -18,6 +18,10 @@ the scatterers within the turbid medium, and are usually related to LAI.
 
 import numpy as np
 
+from numba import jit
+
+
+@jit(nopython=True)
 def wcm(x, theta=30):
     """The Water Cloud Model for one polarisation. This function phrases 
     the WCM for a time series: We assume that the A, B, and C terms are
@@ -53,6 +57,7 @@ def wcm(x, theta=30):
     sigma_veg = a*V1*(1-tau)
     return sigma_soil + sigma_veg
 
+@jit(nopython=True)
 def wcm_jac(x, theta=30):
     """The Jacobian of the WCM model for one polarisation. See above
     Arguments:
@@ -84,6 +89,7 @@ def wcm_jac(x, theta=30):
     return [der_dA, der_dB, der_dC, der_dsigmasoil]
 
 
+@jit(nopython=True)
 def wcm_hess(x, theta=30):
     """The Hessian of the WCM model for one polarisation. See above
     Arguments:
