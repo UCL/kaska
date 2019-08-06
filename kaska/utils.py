@@ -73,6 +73,8 @@ def reproject_data(source_img,
             _srcSRS.ImportFromEPSG(int(srcSRS.split(":")[1]))
         except:
             _srcSRS.ImportFromWkt(srcSRS)
+    else:
+        _srcSRS = None
         
 
     if (target_img is None) & (dstSRS is None):
