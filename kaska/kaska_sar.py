@@ -78,15 +78,15 @@ if __name__ == "__main__":
         n_obs = len(svh)
         return cost_hess(np.concatenate([xx[:6], lai, lai*cab, xx[-n_obs:]]), svh,svv,theta)
 
-    Avv, Bvv, Cvv, V1, V2, sigma_soil = -12,  0.05, 0.1, np.ones(2)*4, np.ones(2)*4, np.ones(2)*0.1
+    Avv, Bvv, Cvv = -12,  0.05, 0.1
     Avh, Bvh, Cvh = -14, 0.01, 0.1
-    
+    sigma_soil0 = np.zeros(n_sar_obs)*0.2 # Say
     x0 = np.r_[Avv, Bvv, Cvv, Avh, Bvh, Cvh, sigma_soil0]#, V1, V2, sigma_soil]
-    
-    for (row, col) in np.npindex(lai):
+
+    for (row, col) in np.ndindex(*lai_s1[0].shape):
         # Select one pixel
-        svv = S1_backscatter.VV[:, row, col]
-        svh = S1_backscatter.VH[:, row, col]
+        svv = 10*np.log10(S1_backscatter.VV[:, row, col])
+        svh = 10*np.log10(S1_backscatter.VH[:, row, col])
         theta = S1_backscatter.theta[:, row, col]
         sigma_soil0 = np.ones_like(svv)*0.2 # 
         lai = lai_s1[:, row, col]
@@ -95,6 +95,6 @@ if __name__ == "__main__":
         retval = scipy.optimize.minimize(cost_nolai, x0, args=(svh, svh, lai, cab, theta), 
                                  jac=cost_nolai_jac, hess=cost_nolai_hess,
                                 method="Newton-CG")
-        print(cost_nolai(retval.x, svh, svv, lai, cab, theta))    
+        print(retval.x[:6])
         x0 = retval.x
 
