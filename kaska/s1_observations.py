@@ -10,7 +10,7 @@ from pathlib import Path
 import gdal
 import numpy as np
 
-from utils import reproject_data
+from utils import reproject_data, define_temporal_grid
 
 gdal.UseExceptions()
 
@@ -36,10 +36,6 @@ layers = [
     "sigma0_vh_norm_multi_db",
     "localIncidenceAngle"
     ]
-
-
-
-
 
 
 def get_s1_dates(s1_file):
