@@ -22,7 +22,7 @@ from numba import jit
 
 
 @jit(nopython=True)
-def wcm(x, theta=30):
+def wcm(x, theta=30.):
     """The Water Cloud Model for one polarisation. This function phrases 
     the WCM for a time series: We assume that the A, B, and C terms are
     constant over the time series, and that the V1, V2 and VSM parameters
@@ -58,7 +58,7 @@ def wcm(x, theta=30):
     return sigma_soil + sigma_veg
 
 @jit(nopython=True)
-def wcm_jac(x, theta=30):
+def wcm_jac(x, theta=30.):
     """The Jacobian of the WCM model for one polarisation. See above
     Arguments:
     x {array} -- An array of input parameters. Order is A, B, C,
@@ -90,7 +90,7 @@ def wcm_jac(x, theta=30):
 
 
 @jit(nopython=True)
-def wcm_hess(x, theta=30):
+def wcm_hess(x, theta=30.):
     """The Hessian of the WCM model for one polarisation. See above
     Arguments:
     x {array} -- An array of input parameters. Order is A, B, C,
@@ -254,12 +254,18 @@ def cost(x, svh, svv, theta, sigma=0.5):
     s = x[(6+2*n_obs):]
     x_vv = np.r_[a_vv, b_vv, c_vv, V1, V2, s]
     x_vh = np.r_[a_vh, b_vh, c_vh, V1, V2, s]
+    #x_vv = np.array([a_vv, b_vv, c_vv, V1, V2, s])
+    #x_vh = np.array([a_vh, b_vh, c_vh, V1, V2, s])
+
     sigma_vv = wcm(x_vv, theta=theta)
     sigma_vh = wcm(x_vh, theta=theta)
     diff_vv = (svv - sigma_vv) 
     diff_vh = (svh - sigma_vh) 
     cost = 0.5*(diff_vv**2 + diff_vh**2)/(sigma**2)
-    return cost.sum()
+    cost0 = np.sum(cost)
+    return cost0
+
+
 
 def cost_jac(x, svh, svv, theta, sigma=0.5):
     """The **Jacobian** of the SAR WCM cost function.
@@ -296,6 +302,8 @@ def cost_jac(x, svh, svv, theta, sigma=0.5):
     s = x[(6+2*n_obs):]
     x_vv = np.r_[a_vv, b_vv, c_vv, V1, V2, s]
     x_vh = np.r_[a_vh, b_vh, c_vh, V1, V2, s]
+    #x_vv = np.array([a_vv, b_vv, c_vv, V1, V2, s])
+    #x_vh = np.array([a_vh, b_vh, c_vh, V1, V2, s])
     sigma_vv = wcm(x_vv, theta=theta)
     sigma_vh = wcm(x_vh, theta=theta)
     diff_vv = (svv - sigma_vv) 
@@ -313,6 +321,8 @@ def cost_jac(x, svh, svv, theta, sigma=0.5):
                              #np.sum(dvh[3]*diff_vh)]),# Removed D parameter
                              dvv[-1]*diff_vv + dvh[-1]*diff_vh])
     return -jac/sigma**2
+
+
 
 def cost_hess(x, svh, svv, theta, sigma=0.5):
     """The **Hessian** of the SAR WCM cost function.
@@ -348,6 +358,9 @@ def cost_hess(x, svh, svv, theta, sigma=0.5):
     s = x[(6+2*n_obs):]
     x_vv = np.r_[a_vv, b_vv, c_vv, V1, V2, s]
     x_vh = np.r_[a_vh, b_vh, c_vh, V1, V2, s]
+    #x_vv = np.array([a_vv, b_vv, c_vv, V1, V2, s])
+    #x_vh = np.array([a_vh, b_vh, c_vh, V1, V2, s])
+
     sigma_vv = wcm(x_vv, theta=theta)
     sigma_vh = wcm(x_vh, theta=theta)
     
