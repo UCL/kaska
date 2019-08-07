@@ -159,7 +159,8 @@ if __name__ == "__main__":
     temporal_grid_space = 5
     temporal_grid = define_temporal_grid(start_date, end_date,
                                         temporal_grid_space)
-    nc_file = "/data/selene/ucfajlg/ELBARA_LMU/mirror_ftp/141.84.52.201/S1/S1_LMU_site_2017_new.nc"
+    nc_file = "/data/selene/ucfajlg/ELBARA_LMU/mirror_ftp/" + \
+              "141.84.52.201/S1/S1_LMU_site_2017_new.nc"
     s1_obs = Sentinel1Observations(nc_file,
                 "/home/ucfajlg/Data/python/KaFKA_Validation/LMU/carto/ESU.tif",
                 time_grid=temporal_grid)
