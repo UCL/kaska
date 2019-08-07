@@ -62,17 +62,8 @@ class Sentinel1Observations(object):
         self.time_grid = time_grid
         self.state_mask = state_mask
         self.nc_file = Path(netCDF_file)
-        self.s1_data_ptr = {}
-        for layer, layer_name in nc_layers.items():
-            fname = f'NETCDF:"{self.nc_file.as_posix():s}":{layer_name:s}'
-            self.s1_data_ptr[layer] = reproject_data(fname, output_format="VRT", 
-                                                  srcSRS="EPSG:4326",
-                                                  target_img=self.state_mask)
-        s1_dates = get_s1_dates(self.s1_data_ptr[layer])
-        self.dates = {x:(i+1) 
-                            for i, x in enumerate(s1_dates) 
-                            if ( (x >= self.time_grid[0]) and 
-                            (x <= self.time_grid[-1]))}
+        self.nc_layers = nc_layers
+        self._match_to_mask()
 
     def apply_roi(self, ulx, uly, lrx, lry):
         self.ulx = ulx
@@ -81,13 +72,16 @@ class Sentinel1Observations(object):
         self.lry = lry
         width = lrx - ulx
         height = uly - lry
-
+        
         self.state_mask = gdal.Translate(
             "",
             self.original_mask,
             srcWin=[ulx, uly, width, abs(height)],
             format="MEM",
         )
+        LOG.info(f"Applied ROI ulx, uly = ({ulx:d}, {uly:d}," +
+                 f" w,h {width:d}, {height:d}")
+        self._match_to_mask()
 
     def define_output(self):
         """Define the output array shapes to be consistent with the state
@@ -113,8 +107,37 @@ class Sentinel1Observations(object):
         # new_geoT[3] = new_geoT[3] + self.uly*new_geoT[5]
         return proj, geoT.tolist()  # new_geoT.tolist()
         
+    def _match_to_mask(self):
+        """Matches the observations to the state mask.
+        """
+        self.s1_data_ptr = {}
+        for layer, layer_name in self.nc_layers.items():
+            fname = f'NETCDF:"{self.nc_file.as_posix():s}":{layer_name:s}'
+            self.s1_data_ptr[layer] = reproject_data(fname, output_format="VRT", 
+                                                srcSRS="EPSG:4326",
+                                                target_img=self.state_mask)
+        s1_dates = get_s1_dates(self.s1_data_ptr[layer])
+        self.dates = {x:(i+1) 
+                            for i, x in enumerate(s1_dates) 
+                            if ( (x >= self.time_grid[0]) and 
+                            (x <= self.time_grid[-1]))}
+
+
     def read_time_series(self, time_grid):
+        """Reads a time series of observations. Uses the time grid to provide
+        a min/max times.
         
+        Parameters
+        ----------
+        time_grid : list of datetimes
+            List of datetimes
+        
+        Returns
+        -------
+        S1data
+            An object with arrays containing the VV, VH and theta, as well
+            as uncertainties...
+        """
         early = time_grid[0]
         late = time_grid[-1]
         
