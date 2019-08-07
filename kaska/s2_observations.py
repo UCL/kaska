@@ -64,6 +64,25 @@ class Sentinel2Observations(object):
         self.chunk = chunk
 
     def apply_roi(self, ulx, uly, lrx, lry):
+        """Applies a region of interest (ROI) window to the state mask, which is
+        then used to subset the data spatially. Useful for spatial windowing/
+        chunking
+        
+        Parameters
+        ----------
+        ulx : integer
+            The Upper Left corner of the state mask (in pixels). Easting.
+        uly : integer
+            The Upper Left corner of the state mask (in pixels). Northing.
+        lrx : integer
+            The Lower Right corner of the state mask (in pixels). Easting.
+        lry : integer
+            The Lower Right corner of the state mask (in pixels). Northing.
+        Returns
+        -------
+        None
+        Doesn't return anything, but changes `self.state_mask`
+        """
         self.ulx = ulx
         self.uly = uly
         self.lrx = lrx
@@ -79,6 +98,16 @@ class Sentinel2Observations(object):
         )
 
     def define_output(self):
+        """Define the output array shapes to be consistent with the state
+        mask. You get the projection and geotransform, that should be 
+        enough to define an ouput dataset that conforms to the state mask.
+        
+        Returns
+        -------
+        tuple
+            The first element is the projection string (WKT probably?), and
+            the second element is the geotransform.
+        """
         try:
             g = gdal.Open(self.state_mask)
             proj = g.GetProjection()
