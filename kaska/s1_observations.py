@@ -74,6 +74,45 @@ class Sentinel1Observations(object):
                             if ( (x >= self.time_grid[0]) and 
                             (x <= self.time_grid[-1]))}
 
+    def apply_roi(self, ulx, uly, lrx, lry):
+        self.ulx = ulx
+        self.uly = uly
+        self.lrx = lrx
+        self.lry = lry
+        width = lrx - ulx
+        height = uly - lry
+
+        self.state_mask = gdal.Translate(
+            "",
+            self.original_mask,
+            srcWin=[ulx, uly, width, abs(height)],
+            format="MEM",
+        )
+
+    def define_output(self):
+        """Define the output array shapes to be consistent with the state
+        mask. You get the projection and geotransform, that should be 
+        enough to define an ouput dataset that conforms to the state mask.
+        
+        Returns
+        -------
+        tuple
+            The first element is the projection string (WKT probably?), and
+            the second element is the geotransform.
+        """
+        try:
+            g = gdal.Open(self.state_mask)
+            proj = g.GetProjection()
+            geoT = np.array(g.GetGeoTransform())
+        except RuntimeError:
+            proj = self.state_mask.GetProjection()
+            geoT = np.array(self.state_mask.GetGeoTransform())
+
+        # new_geoT = geoT*1.
+        # new_geoT[0] = new_geoT[0] + self.ulx*new_geoT[1]
+        # new_geoT[3] = new_geoT[3] + self.uly*new_geoT[5]
+        return proj, geoT.tolist()  # new_geoT.tolist()
+        
     def read_time_series(self, time_grid):
         
         early = time_grid[0]
