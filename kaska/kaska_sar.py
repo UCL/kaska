@@ -22,6 +22,8 @@ from watercloudmodel import cost, cost_jac, cost_hess
 
 import scipy.optimize
 
+import time # Just for timekeeping
+
 LOG = logging.getLogger(__name__ + ".KaSKA")
 LOG.setLevel(logging.DEBUG)
 if not LOG.handlers:
@@ -81,20 +83,66 @@ if __name__ == "__main__":
     Avv, Bvv, Cvv = -12,  0.05, 0.1
     Avh, Bvh, Cvh = -14, 0.01, 0.1
     sigma_soil0 = np.zeros(n_sar_obs)*0.2 # Say
-    x0 = np.r_[Avv, Bvv, Cvv, Avh, Bvh, Cvh, sigma_soil0]#, V1, V2, sigma_soil]
-
+    x0_all = np.r_[Avv, Bvv, Cvv, Avh, Bvh, Cvh, sigma_soil0]#, V1, V2, sigma_soil]
+    nt, ny, nx = lai_s1.shape
+    Avv_out = np.zeros((ny, nx))
+    Bvv_out = np.zeros((ny, nx))
+    Cvv_out = np.zeros((ny, nx))
+    Avh_out = np.zeros((ny, nx))
+    Bvh_out = np.zeros((ny, nx))
+    Cvh_out = np.zeros((ny, nx))
+    cost_f = np.zeros((ny, nx))
+    sigma_soil_out = np.zeros((nt, ny, nx))
+    tic = time.time()
+    n_pxls = 0
+    bounds = [
+            [-40, -5],
+            [1e-4, 1],
+            [-40, -1],
+            [-40, -5],
+            [1e-4, 1],
+            [-40, -1],
+            *([[0.01, 1]]*n_sar_obs) ]
+    x0 = x0_all
     for (row, col) in np.ndindex(*lai_s1[0].shape):
+        lai = lai_s1[:, row, col]
+        if lai.max() < 2.5:
+            cost_f[row, col] = -900. # No dynamics
+            continue
         # Select one pixel
         svv = 10*np.log10(S1_backscatter.VV[:, row, col])
         svh = 10*np.log10(S1_backscatter.VH[:, row, col])
         theta = S1_backscatter.theta[:, row, col]
         sigma_soil0 = np.ones_like(svv)*0.2 # 
-        lai = lai_s1[:, row, col]
+        
         cab = cab_s1[:, row, col]
-
+        # Might be worth defining Cxx from LAI=0 average and
+        #  Axx when LAI=LAI.max()
+        x0[2] = svv[lai<0.3].mean()
+        x0[5] = svh[lai<0.3].mean()
+        x0[0] = svv[lai>(0.9*lai.max())].mean()
+        x0[3] = svh[lai>(0.9*lai.max())].mean()
         retval = scipy.optimize.minimize(cost_nolai, x0, args=(svh, svh, lai, cab, theta), 
                                  jac=cost_nolai_jac, hess=cost_nolai_hess,
                                 method="Newton-CG")
-        print(retval.x[:6])
-        x0 = retval.x
+        Avv_out[row, col] = retval.x[0]
+        Bvv_out[row, col] = retval.x[1]
+        Cvv_out[row, col] = retval.x[2]
+        Avh_out[row, col] = retval.x[3]
+        Bvh_out[row, col] = retval.x[4]
+        Cvh_out[row, col] = retval.x[5]
+        cost_f[row, col] = retval.fun
+        sigma_soil_out[:, row, col] = retval.x[6:]
+        if retval.fun < 1e5:
+            print(f"Good good...{row:d}, {col:d}")
+            x0 = retval.x
+        else:
+            # Rubbish inversion, do not use parameters!
+            x0 = x0_all
+
+        n_pxls += 1
+        if n_pxls % 1000 == 0:
+            n_pxls = 0
+            LOG.info(f"Done 100 pixels in {(time.time()-tic):g}")
+            tic = time.time()
 
