@@ -70,15 +70,15 @@ if __name__ == "__main__":
     # Wrap cost functions
     def cost_nolai(xx, svh, svv, lai, cab, theta):
         n_obs = len(svh)
-        return cost(np.concatenate([xx[:6], lai,lai*cab, xx[-n_obs:]]), svh,svv,theta)
+        return cost(np.concatenate([xx[:6], lai,lai, xx[-n_obs:]]), svh,svv,theta)
 
     def cost_nolai_jac(xx, svh, svv, lai, cab, theta):
         n_obs = len(svh)
-        return cost_jac(np.concatenate([xx[:6], lai,lai*cab, xx[-n_obs:]]), svh,svv,theta)
+        return cost_jac(np.concatenate([xx[:6], lai,lai, xx[-n_obs:]]), svh,svv,theta)
 
     def cost_nolai_hess(xx, svh, svv, lai, cab, theta):
         n_obs = len(svh)
-        return cost_hess(np.concatenate([xx[:6], lai, lai*cab, xx[-n_obs:]]), svh,svv,theta)
+        return cost_hess(np.concatenate([xx[:6], lai, lai, xx[-n_obs:]]), svh,svv,theta)
 
     Avv, Bvv, Cvv = -12,  0.05, 0.1
     Avh, Bvh, Cvh = -14, 0.01, 0.1
