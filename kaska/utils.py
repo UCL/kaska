@@ -1,9 +1,22 @@
 #!/usr/bin/env python
+import logging
 
 import gdal
 import osr
 import numpy as np
 
+from pathlib import Path
+
+LOG = logging.getLogger(__name__ + ".Sentinel2_Observations")
+LOG.setLevel(logging.INFO)
+if not LOG.handlers:
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.INFO)
+    formatter = logging.Formatter('%(asctime)s - %(name)s - ' +
+                                  '%(levelname)s - %(message)s')
+    ch.setFormatter(formatter)
+    LOG.addHandler(ch)
+LOG.propagate = False
 
 def read_emulator(emulator_file="/home/ucfafyi/DATA/Prosail/prosail_2NN.npz"):
     f = np.load(str(emulator_file))
@@ -126,3 +139,32 @@ def reproject_data(source_img,
                 % gg.RasterCount
             )
     return gg
+
+
+
+def save_output_parameters(observations, output_folder, parameter_names,
+                           output_data, output_format="GTiff",
+                           options=['COMPRESS=DEFLATE',
+                                    'BIGTIFF=YES',
+                                    'PREDICTOR=1',
+                                    'TILED=YES']):
+    """Saving the output parameters as (probably all times) GeoTIFFs
+    """
+    output_folder = Path(output_folder)
+    assert len(parameter_names) == len(output_data)
+    nt = output_data[0].shape[0]
+    projection, geo_transform, nx, ny = observations.define_output()
+    drv = gdal.GetDriverByName(output_format)
+    for (param, data) in zip(parameter_names, output_data):
+        outfile = output_folder/f"s2_{param:s}.tif"
+        if outfile.exists():
+            outfile.unlink()
+        LOG.info(f"Saving file {str(outfile):s}...")
+        dst_ds = drv.Create(str(outfile), nx, ny, nt,
+                        gdal.GDT_Float32, options)
+        dst_ds.SetProjection(projection)
+        dst_ds.SetGeoTransform(geo_transform)
+        for band in range(nt):
+            dst_ds.GetRasterBand(band+1).WriteArray(
+                                data[band, :, :].astype(np.float32))
+        dst_ds = None
