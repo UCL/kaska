@@ -142,8 +142,9 @@ def reproject_data(source_img,
 
 
 
-def save_output_parameters(observations, output_folder, parameter_names,
+def save_output_parameters(time_grid, observations, output_folder, parameter_names,
                            output_data, output_format="GTiff",
+                           chunk=None,
                            options=['COMPRESS=DEFLATE',
                                     'BIGTIFF=YES',
                                     'PREDICTOR=1',
@@ -153,10 +154,14 @@ def save_output_parameters(observations, output_folder, parameter_names,
     output_folder = Path(output_folder)
     assert len(parameter_names) == len(output_data)
     nt = output_data[0].shape[0]
+    assert len(time_grid) == nt
     projection, geo_transform, nx, ny = observations.define_output()
     drv = gdal.GetDriverByName(output_format)
     for (param, data) in zip(parameter_names, output_data):
-        outfile = output_folder/f"s2_{param:s}.tif"
+        if chunk is None:
+            outfile = output_folder/f"s2_{param:s}.tif"
+        else:
+            outfile = output_folder/f"s2_{param:s}_{chunk:s}.tif"
         if outfile.exists():
             outfile.unlink()
         LOG.info(f"Saving file {str(outfile):s}...")
@@ -165,6 +170,8 @@ def save_output_parameters(observations, output_folder, parameter_names,
         dst_ds.SetProjection(projection)
         dst_ds.SetGeoTransform(geo_transform)
         for band in range(nt):
-            dst_ds.GetRasterBand(band+1).WriteArray(
-                                data[band, :, :].astype(np.float32))
+            x = dst_ds.GetRasterBand(band+1)
+            x.WriteArray(data[band, :, :].astype(np.float32))
+            x.SetMetadata({'parameter': param,
+                           'date': time_grid[band].strftime("%Y-%m-%d")})
         dst_ds = None

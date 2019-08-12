@@ -16,7 +16,7 @@ from smoothn import smoothn
 
 from utils import save_output_parameters
 
-LOG = logging.getLogger(__name__ + ".KaSKA")
+LOG = logging.getLogger("KaSKA")
 LOG.setLevel(logging.DEBUG)
 if not LOG.handlers:
     ch = logging.StreamHandler()
@@ -40,12 +40,14 @@ class KaSKA(object):
     """The main KaSKA object"""
 
     def __init__(self, observations, time_grid, state_mask, approx_inverter,
-                output_folder):
+                output_folder,
+                chunk = None):
         self.time_grid = time_grid
         self.observations = observations
         self.state_mask = state_mask
         self.output_folder = output_folder
         self.inverter = NNParameterInversion(approx_inverter)
+        self.chunk = chunk
 
     def first_pass_inversion(self):
         """A first pass inversion. Could be anything, from a quick'n'dirty
@@ -164,17 +166,20 @@ class KaSKA(object):
         scbrown[:, mask] = 0
         return (["lai", "cab", "cbrown"], [slai, scab, scbrown])
 
-    def save_s2_output(self, parameter_names, output_data, output_format="GTiff"):
+    def save_s2_output(self, parameter_names, output_data,
+                       output_format="GTiff"):
         
-        save_output_parameters(self.observations, self.output_folder, 
+        save_output_parameters(self.time_grid, self.observations,
+                               self.output_folder,
                                parameter_names, output_data,
-                               output_format=output_format)
+                               output_format=output_format,
+                               chunk=self.chunk)
 
 
 
 if __name__ == "__main__":
     start_date = dt.datetime(2017, 5, 1)
-    end_date = dt.datetime(2017, 7, 1)
+    end_date = dt.datetime(2017, 6, 1)
     temporal_grid_space = 5
     temporal_grid = define_temporal_grid(start_date, end_date,
                                             temporal_grid_space)
