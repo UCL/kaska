@@ -10,9 +10,8 @@ import pytest
 import numpy as np
 
 import sys
-sys.path.append("../kaska")
 
-import smoothn
+from .. import smoothn
 
 # Make a test from the first example of the smoothn code
 def test_robust1d():
