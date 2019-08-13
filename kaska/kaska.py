@@ -14,7 +14,7 @@ from .s2_observations import Sentinel2Observations
 
 from .smoothn import smoothn
 
-from utils import save_output_parameters
+from .utils import save_output_parameters
 
 LOG = logging.getLogger("KaSKA")
 LOG.setLevel(logging.DEBUG)
