@@ -6,7 +6,7 @@
 import pytest
 
 
-from kaska import kaska
+from .. import kaska
 
 
 @pytest.fixture

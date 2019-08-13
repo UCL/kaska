@@ -12,7 +12,7 @@ import numpy as np
 
 DATA_PATH = os.path.dirname(__file__)
 
-from kaska.utils import reproject_data
+from ..utils import reproject_data
 
 def test_reproject_data():
     """Test than when reprojecting a file to match another,
