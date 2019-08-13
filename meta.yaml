@@ -1,0 +1,27 @@
+package:
+  name: kaska
+  version: 0.0.1
+
+source:
+  path: .
+
+build:
+  noarch: python
+
+requirements:
+  build:
+    - python
+    - setuptools
+
+  run:
+    - python
+    - gdal
+    - numpy
+    - scipy
+    - matplotlib
+    - numba
+    - colorama
+    - tensorflow
+
+about:
+  home: https://github.com/UCL/kaska

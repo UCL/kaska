@@ -10,9 +10,9 @@ from pathlib import Path
 import gdal
 import numpy as np
 
-from TwoNN import Two_NN
+from .TwoNN import Two_NN
 
-from utils import reproject_data
+from .utils import reproject_data
 
 gdal.UseExceptions()
 
