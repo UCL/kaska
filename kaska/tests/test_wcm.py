@@ -8,15 +8,15 @@ import pytest
 import numpy as np
 
 
-from .. import watercloudmodel as wcm #import wcm, wcm_jac, wcm_hess
-#from .. import watercloudmodel #import cost, cost_jac, cost_hess
+from ..watercloudmodel  import wcm, wcm_jac, wcm_hess
+from ..watercloudmodel import cost, cost_jac, cost_hess
 
 
 def test_wcm():
     """Test the WCM mode forward operation."""
     A, B, C, V1, V2, sigma_soil = -12,  0.05, 0.02, np.ones(2)*4, np.ones(2)*4, np.ones(2)*0.1
     x = np.r_[A, B, C, V1, V2, sigma_soil]
-    retval = wcm.wcm(x)
+    retval = wcm(x)
     expected = np.array([-17.67969331, -17.67969331])
     assert np.allclose( retval, expected)
 
@@ -28,7 +28,7 @@ def test_wcm_jac():
     A, B and C terms. The sigma_soil terms are independent"""
     A, B, C, V1, V2, sigma_soil = -12,  0.05, 0.02, np.ones(2)*4, np.ones(2)*4, np.ones(2)*0.1
     x = np.r_[A, B, C, V1, V2, sigma_soil]
-    jj = wcm.wcm_jac(x)
+    jj = wcm_jac(x)
     retval = np.array([jj[0].sum(), jj[1].sum(), jj[2].sum(), *(jj[3])])
     expected = np.array([2.959217508268818, -559.9411675286623,
                         1.2601956229327955, 0.63009781, 0.63009781])
@@ -42,7 +42,7 @@ def test_cost():
     svv = np.array([-17.67969331,-17.67969331])
     svh = np.array([-4.75896306,-4.75896306])
     lai = np.array([4, 4.])
-    retval  = wcm.cost(x, svh, svv, theta=30)
+    retval  = cost(x, svh, svv, theta=30)
     assert np.allclose(retval, 0, atol=1e-10)
 
 def test_cost_jac():
@@ -58,7 +58,7 @@ def test_cost_jac():
     # 
     expected = np.array([-2.65e-08,  5.01e-06, -1.13e-08,  1.18e-08,
                         -1.57e-05,  3.04e-08,  9.55e-09, 9.55e-09])
-    retval = wcm.cost_jac(x, svh, svv, theta=30)
+    retval = cost_jac(x, svh, svv, theta=30)
     print(retval-expected)
     # Could also test with respect to 0
     assert np.allclose(retval, expected, atol=1e-6)
@@ -81,14 +81,14 @@ def test_optimiser():
     theta = 30
 
     def cost_nolai(xx, svh, svv, lai, theta):
-        return wcm.cost(np.concatenate([xx[:6], lai,lai, x[-2:]]), svh,svv,theta)
+        return cost(np.concatenate([xx[:6], lai,lai, x[-2:]]), svh,svv,theta)
 
     def cost_nolai_jac(xx, svh, svv, lai, theta):
-        return wcm.cost_jac(np.concatenate([xx[:6], lai,lai, x[-2:]]), svh,svv,theta)
+        return cost_jac(np.concatenate([xx[:6], lai,lai, x[-2:]]), svh,svv,theta)
 
 
     def cost_nolai_hess(xx, svh, svv, lai, theta):
-        return wcm.cost_hess(np.concatenate([xx[:6], lai, lai,x[-2:]]), svh,svv,theta)
+        return cost_hess(np.concatenate([xx[:6], lai, lai,x[-2:]]), svh,svv,theta)
 
     x0 = np.array([-10, 0.1, 1, -10, 0.1, 1, 0.2, 0.2])
     
