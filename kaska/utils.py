@@ -158,20 +158,24 @@ def save_output_parameters(time_grid, observations, output_folder, parameter_nam
     projection, geo_transform, nx, ny = observations.define_output()
     drv = gdal.GetDriverByName(output_format)
     for (param, data) in zip(parameter_names, output_data):
-        if chunk is None:
-            outfile = output_folder/f"s2_{param:s}.tif"
-        else:
-            outfile = output_folder/f"s2_{param:s}_{chunk:s}.tif"
-        if outfile.exists():
-            outfile.unlink()
-        LOG.info(f"Saving file {str(outfile):s}...")
-        dst_ds = drv.Create(str(outfile), nx, ny, nt,
-                        gdal.GDT_Float32, options)
-        dst_ds.SetProjection(projection)
-        dst_ds.SetGeoTransform(geo_transform)
-        for band in range(nt):
-            x = dst_ds.GetRasterBand(band+1)
+        for band, tstep in enumerate(time_grid):
+            this_date = tstep.strftime("%Y%j")
+            if chunk is None:
+                outfile = output_folder/f"s2_{param:s}_A{this_date:s}.tif"
+            else:
+                outfile = output_folder/f"s2_{param:s}_A{this_date:s}_{chunk:s}.tif"
+            if outfile.exists():
+                outfile.unlink()
+            LOG.info(f"Saving file {str(outfile):s}...")
+            dst_ds = drv.Create(str(outfile), nx, ny, 1,
+                            gdal.GDT_Float32, options)
+            dst_ds.SetProjection(projection)
+            dst_ds.SetGeoTransform(geo_transform)
+            x = dst_ds.GetRasterBand(1)
             x.WriteArray(data[band, :, :].astype(np.float32))
             x.SetMetadata({'parameter': param,
-                           'date': time_grid[band].strftime("%Y-%m-%d")})
-        dst_ds = None
+                            'date': time_grid[band].strftime("%Y-%m-%d"),
+                            'doy':this_date})
+            dst_ds = None
+            g = gdal.Open(str(outfile))
+            g.BuildOverviews("average", np.power(2, np.arange(6)))
