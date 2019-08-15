@@ -179,3 +179,55 @@ def save_output_parameters(time_grid, observations, output_folder, parameter_nam
             dst_ds = None
             g = gdal.Open(str(outfile))
             g.BuildOverviews("average", np.power(2, np.arange(6)))
+
+
+def get_chunks(nx, ny, block_size= [256, 256]):
+    """An iterator to provide square chunks for an image. Basically,
+    you pass this function the size of an array (doesn't need to be
+    square!), the block size you want the cuncks to have, and it will
+    return an iterator with the window of interest.
+    
+    Parameters
+    ----------
+    nx : int
+        `x` size of the array in pixels.
+    ny : int
+        `y` size of the array in pixels.
+    block_size : list, optional
+        Size of the blocks in `x` and `y` in pixels, by default [256, 256].
+
+    Returns
+    -------
+    An iterator with `this_X`, `this_Y` (upper corner of selection window),
+    `nx_valid`, `ny_valid` (number of valid pixels. Should be equal to
+    `block_size` most of the time except it'll be smaller to cope with edges)
+    and `chunk_no`, the chunk number.
+    """
+    blocks = []
+    nx_blocks = (int)((nx + block_size[0] - 1) / block_size[0])
+    ny_blocks = (int)((ny + block_size[1] - 1) / block_size[1])
+    nx_valid, ny_valid = block_size
+    chunk_no = 0
+    for X in range(nx_blocks):
+        # change the block size of the final piece
+        if X == nx_blocks - 1:
+            nx_valid = nx - X * block_size[0]
+            buf_size = nx_valid * ny_valid
+
+        # find X offset
+        this_X = X * block_size[0]
+
+        # reset buffer size for start of Y loop
+        ny_valid = block_size[1]
+        buf_size = nx_valid * ny_valid
+
+        # loop through Y lines
+        for Y in range(ny_blocks):
+            # change the block size of the final piece
+            if Y == ny_blocks - 1:
+                ny_valid = ny - Y * block_size[1]
+                buf_size = nx_valid * ny_valid
+            chunk_no += 1
+            # find Y offset
+            this_Y = Y * block_size[1]
+            yield this_X, this_Y, nx_valid, ny_valid, chunk_no
