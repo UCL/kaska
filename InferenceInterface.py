@@ -213,8 +213,8 @@ if __name__ == "__main__":
     from kaska import KaSKA, get_chunks
     from kaska import define_temporal_grid
 
-def kaska_setup(start_date, end_date, temporal_grid_space,
-                s2_folder, approx_inverter, emulator, output_folder):
+def kaska_setup(start_date, end_date, temporal_grid_space, state_mask,
+                s2_folder, approx_inverter, s2_emulator, output_folder):
 
     temporal_grid = define_temporal_grid(start_date, end_date,
                                             temporal_grid_space)
