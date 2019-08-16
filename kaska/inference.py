@@ -14,7 +14,7 @@ from osgeo import gdal
 
 from .utils import  get_chunks
 from .s2_observations import Sentinel2Observations
-from .kaska import KaSKA, get_chunks
+from .kaska import KaSKA
 from .kaska import define_temporal_grid
 
 Config = namedtuple("Config",
