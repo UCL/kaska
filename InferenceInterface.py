@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import copy
 import logging
 import shutil
 from copy import deepcopy
@@ -189,7 +190,22 @@ def kafka_inference(mask, time_grid, parameter_list,
     
     return stitch_outputs(output_folder, parameter_list)
 
-    
+
+
+def process_tile(this_X, this_Y, nx_valid, ny_valid, chunk_no,
+                 config):
+    ulx = this_X
+    uly = this_Y
+    lrx = this_X + nx_valid
+    lry = this_Y + ny_valid
+    s2_obs = copy.copy(config.s2_obs)
+    s2_obs.apply_roi(ulx, uly, lrx, lry)
+    kaska = KaSKA(s2_obs, config.temporal_grid, config.state_mask,
+                  config.inverter, config.output_folder, 
+                  chunk=hex(chunk_no))
+    parameter_names, parameter_data = kaska.run_retrieval()
+    kaska.save_s2_output(parameter_names, parameter_data)
+
 
 if __name__ == "__main__":
     import datetime as dt
@@ -198,7 +214,7 @@ if __name__ == "__main__":
     from kaska import define_temporal_grid
 
 def kaska_setup(start_date, end_date, temporal_grid_space,
-                s2_folder, inverter, emulator, output_folder):
+                s2_folder, approx_inverter, emulator, output_folder):
 
     temporal_grid = define_temporal_grid(start_date, end_date,
                                             temporal_grid_space)
@@ -210,13 +226,9 @@ def kaska_setup(start_date, end_date, temporal_grid_space,
         time_grid=temporal_grid,
     )
 
-    start_date = dt.datetime(2017, 5, 1)
-    end_date = dt.datetime(2017, 6, 1)
-    temporal_grid_space = 5
-    
     state_mask = "/home/ucfajlg/Data/python/KaFKA_Validation/LMU/carto/ESU.tif"
     approx_inverter = "/home/ucfafyi/DATA/Prosail/Prosail_5_paras.h5"
-    output_folder = Path("/tmp/output").mkdir(parents=True, exist_ok=True)
+    output_folder = Path(output_folder).mkdir(parents=True, exist_ok=True)
     config = Config(s2_obs, temporal_grid, state_mask, 
                     approx_inverter, output_folder)
     # Avoid reading mask in memory in case we fill it up 
@@ -224,18 +236,8 @@ def kaska_setup(start_date, end_date, temporal_grid_space,
     ny, nx = g.RasterYSize, g.RasterXSize
 
     them_chunks = [the_chunk for the_chunk in get_chunks(nx, ny)]
+
     for [this_X, this_Y, nx_valid, ny_valid, chunk_no] in get_chunks(nx, ny):
-        ulx = this_X
-        uly = this_Y
-        lrx = this_X + nx_valid
-        lry = this_Y + ny_valid
-        
-        s2_obs.apply_roi(ulx, uly, lrx, lry)
-        kaska = KaSKA(s2_obs, temporal_grid, state_mask, approx_inverter,
-                         "/tmp/", chunk=hex(chunk_no))
-    
-        parameter_names, parameter_data = kaska.run_retrieval()
-        kaska.save_s2_output(parameter_names, parameter_data)
     stitch_outputs("/tmp/", ["lai", "cab", "cbrown"])
 
 
