@@ -3,24 +3,24 @@ import copy
 import logging
 import shutil
 from copy import deepcopy
+import datetime as dt
 from functools import partial
 from pathlib import Path
 from collections import namedtuple
 
+import numpy as np
+
 from osgeo import gdal
 
-
-#from .utils import  get_chunks
-
-LOG = logging.getLogger(__name__+".InferenceInterface")
+from kaska.utils import  get_chunks
+from kaska import Sentinel2Observations
+from kaska import KaSKA, get_chunks
+from kaska import define_temporal_grid
+from kaska import get_emulators, get_emulator
+from kaska import get_inverters, get_inverter
 
 Config = namedtuple("Config",
                     "s2_obs temporal_grid state_mask inverter output_folder")
-
-import numpy as np
-import gdal
-from pathlib import Path
-import logging
 
 LOG = logging.getLogger(__name__ + ".KaSKA")
 LOG.setLevel(logging.DEBUG)
@@ -86,109 +86,109 @@ def stitch_outputs(output_folder, parameter_list):
     return output_tiffs
 
 
-def chunk_inference(roi, prefix, current_mask, configuration):
+# # def chunk_inference(roi, prefix, current_mask, configuration):
 
-    [ulx, uly, lrx, lry] = roi
+# #     [ulx, uly, lrx, lry] = roi
     
-    configuration.observations.apply_roi(ulx, uly, lrx, lry)
-    projection, geotransform = configuration.observations.define_output()
-    output = KafkaOutput(configuration.parameter_list, 
-                         geotransform, projection,
-                         configuration.output_folder,
-                         prefix=prefix)
+# #     configuration.observations.apply_roi(ulx, uly, lrx, lry)
+# #     projection, geotransform = configuration.observations.define_output()
+# #     output = KafkaOutput(configuration.parameter_list, 
+# #                          geotransform, projection,
+# #                          configuration.output_folder,
+# #                          prefix=prefix)
 
-    #Q = np.array([100., 1e5, 1e2, 100., 1e5, 1e2, 100.])
-    ## state_propagator = IdentityPropagator(Q, 7, mask)
-    the_prior = configuration.prior(configuration.parameter_list,
-                                    current_mask)
-    state_propagator = deepcopy(configuration.propagator)
-    state_propagator.mask = current_mask
-    state_propagator.n_elements = current_mask.sum()
-    kf = LinearKalman(configuration.observations, 
-                      output, current_mask, 
-                      configuration.observation_operator_creator,
-                      configuration.parameter_list,
-                      state_propagation=state_propagator.get_matrices,
-                      prior=the_prior, 
-                      band_mapper=configuration.band_mapper,
-                      linear=False, upper_bound=configuration.upper_bounds,
-                      lower_bound=configuration.lower_bounds)
+# #     #Q = np.array([100., 1e5, 1e2, 100., 1e5, 1e2, 100.])
+# #     ## state_propagator = IdentityPropagator(Q, 7, mask)
+# #     the_prior = configuration.prior(configuration.parameter_list,
+# #                                     current_mask)
+# #     state_propagator = deepcopy(configuration.propagator)
+# #     state_propagator.mask = current_mask
+# #     state_propagator.n_elements = current_mask.sum()
+# #     kf = LinearKalman(configuration.observations, 
+# #                       output, current_mask, 
+# #                       configuration.observation_operator_creator,
+# #                       configuration.parameter_list,
+# #                       state_propagation=state_propagator.get_matrices,
+# #                       prior=the_prior, 
+# #                       band_mapper=configuration.band_mapper,
+# #                       linear=False, upper_bound=configuration.upper_bounds,
+# #                       lower_bound=configuration.lower_bounds)
 
-    # Get starting state... We can request the prior object for this
-    x_forecast, P_forecast_inv = the_prior.process_prior(None)
+# #     # Get starting state... We can request the prior object for this
+# #     x_forecast, P_forecast_inv = the_prior.process_prior(None)
         
     
-    kf.run(configuration.time_grid, x_forecast, None, P_forecast_inv,
-           iter_obs_op=True, is_robust=False)
+# #     kf.run(configuration.time_grid, x_forecast, None, P_forecast_inv,
+# #            iter_obs_op=True, is_robust=False)
 
 
-def chunk_wrapper(the_chunk, config):
-    """[summary]
+# # def chunk_wrapper(the_chunk, config):
+# #     """[summary]
     
-    Parameters
-    ----------
-    the_chunk : [type]
-        [description]
-    config : [type]
-        [description]
+# #     Parameters
+# #     ----------
+# #     the_chunk : [type]
+# #         [description]
+# #     config : [type]
+# #         [description]
     
-    Returns
-    -------
-    [type]
-        [description]
-    """
-    this_X, this_Y, nx_valid, ny_valid, chunk = the_chunk
-    ulx = this_X
-    uly = this_Y
-    lrx = this_X + nx_valid
-    lry = this_Y + ny_valid
+# #     Returns
+# #     -------
+# #     [type]
+# #         [description]
+# #     """
+# #     this_X, this_Y, nx_valid, ny_valid, chunk = the_chunk
+# #     ulx = this_X
+# #     uly = this_Y
+# #     lrx = this_X + nx_valid
+# #     lry = this_Y + ny_valid
     
-    roi = [ulx, uly, lrx, lry]
+# #     roi = [ulx, uly, lrx, lry]
 
-    if config.mask[this_Y:(this_Y+ny_valid), this_X:(this_X+nx_valid)].sum() > 0:   
-        print("Running chunk %s" % ( hex(chunk)))
-        chunk_inference(roi, hex(chunk), 
-                        config.mask[this_Y:(this_Y+ny_valid),
-                                    this_X:(this_X+nx_valid)],
-                        config)
-        return hex(chunk)
+# #     if config.mask[this_Y:(this_Y+ny_valid), this_X:(this_X+nx_valid)].sum() > 0:   
+# #         print("Running chunk %s" % ( hex(chunk)))
+# #         chunk_inference(roi, hex(chunk), 
+# #                         config.mask[this_Y:(this_Y+ny_valid),
+# #                                     this_X:(this_X+nx_valid)],
+# #                         config)
+# #         return hex(chunk)
             
 
 
-def kafka_inference(mask, time_grid, parameter_list,
-                    observations, prior, propagator,
-                    output_folder, band_mapper, dask_client,
-                    observation_operator_creator,
-                    chunk_size=[64, 64], upper_bounds=None,
-                    lower_bounds=None):
+# # def kafka_inference(mask, time_grid, parameter_list,
+# #                     observations, prior, propagator,
+# #                     output_folder, band_mapper, dask_client,
+# #                     observation_operator_creator,
+# #                     chunk_size=[64, 64], upper_bounds=None,
+# #                     lower_bounds=None):
     
-    # First, put the configuration in its own object to minimise
-    # variable transport
+# #     # First, put the configuration in its own object to minimise
+# #     # variable transport
     
-    Config = namedtuple("Config", ["mask", "time_grid", "parameter_list",
-                                   "observations", 
-                                   "observation_operator_creator",
-                                   "prior", "propagator",
-                                   "output_folder", "band_mapper",
-                                   "upper_bounds", "lower_bounds"])    
-    config = Config(mask, time_grid, parameter_list, observations,
-                    observation_operator_creator,
-                    prior, propagator, output_folder, band_mapper,
-                    upper_bounds, lower_bounds)
-    ny, nx= mask.shape
+# #     Config = namedtuple("Config", ["mask", "time_grid", "parameter_list",
+# #                                    "observations", 
+# #                                    "observation_operator_creator",
+# #                                    "prior", "propagator",
+# #                                    "output_folder", "band_mapper",
+# #                                    "upper_bounds", "lower_bounds"])    
+# #     config = Config(mask, time_grid, parameter_list, observations,
+# #                     observation_operator_creator,
+# #                     prior, propagator, output_folder, band_mapper,
+# #                     upper_bounds, lower_bounds)
+# #     ny, nx= mask.shape
     
-    them_chunks = [the_chunk for the_chunk in qhunks(nx, ny,
-                    block_size= chunk_size)]
+# #     them_chunks = [the_chunk for the_chunk in qhunks(nx, ny,
+# #                     block_size= chunk_size)]
     
-    wrapper = partial(chunk_wrapper, config=config)
+# #     wrapper = partial(chunk_wrapper, config=config)
 
-    if dask_client is None:
-        chunk_names = list(map(wrapper, them_chunks))
-    else:
-        A = dask_client.map (wrapper, them_chunks)
-        retval = dask_client.gather(A)
+# #     if dask_client is None:
+# #         chunk_names = list(map(wrapper, them_chunks))
+# #     else:
+# #         A = dask_client.map (wrapper, them_chunks)
+# #         retval = dask_client.gather(A)
     
-    return stitch_outputs(output_folder, parameter_list)
+# #     return stitch_outputs(output_folder, parameter_list)
 
 
 
@@ -198,6 +198,8 @@ def process_tile(this_X, this_Y, nx_valid, ny_valid, chunk_no,
     uly = this_Y
     lrx = this_X + nx_valid
     lry = this_Y + ny_valid
+    # copy the observations in case we have issues with
+    # references hanging around...
     s2_obs = copy.copy(config.s2_obs)
     s2_obs.apply_roi(ulx, uly, lrx, lry)
     kaska = KaSKA(s2_obs, config.temporal_grid, config.state_mask,
@@ -205,13 +207,10 @@ def process_tile(this_X, this_Y, nx_valid, ny_valid, chunk_no,
                   chunk=hex(chunk_no))
     parameter_names, parameter_data = kaska.run_retrieval()
     kaska.save_s2_output(parameter_names, parameter_data)
+    return parameter_names
 
 
-if __name__ == "__main__":
-    import datetime as dt
-    from kaska import Sentinel2Observations
-    from kaska import KaSKA, get_chunks
-    from kaska import define_temporal_grid
+
 
 def kaska_setup(start_date, end_date, temporal_grid_space, state_mask,
                 s2_folder, approx_inverter, s2_emulator, output_folder):
@@ -226,8 +225,6 @@ def kaska_setup(start_date, end_date, temporal_grid_space, state_mask,
         time_grid=temporal_grid,
     )
 
-    state_mask = "/home/ucfajlg/Data/python/KaFKA_Validation/LMU/carto/ESU.tif"
-    approx_inverter = "/home/ucfafyi/DATA/Prosail/Prosail_5_paras.h5"
     output_folder = Path(output_folder).mkdir(parents=True, exist_ok=True)
     config = Config(s2_obs, temporal_grid, state_mask, 
                     approx_inverter, output_folder)
@@ -235,11 +232,24 @@ def kaska_setup(start_date, end_date, temporal_grid_space, state_mask,
     g = gdal.Open(state_mask)
     ny, nx = g.RasterYSize, g.RasterXSize
 
-    them_chunks = [the_chunk for the_chunk in get_chunks(nx, ny)]
-
-    for [this_X, this_Y, nx_valid, ny_valid, chunk_no] in get_chunks(nx, ny):
-    stitch_outputs("/tmp/", ["lai", "cab", "cbrown"])
-
-
+    # Do the splitting
+    them_chunks = (the_chunk for the_chunk in get_chunks(nx, ny))
+    wrapper = partial(process_tile, config=config)
+    retval = map(wrapper, them_chunks)
+    #for [this_X, this_Y, nx_valid, ny_valid, chunk_no] in them_chunks:
     
+    return stitch_outputs(output_folder, ["lai", "cab", "cbrown"])
+
+if __name__ == "__main__":
+
+    start_date = dt.datetime(2017,5, 1)
+    end_date = dt.datetime(2017,7, 1)
+    temporal_grid_space = 5
+    state_mask = ""
+    s2_folder = ""
+    output_folder = "/tmp/"
+    s2_emulator = get_emulator("prosail", "Sentinel2")
+    approx_inverter = get_emulator("prosail_5paras", "Sentinel2")
+    kaska_setup(start_date, end_date, temporal_grid_space, state_mask,
+                s2_folder, approx_inverter, s2_emulator, output_folder)
     
