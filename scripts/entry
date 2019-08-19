@@ -1,0 +1,2 @@
+from kaska.entry import run_process
+run_process()
