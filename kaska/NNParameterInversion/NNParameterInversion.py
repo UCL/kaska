@@ -24,11 +24,7 @@ class NNParameterInversion(object):
         NN_file: str
             An already trained emulator that can be read in by tf.keras.
         """
-        path = Path(NN_file)
-        if not path.exists():
-            LOG.error(f"File {str(path):s} does not exist in the system")
-            raise IOError(f"File {str(path):s} does not exist in the system")
-        LOG.info(f"Using inverter file {NN_file:s}")
+        
         self.inverse_param_model = tf.keras.models.load_model(NN_file)
         self.bands = [
             "B01",
