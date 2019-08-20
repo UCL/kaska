@@ -36,7 +36,7 @@ class Sentinel2Observations(object):
     def __init__(
         self,
         parent_folder,
-        emulator_file,
+        emulator,
         state_mask,
         band_prob_threshold=20,
         chunk=None,
@@ -44,27 +44,23 @@ class Sentinel2Observations(object):
     ):
         self.band_prob_threshold = band_prob_threshold
         parent_folder = Path(parent_folder)
-        emulator_file = Path(emulator_file)
         if not parent_folder.exists():
             LOG.info(f"S2 data folder: {parent_folder}")
             raise IOError("S2 data folder doesn't exist")
-
-        if not emulator_file.exists():
-            LOG.info(f"Emulator file: {emulator_file}")
-            raise IOError("Emulator file doesn't exist")
         self.band_map = ['B01', 'B02', 'B03', 'B04', 'B05', 'B06', 'B07',
                         'B08', 'B8A', 'B09', 'B10','B11', 'B12']
         # self.band_map = ['05', '08']
 
         self.parent = parent_folder
-        self.emulator_folder = emulator_file
         self.original_mask = state_mask
         self.state_mask = state_mask
-        self._find_granules(self.parent, time_grid)
-        f = np.load(str(emulator_file))
+
+        f = np.load(emulator)
         self.emulator = Two_NN(
             Hidden_Layers=f.f.Hidden_Layers, Output_Layers=f.f.Output_Layers
         )
+        LOG.debug("Read emulator in")
+        self._find_granules(self.parent, time_grid)
         self.chunk = chunk
 
     def apply_roi(self, ulx, uly, lrx, lry):
