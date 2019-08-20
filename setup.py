@@ -11,6 +11,6 @@ setup(name="kaska",
       license = "GNU General Public License v3",
 #      packages = find_packages(include=['kaska']),
       packages = ['kaska'], # , 'kaska.TwoNN', 'kaska.NNParameterInversion'],
-      scripts= ['scripts/entry'],
+      scripts= ['scripts/run_kaska'],
       zip_safe=False
       )
