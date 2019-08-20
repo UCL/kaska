@@ -1,3 +1,11 @@
 #!python
 from kaska.entry import run_process
-run_process()
+import datetime as dt
+
+start_date = dt.datetime(2017, 5, 1)
+end_date = dt.datetime(2017, 9, 1)
+temporal_grid_space = 5
+parent_folder = "/home/ucfajlg/Data/python/KaFKA_Validation/LMU/s2_obs/"
+state_mask = "/home/ucfajlg/Data/python/KaFKA_Validation/LMU/carto/ESU.tif"
+
+run_process(start_date, end_date, temporal_grid_space, parent_folder, state_mask)
