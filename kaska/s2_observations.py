@@ -55,7 +55,7 @@ class Sentinel2Observations(object):
         self.original_mask = state_mask
         self.state_mask = state_mask
 
-        f = np.load(emulator)
+        f = np.load(emulator, allow_pickle=True)
         self.emulator = Two_NN(
             Hidden_Layers=f.f.Hidden_Layers, Output_Layers=f.f.Output_Layers
         )

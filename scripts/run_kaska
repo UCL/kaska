@@ -1,4 +1,4 @@
-#!python
+#!/bin/env python
 from kaska.entry import run_process
 import argparse
 import datetime as dt
