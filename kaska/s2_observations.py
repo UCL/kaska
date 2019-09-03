@@ -112,14 +112,17 @@ class Sentinel2Observations(object):
             g = gdal.Open(self.state_mask)
             proj = g.GetProjection()
             geoT = np.array(g.GetGeoTransform())
+            nx = g.RasterXSize
+            ny = g.RasterYSize
         except RuntimeError:
             proj = self.state_mask.GetProjection()
             geoT = np.array(self.state_mask.GetGeoTransform())
-
+            nx = self.state_mask.RasterXSize
+            ny = self.state_mask.RasterYSize
         # new_geoT = geoT*1.
         # new_geoT[0] = new_geoT[0] + self.ulx*new_geoT[1]
         # new_geoT[3] = new_geoT[3] + self.uly*new_geoT[5]
-        return proj, geoT.tolist()  # new_geoT.tolist()
+        return proj, geoT.tolist(), nx, ny  # new_geoT.tolist()
 
     def _find_granules(self, parent_folder, time_grid=None):
         """Finds granules. Currently does so by checking for
