@@ -8,9 +8,9 @@ import numpy as np
 
 from scipy.interpolate import interp1d
 
-from NNParameterInversion import NNParameterInversion
+from .NNParameterInversion import NNParameterInversion
 
-from s2_observations import Sentinel2Observations
+from .s2_observations import Sentinel2Observations
 
 from s1_observations import Sentinel1Observations
 
