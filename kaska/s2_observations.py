@@ -64,6 +64,25 @@ class Sentinel2Observations(object):
         self.chunk = chunk
 
     def apply_roi(self, ulx, uly, lrx, lry):
+        """Applies a region of interest (ROI) window to the state mask, which is
+        then used to subset the data spatially. Useful for spatial windowing/
+        chunking
+        
+        Parameters
+        ----------
+        ulx : integer
+            The Upper Left corner of the state mask (in pixels). Easting.
+        uly : integer
+            The Upper Left corner of the state mask (in pixels). Northing.
+        lrx : integer
+            The Lower Right corner of the state mask (in pixels). Easting.
+        lry : integer
+            The Lower Right corner of the state mask (in pixels). Northing.
+        Returns
+        -------
+        None
+        Doesn't return anything, but changes `self.state_mask`
+        """
         self.ulx = ulx
         self.uly = uly
         self.lrx = lrx
@@ -79,18 +98,31 @@ class Sentinel2Observations(object):
         )
 
     def define_output(self):
+        """Define the output array shapes to be consistent with the state
+        mask. You get the projection and geotransform, that should be 
+        enough to define an ouput dataset that conforms to the state mask.
+        
+        Returns
+        -------
+        tuple
+            The first element is the projection string (WKT probably?), and
+            the second element is the geotransform.
+        """
         try:
             g = gdal.Open(self.state_mask)
             proj = g.GetProjection()
             geoT = np.array(g.GetGeoTransform())
+            nx = g.RasterXSize
+            ny = g.RasterYSize
         except RuntimeError:
             proj = self.state_mask.GetProjection()
             geoT = np.array(self.state_mask.GetGeoTransform())
-
+            nx = self.state_mask.RasterXSize
+            ny = self.state_mask.RasterYSize
         # new_geoT = geoT*1.
         # new_geoT[0] = new_geoT[0] + self.ulx*new_geoT[1]
         # new_geoT[3] = new_geoT[3] + self.uly*new_geoT[5]
-        return proj, geoT.tolist()  # new_geoT.tolist()
+        return proj, geoT.tolist(), nx, ny  # new_geoT.tolist()
 
     def _find_granules(self, parent_folder, time_grid=None):
         """Finds granules. Currently does so by checking for
@@ -112,15 +144,24 @@ class Sentinel2Observations(object):
                 for f in test_files
             ]
         # Sort dates by time, as currently S2A/S2B will be part of ordering
-        dates = sorted(dates)
+        
+        #test_files = sorted(test_files, key=lambda x:dates[test_files.index(x)])
+        #dates = sorted(dates)
         if time_grid is not None:
             start_date = time_grid[0]
             end_date = time_grid[-1]
             self.dates = [d.replace(hour=0, minute=0, second=0) for d in dates
                             if (d >= start_date) and (d <= end_date)] 
+            test_files = [test_files[i] for i, d in enumerate(dates)
+                            if (d >= start_date) and (d <= end_date)]
         else:
             self.dates = [x.replace(hour=0,minute=0, second=0) for x in dates]
-        self.date_data = dict(zip(self.dates, [f.parent for f in test_files]))
+        temp_dict = dict(zip(self.dates, [f.parent for f in test_files]))
+        dates = sorted(self.dates)
+        self.date_data = {k:temp_dict[k] for k in dates}
+        self.dates = dates
+        
+        #self.date_data = dict(zip(self.dates, [f.parent for f in test_files]))
         self.bands_per_observation = {}
         LOG.info(f"Found {len(test_files):d} S2 granules")
         LOG.info(
