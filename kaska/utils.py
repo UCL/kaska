@@ -2,8 +2,8 @@
 import datetime as dt
 import logging
 
-import gdal
-import osr
+from osgeo import gdal
+from osgeo import osr
 
 import numpy as np
 
@@ -255,3 +255,56 @@ def get_chunks(nx, ny, block_size= [256, 256]):
             # find Y offset
             this_Y = Y * block_size[1]
             yield this_X, this_Y, nx_valid, ny_valid, chunk_no
+
+
+def rasterise_vector(vector_f, sample_f=None,  pixel_size=20):
+    """Raterise a vector. Basically, pixels inside a polygon are set to 1,
+    and those outside to 0. Two ways of going around this: either you 
+    provide a sample raster file to define spatial extent and projection
+    via `sample_f`, or you use the the extent of the vector file, and 
+    provide the `pixel_size` (in vector file projection units)
+    
+    Parameters
+    ----------
+    vector_f : str
+        An OGR-readable vector dataset path. Pixels inside features
+        will be set to 1.
+    sample_f : str, optional
+        A GDAL-readable raster dataset. If given, this is a sample
+        dataset that defines rows, columns, extent and pixel spacing.
+    pixel_size : int, optional
+        The pixel size if not using, by default 20
+    
+    Returns
+    -------
+    GDAL object
+        A GDAL object
+    """
+    source_ds = ogr.Open(vector_f)
+    source_layer = source_ds.GetLayer()
+
+    if sample_f is not None:
+        g = gdal.Open(sample_f)
+        geoT = g.GetGeoTransform()
+        rows, cols = g.RasterXSize, g.RasterYSize
+        target_dsSRS = g.GetProjectionRef()
+    else:
+        x_min, x_max, y_min, y_max = source_layer.GetExtent()
+        cols = int((x_max - x_min) / pixel_size)
+        rows = int((y_max - y_min) / pixel_size)
+        geoT = [x_min, pixel_size, 0, y_max, 0, -pixel_size]
+        target_dsSRS = osr.SpatialReference()
+        target_dsSRS.ImportFromEPSG(4326)
+        target_dsSRS = target_dsSRS.ExportToWkt()
+
+    target_ds = gdal.GetDriverByName("MEME").Create(
+                "", cols, rows, 1, gdal.GDT_Byte) 
+    target_ds.SetGeoTransform(geoT)
+    target_ds.SetProjection(target_dsSRS)
+
+    band = target_ds.GetRasterBand(1) 
+    band.SetNoDataValue(0) 
+
+    gdal.RasterizeLayer(target_ds, [1], source_layer, burn_values=[1])
+    
+    return target_ds
