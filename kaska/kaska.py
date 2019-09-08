@@ -12,9 +12,9 @@ from .NNParameterInversion import NNParameterInversion
 
 from .s2_observations import Sentinel2Observations
 
-from s1_observations import Sentinel1Observations
+from .s1_observations import Sentinel1Observations
 
-from smoothn import smoothn
+from .smoothn import smoothn
 
 from .utils import save_output_parameters
 

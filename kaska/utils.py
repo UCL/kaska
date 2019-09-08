@@ -2,7 +2,7 @@
 import datetime as dt
 import logging
 
-from osgeo import gdal
+from osgeo import gdal,ogr
 from osgeo import osr
 
 import numpy as np
@@ -297,7 +297,7 @@ def rasterise_vector(vector_f, sample_f=None,  pixel_size=20):
         target_dsSRS.ImportFromEPSG(4326)
         target_dsSRS = target_dsSRS.ExportToWkt()
 
-    target_ds = gdal.GetDriverByName("MEME").Create(
+    target_ds = gdal.GetDriverByName("MEM").Create(
                 "", cols, rows, 1, gdal.GDT_Byte) 
     target_ds.SetGeoTransform(geoT)
     target_ds.SetProjection(target_dsSRS)
