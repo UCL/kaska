@@ -12,9 +12,13 @@ from .NNParameterInversion import NNParameterInversion
 
 from .s2_observations import Sentinel2Observations
 
+from .s1_observations import Sentinel1Observations
+
 from .smoothn import smoothn
 
-LOG = logging.getLogger(__name__ + ".KaSKA")
+from .utils import save_output_parameters
+
+LOG = logging.getLogger("KaSKA")
 LOG.setLevel(logging.DEBUG)
 if not LOG.handlers:
     ch = logging.StreamHandler()
@@ -38,12 +42,14 @@ class KaSKA(object):
     """The main KaSKA object"""
 
     def __init__(self, observations, time_grid, state_mask, approx_inverter,
-                output_folder):
+                output_folder,
+                chunk = None):
         self.time_grid = time_grid
         self.observations = observations
         self.state_mask = state_mask
         self.output_folder = output_folder
         self.inverter = NNParameterInversion(approx_inverter)
+        self.chunk = chunk
 
     def first_pass_inversion(self):
         """A first pass inversion. Could be anything, from a quick'n'dirty
@@ -135,26 +141,38 @@ class KaSKA(object):
         doy_grid = np.array([int(x.strftime('%j')) for x in self.time_grid])
         # Linear 3D stack interpolator. Assuming dimension 0 is time. Note use
         # of fill_value to indicate missing data (0)
+        LOG.info("Smoothing LAI...")
         f = interp1d(doys, lai, axis=0, bounds_error=False,
                      fill_value=0)
         laii = f(doy_grid)
-        slai = smoothn(np.array(laii), W=np.array(laii), isrobust=True, s=1,
+        slai = smoothn(np.array(laii), W=2*np.array(laii), isrobust=True, s=1.5,
                        TolZ=1e-6, axis=0)[0]
         slai[slai < 0] = 0
         # The last bit is to fix LAI to 0
         # going forward, use LAI as weighting to try to dampen flappiness in
         # pigments when no leaf area is present.
+        LOG.info("Smoothing Cab...")
         f = interp1d(doys, cab, axis=0, bounds_error=False)
         cabi = f(doy_grid)
         scab = smoothn(np.array(cabi), W=slai, isrobust=True, s=1,
                         TolZ=1e-6, axis=0)[0]
+        LOG.info("Smoothing Cbrown...")
         f = interp1d(doys, cbrown, axis=0, bounds_error=False)                                        
         cbrowni = f(doy_grid)
         scbrown = smoothn(np.array(cbrowni) * slai, W=slai, isrobust=True, s=1,
                     TolZ=1e-6, axis=0)[0] / slai
         # Could also set them to nan
-        
+        LOG.info("Done smoothing...")
         slai[:, mask] = 0
         scab[:, mask] = 0
         scbrown[:, mask] = 0
-        return (slai, scab, scbrown)
+    return (["lai", "cab", "cbrown"], [slai, scab, scbrown])
+
+    def save_s2_output(self, parameter_names, output_data,
+                       output_format="GTiff"):
+        
+        save_output_parameters(self.time_grid, self.observations,
+                               self.output_folder,
+                               parameter_names, output_data,
+                               output_format=output_format,
+                               chunk=self.chunk)
