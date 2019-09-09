@@ -262,7 +262,10 @@ def rasterise_vector(vector_f, sample_f=None,  pixel_size=20):
     and those outside to 0. Two ways of going around this: either you 
     provide a sample raster file to define spatial extent and projection
     via `sample_f`, or you use the the extent of the vector file, and 
-    provide the `pixel_size` (in vector file projection units)
+    provide the `pixel_size` (in vector file projection units). Note that
+    if the vector dataset is a point or line vector file, it'll probably
+    also work, but we expect most users to use polygons rather than e.g.
+    points.
     
     Parameters
     ----------
