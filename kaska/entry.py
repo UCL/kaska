@@ -21,4 +21,5 @@ def run_process(start_date, end_date, temporal_grid_space, parent_folder, state_
                     "inverters/Prosail_5_paras.h5"))
     kaska = KaSKA(s2_obs, temporal_grid, state_mask, approx_inverter,
                      "/tmp/")
-    slai, scab, scbrown = kaska.run_retrieval()
+    parameter_names, parameter_data = kaska.run_retrieval()
+    kaska.save_s2_output(parameter_names, parameter_data)
