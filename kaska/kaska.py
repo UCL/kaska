@@ -166,7 +166,7 @@ class KaSKA(object):
         slai[:, mask] = 0
         scab[:, mask] = 0
         scbrown[:, mask] = 0
-    return (["lai", "cab", "cbrown"], [slai, scab, scbrown])
+        return (["lai", "cab", "cbrown"], [slai, scab, scbrown])
 
     def save_s2_output(self, parameter_names, output_data,
                        output_format="GTiff"):
