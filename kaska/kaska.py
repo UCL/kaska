@@ -176,39 +176,3 @@ class KaSKA(object):
                                parameter_names, output_data,
                                output_format=output_format,
                                chunk=self.chunk)
-
-
-
-if __name__ == "__main__":
-    import pkgutil
-    from io import BytesIO
-
-    nn_inverter = pkgutil.get_data("kaska",
-                    "inverters/prosail_2NN.npz")
-    approx_inverter = BytesIO(pkgutil.get_data("kaska",
-                    "inverters/Prosail_5_paras.h5"))
-
-    state_mask = "/home/ucfajlg/Data/python/KaFKA_Validation/LMU/carto/ESU.tif"
-    nc_file = "/data/selene/ucfajlg/ELBARA_LMU/mirror_ftp/141.84.52.201/S1/S1_LMU_site_2017_new.nc"
-    start_date = dt.datetime(2017, 5, 1)
-    end_date = dt.datetime(2017, 6, 1)
-    temporal_grid_space = 5
-    temporal_grid = define_temporal_grid(start_date, end_date,
-                                         temporal_grid_space)
-    s2_obs = Sentinel2Observations(
-        "/home/ucfajlg/Data/python/KaFKA_Validation/LMU/s2_obs/",
-        BytesIO(nn_inverter),
-        state_mask,
-        band_prob_threshold=20,
-        chunk=None,
-        time_grid=temporal_grid)
-
-    s1_obs = Sentinel1Observations(nc_file,
-                state_mask,
-                time_grid=temporal_grid)
-    
-    kaska = KaSKA(s2_obs, temporal_grid, state_mask, approx_inverter,
-                     "/tmp/")
-    parameter_names, parameter_data = kaska.run_retrieval()
-
-    kaska.save_s2_output(parameter_names, parameter_data)
