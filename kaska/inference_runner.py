@@ -26,17 +26,7 @@ Config = namedtuple(
     "Config", "s2_obs temporal_grid state_mask inverter output_folder"
 )
 
-LOG = logging.getLogger(__name__ + ".KaSKA")
-LOG.setLevel(logging.DEBUG)
-if not LOG.handlers:
-    ch = logging.StreamHandler()
-    ch.setLevel(logging.DEBUG)
-    formatter = logging.Formatter(
-        "%(asctime)s - %(name)s - " + "%(levelname)s - %(message)s"
-    )
-    ch.setFormatter(formatter)
-    LOG.addHandler(ch)
-LOG.propagate = False
+LOG = logging.getLogger(__name__)
 
 
 def stitch_outputs(output_folder, parameter_list):

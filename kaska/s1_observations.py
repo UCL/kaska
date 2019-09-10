@@ -14,16 +14,8 @@ from .utils import reproject_data, define_temporal_grid
 
 gdal.UseExceptions()
 
-LOG = logging.getLogger(__name__ + ".Sentinel1_Observations")
-LOG.setLevel(logging.INFO)
-if not LOG.handlers:
-    ch = logging.StreamHandler()
-    ch.setLevel(logging.INFO)
-    formatter = logging.Formatter('%(asctime)s - %(name)s - ' +
-                                  '%(levelname)s - %(message)s')
-    ch.setFormatter(formatter)
-    LOG.addHandler(ch)
-LOG.propagate = False
+LOG = logging.getLogger(__name__)
+
 # A SIAC data storage type
 S1data = namedtuple(
     #"S1data", "time observations uncertainty mask metadata emulator"

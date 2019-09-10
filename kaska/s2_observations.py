@@ -16,16 +16,7 @@ from .utils import reproject_data
 
 gdal.UseExceptions()
 
-LOG = logging.getLogger(__name__ + ".Sentinel2_Observations")
-LOG.setLevel(logging.INFO)
-if not LOG.handlers:
-    ch = logging.StreamHandler()
-    ch.setLevel(logging.INFO)
-    formatter = logging.Formatter('%(asctime)s - %(name)s - ' +
-                                  '%(levelname)s - %(message)s')
-    ch.setFormatter(formatter)
-    LOG.addHandler(ch)
-LOG.propagate = False
+LOG = logging.getLogger(__name__)
 # A SIAC data storage type
 S2MSIdata = namedtuple(
     "S2MSIdata", "time observations uncertainty mask metadata emulator"

@@ -1,10 +1,17 @@
+import datetime as dt
 from .kaska import KaSKA, define_temporal_grid
 from .s2_observations import Sentinel2Observations
+from .logger import create_logger
 
-def run_process(start_date, end_date, temporal_grid_space, parent_folder, state_mask):
+
+def run_process(start_date, end_date, temporal_grid_space, parent_folder, 
+                state_mask, logfile=None):
     import pkgutil
     from io import BytesIO
 
+    if logfile is None:
+        logfile = f"./KaSKA_{int(dt.datetime.now().timestamp()):d}.log"
+    LOG = create_logger(debug=debug, fname=logfile)
     temporal_grid = define_temporal_grid(start_date, end_date,
                                         temporal_grid_space)
     nn_inverter = pkgutil.get_data("kaska",

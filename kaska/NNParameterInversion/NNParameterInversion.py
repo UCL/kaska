@@ -8,7 +8,7 @@ import numpy as np
 
 import tensorflow as tf
 
-LOG = logging.getLogger(__name__ + ".NNParameterInversion")
+LOG = logging.getLogger(__name__)
 
 """Neural Network Parameter inversion for Sentinel-2"""
 

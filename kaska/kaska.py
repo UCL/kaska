@@ -18,17 +18,6 @@ from .smoothn import smoothn
 
 from .utils import save_output_parameters
 
-LOG = logging.getLogger("KaSKA")
-LOG.setLevel(logging.DEBUG)
-if not LOG.handlers:
-    ch = logging.StreamHandler()
-    ch.setLevel(logging.DEBUG)
-    formatter = logging.Formatter('%(asctime)s - %(name)s - ' +
-                                  '%(levelname)s - %(message)s')
-    ch.setFormatter(formatter)
-    LOG.addHandler(ch)
-LOG.propagate = False
-
             
 def define_temporal_grid(start_date, end_date, temporal_grid_space):
     """Creates a temporal grid"""
