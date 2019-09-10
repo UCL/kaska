@@ -18,6 +18,7 @@ from .smoothn import smoothn
 
 from .utils import save_output_parameters
 
+LOG = logging.getLogger(__name__)
             
 def define_temporal_grid(start_date, end_date, temporal_grid_space):
     """Creates a temporal grid"""
@@ -44,6 +45,7 @@ class KaSKA(object):
         """A first pass inversion. Could be anything, from a quick'n'dirty
         LUT, a regressor. As coded, we use the `self.inverter` method, which
         in this case, will call the ANN inversion."""
+        LOG.info("Doing first pass inversion!")
         S = {}
         for k in self.observations.dates:
             retval = self.inverter.invert_observations(self.observations, k)

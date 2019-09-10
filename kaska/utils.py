@@ -149,7 +149,7 @@ def reproject_data(source_img,
                 srcSRS=_srcSRS
             )
     if verbose:
-        print("There are %d bands in this file, use "
+        LOG.debug("There are %d bands in this file, use "
                 + "g.GetRasterBand(<band>) to avoid reading the whole file."
                 % gg.RasterCount
             )

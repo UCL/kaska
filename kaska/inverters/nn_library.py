@@ -166,7 +166,7 @@ def get_inverter(name, sensor, fname=True):
     assert sensor in Inverters[name], (
         f"No {sensor:s} set-up for" + f" inverter {name:s} available"
     )
-    print(f"{Inverters[name][sensor]['fname']:s}")
+    LOG.debug(f"{Inverters[name][sensor]['fname']:s}")
     if fname:
         inverter = get_filename(
             "kaska", f"{Inverters[name][sensor]['fname']:s}"

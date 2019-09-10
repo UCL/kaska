@@ -24,16 +24,7 @@ import scipy.optimize
 
 import time # Just for timekeeping
 
-LOG = logging.getLogger(__name__ + ".KaSKA")
-LOG.setLevel(logging.DEBUG)
-if not LOG.handlers:
-    ch = logging.StreamHandler()
-    ch.setLevel(logging.DEBUG)
-    formatter = logging.Formatter('%(asctime)s - %(name)s - ' +
-                                  '%(levelname)s - %(message)s')
-    ch.setFormatter(formatter)
-    LOG.addHandler(ch)
-LOG.propagate = False
+LOG = logging.getLogger(__name__ )
 
 if __name__ == "__main__":
     state_mask = "/home/ucfajlg/Data/python/KaFKA_Validation/LMU/carto/ESU.tif"

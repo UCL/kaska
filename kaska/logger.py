@@ -23,7 +23,7 @@ def create_logger(debug=True, fname=None):
     logging
         A log object.
     """
-    logger = logging.getLogger(f"KaSKA-{__version__:s}->")
+    logger = logging.getLogger()
     if debug:
         logger.setLevel(logging.DEBUG)
     else:
@@ -48,4 +48,7 @@ def create_logger(debug=True, fname=None):
             fh.setLevel(logging.INFO)
         fh.setFormatter(formatter)
         logger.addHandler(fh)
+        logger.info(f"Logging to {fname:s}")
+    logger.propagate = True
+    
     return logger

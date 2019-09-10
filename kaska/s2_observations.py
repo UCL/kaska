@@ -51,6 +51,7 @@ class Sentinel2Observations(object):
             Hidden_Layers=f.f.Hidden_Layers, Output_Layers=f.f.Output_Layers
         )
         LOG.debug("Read emulator in")
+        LOG.debug("Searching for files....")
         self._find_granules(self.parent, time_grid)
         self.chunk = chunk
 
