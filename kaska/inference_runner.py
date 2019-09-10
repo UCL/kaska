@@ -168,19 +168,23 @@ def process_tile(the_chunk, config):
     # Apply the region of interest to the observations
     s2_obs = copy.copy(config.s2_obs)
     s2_obs.apply_roi(ulx, uly, lrx, lry)
-
-    # Define KaSKA object with windowed observations.
-    kaska = KaSKA(
-        s2_obs,
-        config.temporal_grid,
-        config.state_mask,
-        config.inverter,
-        config.output_folder,
-        chunk=hex(chunk_no),
-    )
-    parameter_names, parameter_data = kaska.run_retrieval()
-    kaska.save_s2_output(parameter_names, parameter_data)
-    return parameter_names
+    chunk_mask = s2_obs.state_mask.ReadAsArray()
+    if np.sum(chunk_mask) == 0:
+        LOG.info(f"No pixels in chunk {chunk_no:s}")
+        return None
+    else:
+        # Define KaSKA object with windowed observations.
+        kaska = KaSKA(
+            s2_obs,
+            config.temporal_grid,
+            config.state_mask,
+            config.inverter,
+            config.output_folder,
+            chunk=hex(chunk_no),
+        )
+        parameter_names, parameter_data = kaska.run_retrieval()
+        kaska.save_s2_output(parameter_names, parameter_data)
+        return parameter_names
 
 
 def kaska_runner(
