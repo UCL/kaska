@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """Generic logging functionality"""
-import os
+
 import logging
 
 
@@ -44,7 +44,7 @@ def create_logger(debug=True, fname=None):
         fh = logging.FileHandler(fname)
         if debug:
             fh.setLevel(logging.DEBUG)
-         else:
+        else:
             fh.setLevel(logging.INFO)
         fh.setFormatter(formatter)
         logger.addHandler(fh)
