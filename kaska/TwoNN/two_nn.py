@@ -167,7 +167,7 @@ def save_np_model(fname, Hidden_Layers, Output_Layers):
 
 
 def load_np_model(fname):
-    f = np.load(fname)
+    f = np.load(fname, allow_pickle=True)
     Hidden_Layers = f.f.Hidden_Layers
     Output_Layers = f.f.Output_Layers
     return Hidden_Layers, Output_Layers

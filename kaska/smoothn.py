@@ -224,7 +224,7 @@ def smoothn(y,nS0=10,axis=None,smoothOrder=2.0,sd=None,verbose=False,\
   nof = IsFinite.sum() # number of finite elements
   W = W*IsFinite;
   if any(W<0):
-    error('smoothn:NegativeWeights',\
+    raise RuntimeError('smoothn:NegativeWeights',\
         'Weights must all be >=0')
   else:
       #W = W/np.max(W)

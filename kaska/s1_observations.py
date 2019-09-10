@@ -10,7 +10,7 @@ from pathlib import Path
 import gdal
 import numpy as np
 
-from utils import reproject_data, define_temporal_grid
+from .utils import reproject_data, define_temporal_grid
 
 gdal.UseExceptions()
 

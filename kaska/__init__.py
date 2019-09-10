@@ -13,4 +13,4 @@ from .inverters import get_inverters, get_inverter
 from .kaska import KaSKA, define_temporal_grid
 from .s2_observations import Sentinel2Observations
 from .utils import get_chunks
-from .inference import kaska_setup
+from .inference_runner import kaska_runner
