@@ -7,11 +7,13 @@ import logging
 from .version import __version__
 
 
-def create_logger(fname=None):
+def create_logger(debug=True, fname=None):
     """Creates a python logger
     
     Parameters
     ----------
+    debug: bool, optional
+        Whether to set default logger level to debug
     fname : str, optional
         If you pass a filename to this, it'll also output logging info to
         a file.
@@ -22,19 +24,28 @@ def create_logger(fname=None):
         A log object.
     """
     logger = logging.getLogger(f"KaSKA-{__version__:s}->")
-    logger.setLevel(logging.DEBUG)
+    if debug:
+        logger.setLevel(logging.DEBUG)
+    else:
+        logger.setLevel(logging.INFO)
     formatter = logging.Formatter(
         "%(asctime)s - %(name)s -" " %(levelname)s - %(message)s"
     )
 
-    fh = logging.StreamHandler()
-    fh.setLevel(logging.DEBUG)
-    fh.setFormatter(formatter)
-    logger.addHandler(fh)
+    ch = logging.StreamHandler()
+    if debug:
+        ch.setLevel(logging.DEBUG)
+    else:
+        ch.setLevel(logging.INFO)
+    ch.setFormatter(formatter)
+    logger.addHandler(ch)
 
     if fname is not None:
         fh = logging.FileHandler(fname)
-        fh.setLevel(logging.DEBUG)
+        if debug:
+            fh.setLevel(logging.DEBUG)
+         else:
+            fh.setLevel(logging.INFO)
         fh.setFormatter(formatter)
         logger.addHandler(fh)
     return logger
