@@ -11,7 +11,7 @@ def run_process(start_date, end_date, temporal_grid_space, s2_folder,
     from io import BytesIO
 
     if logfile is None:
-        logfile = f"./KaSKA_{int(dt.datetime.now().timestamp()):d}.log"
+        logfile = f"KaSKA_{dt.datetime.now():%Y%M%d_%H%M}.log"
     LOG = create_logger(debug=debug, fname=logfile)
     LOG.info("Running KaSKA...")
     temporal_grid = define_temporal_grid(start_date, end_date,
