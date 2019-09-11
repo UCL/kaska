@@ -9,16 +9,7 @@ import numpy as np
 
 from pathlib import Path
 
-LOG = logging.getLogger(__name__ + ".Sentinel2_Observations")
-LOG.setLevel(logging.INFO)
-if not LOG.handlers:
-    ch = logging.StreamHandler()
-    ch.setLevel(logging.INFO)
-    formatter = logging.Formatter('%(asctime)s - %(name)s - ' +
-                                  '%(levelname)s - %(message)s')
-    ch.setFormatter(formatter)
-    LOG.addHandler(ch)
-LOG.propagate = False
+LOG = logging.getLogger(__name__)
 
 def define_temporal_grid(start_date, end_date, temporal_grid_space):
     """Creates a temporal grid"""
@@ -158,7 +149,7 @@ def reproject_data(source_img,
                 srcSRS=_srcSRS
             )
     if verbose:
-        print("There are %d bands in this file, use "
+        LOG.debug("There are %d bands in this file, use "
                 + "g.GetRasterBand(<band>) to avoid reading the whole file."
                 % gg.RasterCount
             )

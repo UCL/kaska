@@ -18,7 +18,8 @@ arg_parser.add_argument('parent_folder',
                         help='The full path to the folder containing the data. See README for the expected folder tree structure.')
 arg_parser.add_argument('state_mask',
                         help='The full path of the tif file containing the state mask.')
-
+arg_parser.add_argument('output_folder',
+                        help="The full path of the output folder")
 args = arg_parser.parse_args()
 #print(args.start_date, args.end_date, args.temporal_grid_space, args.parent_folder, args.state_mask)
 
@@ -28,4 +29,5 @@ args = arg_parser.parse_args()
 #parent_folder = "/home/ucfajlg/Data/python/KaFKA_Validation/LMU/s2_obs/"
 #state_mask = "/home/ucfajlg/Data/python/KaFKA_Validation/LMU/carto/ESU.tif"
 
-run_process(args.start_date, args.end_date, args.temporal_grid_space, args.parent_folder, args.state_mask)
+run_process(args.start_date, args.end_date, args.temporal_grid_space,
+             args.parent_folder, args.state_mask, args.output_folder)

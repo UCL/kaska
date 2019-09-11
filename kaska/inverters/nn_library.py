@@ -12,6 +12,7 @@ the emulator emulates: it predicts parameters of interest *from observations*.
 Both emulators and inverters have been trained with a particular sensor 
 spectral characteristics in mind.
 """
+import logging
 import sys
 import os
 import pkgutil
@@ -19,6 +20,9 @@ import pkgutil
 from io import BytesIO
 
 from enum import Enum
+
+LOG = logging.getLogger(__name__)
+
 
 valid_sensors = [
     "Sentinel2",
@@ -162,7 +166,7 @@ def get_inverter(name, sensor, fname=True):
     assert sensor in Inverters[name], (
         f"No {sensor:s} set-up for" + f" inverter {name:s} available"
     )
-    print(f"{Inverters[name][sensor]['fname']:s}")
+    LOG.debug(f"{Inverters[name][sensor]['fname']:s}")
     if fname:
         inverter = get_filename(
             "kaska", f"{Inverters[name][sensor]['fname']:s}"

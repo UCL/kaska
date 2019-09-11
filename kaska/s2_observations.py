@@ -16,16 +16,7 @@ from .utils import reproject_data
 
 gdal.UseExceptions()
 
-LOG = logging.getLogger(__name__ + ".Sentinel2_Observations")
-LOG.setLevel(logging.INFO)
-if not LOG.handlers:
-    ch = logging.StreamHandler()
-    ch.setLevel(logging.INFO)
-    formatter = logging.Formatter('%(asctime)s - %(name)s - ' +
-                                  '%(levelname)s - %(message)s')
-    ch.setFormatter(formatter)
-    LOG.addHandler(ch)
-LOG.propagate = False
+LOG = logging.getLogger(__name__)
 # A SIAC data storage type
 S2MSIdata = namedtuple(
     "S2MSIdata", "time observations uncertainty mask metadata emulator"
@@ -60,6 +51,7 @@ class Sentinel2Observations(object):
             Hidden_Layers=f.f.Hidden_Layers, Output_Layers=f.f.Output_Layers
         )
         LOG.debug("Read emulator in")
+        LOG.debug("Searching for files....")
         self._find_granules(self.parent, time_grid)
         self.chunk = chunk
 
