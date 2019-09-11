@@ -94,9 +94,6 @@ class Sentinel1Observations(object):
             proj = self.state_mask.GetProjection()
             geoT = np.array(self.state_mask.GetGeoTransform())
 
-        # new_geoT = geoT*1.
-        # new_geoT[0] = new_geoT[0] + self.ulx*new_geoT[1]
-        # new_geoT[3] = new_geoT[3] + self.uly*new_geoT[5]
         return proj, geoT.tolist()  # new_geoT.tolist()
         
     def _match_to_mask(self):
@@ -109,10 +106,11 @@ class Sentinel1Observations(object):
                                                 srcSRS="EPSG:4326",
                                                 target_img=self.state_mask)
         s1_dates = get_s1_dates(self.s1_data_ptr[layer])
+        import pdb;pdb.set_trace()
         self.dates = {x:(i+1) 
                             for i, x in enumerate(s1_dates) 
-                            if ( (x >= self.time_grid[0]) and 
-                            (x <= self.time_grid[-1]))}
+                            if (self.time_grid[0] <= x <= self.time_grid[-1])
+                     }
 
 
     def read_time_series(self, time_grid):
@@ -145,15 +143,15 @@ class Sentinel1Observations(object):
         the_obs = S1data(sel_dates, obs['VV'], obs['VH'], obs['theta'], 0.5, 0.5)
         return the_obs
     
-if __name__ == "__main__":
-    start_date = dt.datetime(2017, 3, 1)
-    end_date = dt.datetime(2017, 9, 1)
-    temporal_grid_space = 5
-    temporal_grid = define_temporal_grid(start_date, end_date,
-                                        temporal_grid_space)
-    nc_file = "/data/selene/ucfajlg/ELBARA_LMU/mirror_ftp/" + \
-              "141.84.52.201/S1/S1_LMU_site_2017_new.nc"
-    s1_obs = Sentinel1Observations(nc_file,
-                "/home/ucfajlg/Data/python/KaFKA_Validation/LMU/carto/ESU.tif",
-                time_grid=temporal_grid)
-    vv = s1_obs.read_time_series(temporal_grid[:5])
+# if __name__ == "__main__":
+#     start_date = dt.datetime(2017, 3, 1)
+#     end_date = dt.datetime(2017, 9, 1)
+#     temporal_grid_space = 5
+#     temporal_grid = define_temporal_grid(start_date, end_date,
+#                                         temporal_grid_space)
+#     nc_file = "/data/selene/ucfajlg/ELBARA_LMU/mirror_ftp/" + \
+#               "141.84.52.201/S1/S1_LMU_site_2017_new.nc"
+#     s1_obs = Sentinel1Observations(nc_file,
+#                 "/home/ucfajlg/Data/python/KaFKA_Validation/LMU/carto/ESU.tif",
+#                 time_grid=temporal_grid)
+#     vv = s1_obs.read_time_series(temporal_grid[:5])
