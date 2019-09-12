@@ -148,9 +148,7 @@ class KaSKA(object):
         # of fill_value to indicate missing data (0)
         LOG.info("Smoothing LAI...")
         laii = interp1d(doy_grid, doys, lai)
-        #f = interp1d(doys, lai, axis=0, bounds_error=False,
-                     #fill_value=0)
-        #laii = f(doy_grid)
+        laii[np.isnan(laii)] = 0
         slai = smoothn(np.array(laii), W=2*np.array(laii), isrobust=True, s=1.5,
                        TolZ=1e-6, axis=0)[0]
         slai[slai < 0] = 0
@@ -159,6 +157,7 @@ class KaSKA(object):
         # pigments when no leaf area is present.
         LOG.info("Smoothing Cab...")
         cabi = interp1d(doy_grid, doys, cab)
+        cabi[np.isnan(caib)] = 0
         #f = interp1d(doys, cab, axis=0, bounds_error=False)
         #cabi = f(doy_grid)
         scab = smoothn(np.array(cabi), W=slai, isrobust=True, s=1,
@@ -167,6 +166,7 @@ class KaSKA(object):
         #f = interp1d(doys, cbrown, axis=0, bounds_error=False)
         #cbrowni = f(doy_grid)
         cbrowni = interp1d(doy_grid, doys, cbrown)
+        cbrowni[np.isnan(cbrowni)] = 0
         scbrown = smoothn(np.array(cbrowni) * slai, W=slai, isrobust=True, s=1,
                     TolZ=1e-6, axis=0)[0] / slai
         # Could also set them to nan
