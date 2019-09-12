@@ -19,6 +19,8 @@ from .smoothn import smoothn
 
 from .utils import save_output_parameters
 
+from .interp_fix import interp1d
+
 LOG = logging.getLogger(__name__)
             
 def define_temporal_grid(start_date, end_date, temporal_grid_space):
@@ -130,12 +132,12 @@ class KaSKA(object):
         # Basically, remove weird values outside of boundaries, nans and stuff
         # Could be done simply with the previously stated data structure, as
         # this is a bit of an adhoc piece of code.
-        lai[~np.isfinite(lai)] = 0
-        cab[~np.isfinite(cab)] = 0
-        cbrown[~np.isfinite(cbrown)] = 0
-        lai[~(lai > 0)] = 0
-        cab[~(cab > 0)] = 0
-        cbrown[~(cbrown > 0)] = 0
+        lai[~np.isfinite(lai)] = np.nan
+        cab[~np.isfinite(cab)] = np.nan
+        cbrown[~np.isfinite(cbrown)] = np.nan
+        lai[lai < 0] = np.nan
+        cab[cab < 0] = np.nan
+        cbrown[cbrown < 0] = np.nan
         # Create a mask where we have no (LAI) data
         mask = np.all(lai == 0, axis=(0))
         LOG.info("Smoothing data like a boss")
@@ -145,9 +147,10 @@ class KaSKA(object):
         # Linear 3D stack interpolator. Assuming dimension 0 is time. Note use
         # of fill_value to indicate missing data (0)
         LOG.info("Smoothing LAI...")
-        f = interp1d(doys, lai, axis=0, bounds_error=False,
-                     fill_value=0)
-        laii = f(doy_grid)
+        laii = interp1d(doy_grid, doys, lai)
+        #f = interp1d(doys, lai, axis=0, bounds_error=False,
+                     #fill_value=0)
+        #laii = f(doy_grid)
         slai = smoothn(np.array(laii), W=2*np.array(laii), isrobust=True, s=1.5,
                        TolZ=1e-6, axis=0)[0]
         slai[slai < 0] = 0
@@ -155,13 +158,15 @@ class KaSKA(object):
         # going forward, use LAI as weighting to try to dampen flappiness in
         # pigments when no leaf area is present.
         LOG.info("Smoothing Cab...")
-        f = interp1d(doys, cab, axis=0, bounds_error=False)
-        cabi = f(doy_grid)
+        cabi = interp1d(doy_grid, doys, cab)
+        #f = interp1d(doys, cab, axis=0, bounds_error=False)
+        #cabi = f(doy_grid)
         scab = smoothn(np.array(cabi), W=slai, isrobust=True, s=1,
                         TolZ=1e-6, axis=0)[0]
         LOG.info("Smoothing Cbrown...")
-        f = interp1d(doys, cbrown, axis=0, bounds_error=False)                                        
-        cbrowni = f(doy_grid)
+        #f = interp1d(doys, cbrown, axis=0, bounds_error=False)
+        #cbrowni = f(doy_grid)
+        cbrowni = interp1d(doy_grid, doys, cbrown)
         scbrown = smoothn(np.array(cbrowni) * slai, W=slai, isrobust=True, s=1,
                     TolZ=1e-6, axis=0)[0] / slai
         # Could also set them to nan
