@@ -120,7 +120,7 @@ class KaSKA(object):
         cab = -100*np.log(parameter_block[1, :, :, :])
         cbrown = parameter_block[2, :, :, :]
         if self.save_sgl_inversion is True:
-            save_output_parameters(self.time_grid, self.observations, 
+            save_output_parameters(dates, self.observations, 
                 self.output_folder, ["lai", "cab", "cbrown"],
                            [lai, cab, cbrown], output_format="GTiff",
                            chunk=self.chunk, fname_pattern="s2_sgl",
