@@ -55,7 +55,11 @@ def stitch_outputs(output_folder, parameter_list):
         A list of the stitched up files.
     """
     # Get the output folder
-    p = Path(output_folder)
+    p = Path(output_folder)if [ "$2" != "" ]; then
+    TIME=$2
+else
+    echo "Default time of 5hrs!"
+fi
     # Loop over parameters and find all the files for all the
     # chunks and dates
     output_tiffs = {}
@@ -239,7 +243,7 @@ def kaska_runner(
     ny, nx = g.RasterYSize, g.RasterXSize
 
     # Do the splitting
-    them_chunks = (the_chunk for the_chunk in get_chunks(nx, ny))
+    them_chunks = [the_chunk for the_chunk in get_chunks(nx, ny)]
 
     wrapper = partial(process_tile, config=config)
     if dask_client is None:
