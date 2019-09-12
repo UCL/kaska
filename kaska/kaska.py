@@ -3,6 +3,7 @@
 """Main module."""
 import logging
 
+from pathlib import Path
 import datetime as dt
 import numpy as np
 
@@ -40,6 +41,7 @@ class KaSKA(object):
         self.output_folder = output_folder
         self.inverter = NNParameterInversion(approx_inverter)
         self.chunk = chunk
+        self.save_sgl_inversion = True
 
     def first_pass_inversion(self):
         """A first pass inversion. Could be anything, from a quick'n'dirty
@@ -115,6 +117,16 @@ class KaSKA(object):
         lai = -2 * np.log(parameter_block[-2, :, :, :])
         cab = -100*np.log(parameter_block[1, :, :, :])
         cbrown = parameter_block[2, :, :, :]
+        if self.save_sgl_inversion is True:
+            save_output_parameters(self.time_grid, self.observations, 
+                self.output_folder, ["lai", "cab", "cbrown"],
+                           [lai, cab, cbrown], output_format="GTiff",
+                           chunk=self.chunk, fname_pattern="s2_sgl",
+                           options=['COMPRESS=DEFLATE',
+                                    'BIGTIFF=YES',
+                                    'PREDICTOR=1',
+                                    'TILED=YES'])
+                    
         # Basically, remove weird values outside of boundaries, nans and stuff
         # Could be done simply with the previously stated data structure, as
         # this is a bit of an adhoc piece of code.
