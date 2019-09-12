@@ -229,11 +229,11 @@ class Sentinel2Observations(object):
             original_s2_file = current_folder / (
                 f"{fname_prefix:s}" + f"{the_band:s}_sur_unc.tif"
             )
-            LOG.debug(f"Uncertainty file {str(original_s2_file):s}")
-            unc = reproject_data(
-                str(original_s2_file), target_img=self.state_mask
-            ).ReadAsArray()
-            rho_unc.append(unc)
+            #LOG.debug(f"Uncertainty file {str(original_s2_file):s}")
+            #unc = reproject_data(
+            #    str(original_s2_file), target_img=self.state_mask
+            #).ReadAsArray()
+            rho_unc.append(np.ones_like(rho)*0.005)
         # For reference...
         #bands = ['B01', 'B02', 'B03', 'B04', 'B05', 'B06', 'B07', 'B08',
         #         'B8A', 'B09', 'B10','B11', 'B12']
