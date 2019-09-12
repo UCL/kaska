@@ -239,7 +239,7 @@ def kaska_runner(
     ny, nx = g.RasterYSize, g.RasterXSize
 
     # Do the splitting
-    them_chunks = (the_chunk for the_chunk in get_chunks(nx, ny))
+    them_chunks = [the_chunk for the_chunk in get_chunks(nx, ny)]
 
     wrapper = partial(process_tile, config=config)
     if dask_client is None:
