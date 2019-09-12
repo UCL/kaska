@@ -55,11 +55,7 @@ def stitch_outputs(output_folder, parameter_list):
         A list of the stitched up files.
     """
     # Get the output folder
-    p = Path(output_folder)if [ "$2" != "" ]; then
-    TIME=$2
-else
-    echo "Default time of 5hrs!"
-fi
+    p = Path(output_folder)
     # Loop over parameters and find all the files for all the
     # chunks and dates
     output_tiffs = {}
