@@ -158,19 +158,25 @@ def process_tile(the_chunk, config):
     # Apply the region of interest to the observations
     s2_obs = copy.copy(config.s2_obs)
     s2_obs.apply_roi(ulx, uly, lrx, lry)
-
-    # Define KaSKA object with windowed observations.
-    kaska = KaSKA(
-        s2_obs,
-        config.temporal_grid,
-        config.state_mask,
-        config.inverter,
-        config.output_folder,
-        chunk=hex(chunk_no),
-    )
-    parameter_names, parameter_data = kaska.run_retrieval()
-    kaska.save_s2_output(parameter_names, parameter_data)
-    return parameter_names
+    chunk_mask = s2_obs.state_mask.ReadAsArray()
+    n_unmasked_pxls = np.sum(chunk_mask)
+    if n_unmasked_pxls == 0:
+        LOG.info(f"No pixels in chunk {hex(chunk_no):s}")
+        return None
+    else:
+        # Define KaSKA object with windowed observations.
+        LOG.info(f"Unmasked pixels in {hex(chunk_no):s}: {n_unmasked_pxls:d}")
+        kaska = KaSKA(
+            s2_obs,
+            config.temporal_grid,
+            config.state_mask,
+            config.inverter,
+            config.output_folder,
+            chunk=hex(chunk_no),
+        )
+        parameter_names, parameter_data = kaska.run_retrieval()
+        kaska.save_s2_output(parameter_names, parameter_data)
+        return parameter_names
 
 
 def kaska_runner(
@@ -248,6 +254,10 @@ def kaska_runner(
         A = dask_client.map(wrapper, them_chunks)
         retval = dask_client.gather(A)
 
-    parameter_names = retval[0]
-
+    try:
+        parameter_names = next(item for item in reval if item is not None)
+    except StopIteration:
+        LOG.info("No masked pixels processed! Sure mask was sensible?")
+        return []
+    LOG.info("Starting file stitching")
     return stitch_outputs(output_folder, parameter_names)
