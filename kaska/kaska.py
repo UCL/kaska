@@ -157,7 +157,7 @@ class KaSKA(object):
         # pigments when no leaf area is present.
         LOG.info("Smoothing Cab...")
         cabi = interp1d(doy_grid, doys, cab)
-        cabi[np.isnan(caib)] = 0
+        cabi[np.isnan(cabi)] = 0
         #f = interp1d(doys, cab, axis=0, bounds_error=False)
         #cabi = f(doy_grid)
         scab = smoothn(np.array(cabi), W=slai, isrobust=True, s=1,
