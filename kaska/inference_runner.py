@@ -265,7 +265,7 @@ def kaska_runner(
         retval = dask_client.gather(A)
 
     try:
-        parameter_names = next(item for item in reval if item is not None)
+        parameter_names = next(item for item in retval if item is not None)
     except StopIteration:
         LOG.info("No masked pixels processed! Sure mask was sensible?")
         return []
