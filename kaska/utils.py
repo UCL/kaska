@@ -167,6 +167,8 @@ def save_output_parameters(time_grid, observations, output_folder, parameter_nam
     """Saving the output parameters as (probably all times) GeoTIFFs
     """
     output_folder = Path(output_folder)
+    if not output_folder.exists(): output_folder.mkdir(parents=True,
+                                                       exist_ok=True)
     assert len(parameter_names) == len(output_data)
     nt = output_data[0].shape[0]
     assert len(time_grid) == nt
