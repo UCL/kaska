@@ -5,6 +5,7 @@ import logging
 
 import datetime as dt
 import numpy as np
+import gdal
 
 from scipy.interpolate import interp1d
 
@@ -45,10 +46,13 @@ class KaSKA(object):
         """A first pass inversion. Could be anything, from a quick'n'dirty
         LUT, a regressor. As coded, we use the `self.inverter` method, which
         in this case, will call the ANN inversion."""
+        state_mask = self.observations.state_mask.ReadAsArray()
+        state_mask = state_mask.astype(np.bool)
         LOG.info("Doing first pass inversion!")
         S = {}
         for k in self.observations.dates:
-            retval = self.inverter.invert_observations(self.observations, k)
+            retval = self.inverter.invert_observations(self.observations, k,
+                                                       state_mask=state_mask)
             if retval is not None:
                 S[k] = retval
         return S
