@@ -245,7 +245,7 @@ def kaska_runner(
     ny, nx = g.RasterYSize, g.RasterXSize
 
     # Do the splitting
-    them_chunks = (the_chunk for the_chunk in get_chunks(nx, ny))
+    them_chunks = [the_chunk for the_chunk in get_chunks(nx, ny)]
 
     wrapper = partial(process_tile, config=config)
     if dask_client is None:
@@ -254,6 +254,11 @@ def kaska_runner(
         A = dask_client.map(wrapper, them_chunks)
         retval = dask_client.gather(A)
 
-    parameter_names = retval[0]
+    try:
+        parameter_names = next(item for item in retval if item is not None)
+    except StopIteration:
+        LOG.info("No masked pixels processed! Sure mask was sensible?")
+        return []
+    LOG.info("Starting file stitching")
 
     return stitch_outputs(output_folder, parameter_names)

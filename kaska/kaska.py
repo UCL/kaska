@@ -5,7 +5,6 @@ import logging
 
 import datetime as dt
 import numpy as np
-import gdal
 
 from scipy.interpolate import interp1d
 
