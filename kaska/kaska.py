@@ -121,7 +121,7 @@ class KaSKA(object):
         cbrown = parameter_block[2, :, :, :]
         if self.save_sgl_inversion is True:
             save_output_parameters(dates, self.observations, 
-                self.output_folder + "/single_imgs/", ["lai", "cab", "cbrown"],
+                self.output_folder/"single_imgs/", ["lai", "cab", "cbrown"],
                            [lai, cab, cbrown], output_format="GTiff",
                            chunk=self.chunk, fname_pattern="s2_sgl",
                            options=['COMPRESS=DEFLATE',
