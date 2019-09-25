@@ -51,7 +51,7 @@ class NNParameterInversion(object):
         
         
 
-    def invert_observations(self, data, date):
+    def invert_observations(self, data, date, state_mask=None):
         """Main method to invert observations using a NN inverter. Takes a 
         date and a data object. The data object could be one defined in 
         s2_observations.py, for example, where we have a `read_granule` method
@@ -63,7 +63,12 @@ class NNParameterInversion(object):
         # rho will be None if there are no data available.
         
         if rho is not None:
+            if state_mask is not None:
+                mask = mask*state_mask
             LOG.info(f"{mask.sum():d} pixels to be processed")
+            if mask.sum() == 0:
+                LOG.info("No clear pixels")
+                return None
             # Subset the bands that we want to use for our inversion
             rho = np.array(rho)[self.b_ind]
             # Get some shapes of pixels
