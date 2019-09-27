@@ -5,8 +5,9 @@ from .logger import create_logger
 from .inverters import get_emulator, get_inverter
 
 
-def run_process(start_date, end_date, temporal_grid_space, s2_folder, 
-                state_mask, output_folder, debug=True, logfile=None):
+def run_process(start_date, end_date, temporal_grid_space, s2_folder,
+                state_mask, output_folder, debug=True, logfile=None,
+                block_size= [256, 256]):
     import pkgutil
     from io import BytesIO
 
@@ -18,8 +19,9 @@ def run_process(start_date, end_date, temporal_grid_space, s2_folder,
                                         temporal_grid_space)
     s2_emulator = get_emulator("prosail", "Sentinel2")
     approx_inverter = get_inverter("prosail_5paras", "Sentinel2")
-    
+
     kaska_runner(start_date, end_date, temporal_grid_space, state_mask,
-                s2_folder, approx_inverter, s2_emulator, output_folder)
+                s2_folder, approx_inverter, s2_emulator, output_folder,
+                block_size=block_size)
 
 
