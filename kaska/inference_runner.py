@@ -36,11 +36,11 @@ def stitch_outputs(output_folder, parameter_list):
     reasonably created by e.g. `process_tile` below. It is not a problem to
     have missing tiles that weren't processed (this sometimes happens if
     the state mask shows no useable pixels). We assume the relevant files
-    have the following filename structure 
-    `[parameter]_A[year][DoY]_0x[tile].tif`, where `parameter` is the 
+    have the following filename structure
+    `[parameter]_A[year][DoY]_0x[tile].tif`, where `parameter` is the
     parameter name, `year` is e.g. `2019` `DoY` is day of year and tile
     is a hexadecimal number with the tile number.
-    
+
     Parameters
     ----------
     output_folder : str
@@ -48,7 +48,7 @@ def stitch_outputs(output_folder, parameter_list):
     parameter_list : list
         A list of parameters. This is used to search individual tiles by
         filename (e.g. `LAI_A2019135_0xfd.tif`).
-    
+
     Returns
     -------
     list
@@ -131,7 +131,7 @@ def stitch_outputs(output_folder, parameter_list):
 def process_tile(the_chunk, config):
     """A function to process a single spatial tile. The function
     receives a `chunk` object, and a configuration object.
-    
+
     Parameters
     ----------
     the_chunk : iter
@@ -140,7 +140,7 @@ def process_tile(the_chunk, config):
         tile number.
     config : Config
         A configuration object.
-    
+
     Returns
     -------
     list
@@ -189,11 +189,12 @@ def kaska_runner(
     s2_emulator,
     output_folder,
     dask_client=None,
+    block_size= [256, 256]
 ):
     """Runs a KaSKA problem for S2 producing parameter estimates between
     `start_date` and `end_date` with a temporal spacing `temporal_grid_space`.
-    
-    
+
+
     Parameters
     ----------
     start_date : datetime object
@@ -215,9 +216,9 @@ def kaska_runner(
         A folder where the output files will be dumped.
     dask_client : dask, optional
         Allows the distribution of the processing using a dask distributed
-        cluster. If this is None, then the processing is run tiled but 
+        cluster. If this is None, then the processing is run tiled but
         sequentially.
-    
+
     Returns
     -------
     list
@@ -245,7 +246,8 @@ def kaska_runner(
     ny, nx = g.RasterYSize, g.RasterXSize
 
     # Do the splitting
-    them_chunks = [the_chunk for the_chunk in get_chunks(nx, ny)]
+    them_chunks = [the_chunk for the_chunk in get_chunks(nx, ny,
+                                                         block_size=block_size)]
 
     wrapper = partial(process_tile, config=config)
     if dask_client is None:
