@@ -152,7 +152,7 @@ class KaSKA(object):
         LOG.info("Smoothing LAI...")
         laii = interp1d(doy_grid, doys, lai)
         laii[np.isnan(laii)] = 0
-        slai = smoothn(np.array(laii), W=2*np.array(laii), isrobust=True, s=1.5,
+        slai = smoothn(np.array(laii), W=2*np.array(laii), isrobust=True, s=0.5,
                        TolZ=1e-6, axis=0)[0]
         slai[slai < 0] = 0
         # The last bit is to fix LAI to 0
@@ -163,7 +163,7 @@ class KaSKA(object):
         cabi[np.isnan(cabi)] = 0
         #f = interp1d(doys, cab, axis=0, bounds_error=False)
         #cabi = f(doy_grid)
-        scab = smoothn(np.array(cabi), W=slai, isrobust=True, s=1,
+        scab = smoothn(np.array(cabi), W=slai, isrobust=True, s=0.5,
                         TolZ=1e-6, axis=0)[0]
         LOG.info("Smoothing Cbrown...")
         #f = interp1d(doys, cbrown, axis=0, bounds_error=False)
