@@ -1,10 +1,25 @@
 #!/bin/env python
-from kaska.entry import run_process
+import logging
 import argparse
 import datetime as dt
 
+from kaska.entry import run_process
+
+
 def str2date(string):
     return dt.datetime.strptime(string, '%Y%m%d')
+
+
+LOG = logging.getLogger(__name__ + ".KaSKA")
+LOG.setLevel(logging.DEBUG)
+if not LOG.handlers:
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.DEBUG)
+    formatter = logging.Formatter('%(asctime)s - %(name)s - ' +
+                                  '%(levelname)s - %(message)s')
+    ch.setFormatter(formatter)
+    LOG.addHandler(ch)
+LOG.propagate = False
 
 arg_parser = argparse.ArgumentParser(description='Run the KaSKA analysis '
                                      'for given time grid, data, and state mask.')
