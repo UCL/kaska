@@ -12,22 +12,6 @@ def str2date(string):
     return dt.datetime.strptime(string, '%Y%m%d')
 
 
-# Setup logger
-LOG = logging.getLogger(__name__ + ".KaSKA")
-LOG.setLevel(logging.DEBUG)
-if not LOG.handlers:
-    ch = logging.StreamHandler()
-    ch.setLevel(logging.DEBUG)
-    formatter = logging.Formatter('%(asctime)s - %(name)s - ' +
-                                  '%(levelname)s - %(message)s')
-    ch.setFormatter(formatter)
-    LOG.addHandler(ch)
-LOG.propagate = False
-#if logfile is None:
-#    logfile = f"KaSKA_{dt.datetime.now():%Y%M%d_%H%M}.log"
-#LOG = create_logger(debug=debug, fname=logfile)
-#LOG.info("Running KaSKA...")
-
 # Define and parse user arguments
 arg_parser = argparse.ArgumentParser(description='Run the KaSKA analysis '
                                      'for given time grid, data, and state mask.')
@@ -48,12 +32,27 @@ arg_parser.add_argument('output_folder',
 
 arg_parser.add_argument('-loglevel', default='debug',
                         help='Output level for the logger. Options are debug, info, warning, error. Default is debug.')
-arg_parser.add_argument('-logfile',
-                        help='Name for the logfile. If missing, a default name based on the current datetime will be created.')
 arg_parser.add_argument('-block_size', default=256, type=int,
                         help='The size of the side of the square tile to break the image into. Default is 256.')
 args = arg_parser.parse_args()
-#print(args.start_date, args.end_date, args.temporal_grid_space, args.parent_folder, args.state_mask)
+#print(args.start_date, args.end_date, args.temporal_grid_space, args.parent_folder, args.state_mask, args.output_folder, args.loglevel, args.logfile, args.block_size)
+
+# Setup logger
+loglevels = { 'debug':logging.DEBUG,
+              'info':logging.INFO,
+              'warning':logging.WARNING,
+              'error':logging.ERROR }
+LOG = logging.getLogger("KaSKA")
+LOG.setLevel(loglevels[args.loglevel])
+if not LOG.handlers:
+    ch = logging.StreamHandler()
+    ch.setLevel(loglevels[args.loglevel])
+    formatter = logging.Formatter('%(asctime)s - %(name)s - ' +
+                                  '%(levelname)s - %(message)s')
+    ch.setFormatter(formatter)
+    LOG.addHandler(ch)
+LOG.propagate = False
+LOG.info("Running KaSKA...")
 
 #start_date = dt.datetime(2017, 5, 1)
 #end_date = dt.datetime(2017, 9, 1)
