@@ -298,11 +298,11 @@ class Sentinel2Observations(object):
         rho_surface = rho_surface / 10000.0
 
         rho_unc = np.array(rho_unc) / 10000.0
-        rho_unc[:, mask] = np.nan
+        rho_unc[:, ~mask] = np.nan
         # Average uncertainty over the image
         rho_unc = np.nanmean(rho_unc, axis=(1, 2))
         # Set missing pixels to NaN
-        rho_surface[:, mask] = np.nan
+        rho_surface[:, ~mask] = np.nan
         # Now read angles
         sun_angles = reproject_data(
             str(current_folder.parent / "ANG_DATA/SAA_SZA.tif"),

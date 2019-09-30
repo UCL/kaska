@@ -61,7 +61,7 @@ class NNParameterInversion(object):
         # Read in the data and return a bunch of numpy arrays
         rho, mask, sza, vza, raa, rho_unc = data.read_granule(date)
         # rho will be None if there are no data available.
-
+        import pdb;pdb.set_trace()
         if rho is not None:
             if state_mask is not None:
                 mask = mask * state_mask
