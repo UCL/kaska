@@ -62,7 +62,8 @@ LOG.info("Running KaSKA...")
 # Prepare arguments needed to run main kaska executable
 s2_emulator = get_emulator("prosail", "Sentinel2")
 approx_inverter = get_inverter("prosail_5paras", "Sentinel2")
+dask_client = None
 
 kaska_runner(args.start_date, args.end_date, args.temporal_grid_space, args.state_mask,
              args.parent_folder, approx_inverter, s2_emulator, args.output_folder,
-             block_size=[args.block_size, args.block_size])
+             dask_client=dask_client, block_size=[args.block_size, args.block_size])
