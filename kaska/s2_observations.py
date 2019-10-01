@@ -29,7 +29,7 @@ class Sentinel2Observations(object):
         parent_folder,
         emulator,
         state_mask,
-        band_prob_threshold=10,
+        band_prob_threshold=5,
         chunk=None,
         time_grid=None,
     ):
