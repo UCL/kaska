@@ -131,7 +131,7 @@ class KaSKA(object):
                                     'BIGTIFF=YES',
                                     'PREDICTOR=1',
                                     'TILED=YES'])
-                    
+               
         # Basically, remove weird values outside of boundaries, nans and stuff
         # Could be done simply with the previously stated data structure, as
         # this is a bit of an adhoc piece of code.
@@ -143,46 +143,37 @@ class KaSKA(object):
         cbrown[cbrown < 0] = np.nan
         # Create a mask where we have no (LAI) data
         mask = np.all(lai == 0, axis=(0))
-        LOG.info("Smoothing data like a boss")
+        
         # Time axes in days of year
         doys = np.array([int(x.strftime('%j')) for x in dates])
         doy_grid = np.array([int(x.strftime('%j')) for x in self.time_grid])
-        # Linear 3D stack interpolator. Assuming dimension 0 is time. Note use
-        # of fill_value to indicate missing data (0)
-        LOG.info("Smoothing LAI...")
-        laii = interp1d(doy_grid, doys, lai)
+        # Do a linear interpolation for missing values in the observations
+        laii = interp1d(doys, doys, lai)
+        cabi = interp1d(doys, doys, cab)
+        cbrowni = interp1d(doys, doys, cbrown)
+        # There might be some NaNs around, set to 0
         laii[np.isnan(laii)] = 0
-        slai = smoothn(np.array(laii), W=2*np.array(laii), isrobust=True, s=0.5,
+        cabi[np.isnan(cabi)] = 0
+        cbrowni[np.isnan(cbrowni)] = 0
+        # Smooth on observations grid
+        slai = smoothn(np.array(laii), W=2*np.array(laii), isrobust=True, s=0.05,
                        TolZ=1e-6, axis=0)[0]
         slai[slai < 0] = 0
-        # The last bit is to fix LAI to 0
-        # going forward, use LAI as weighting to try to dampen flappiness in
-        # pigments when no leaf area is present.
-        LOG.info("Smoothing Cab...")
-        cabi = interp1d(doy_grid, doys, cab)
-        cabi[np.isnan(cabi)] = 0
-        #f = interp1d(doys, cab, axis=0, bounds_error=False)
-        #cabi = f(doy_grid)
         scab = smoothn(np.array(cabi), W=slai, isrobust=True, s=0.5,
                         TolZ=1e-6, axis=0)[0]
-        LOG.info("Smoothing Cbrown...")
-        #f = interp1d(doys, cbrown, axis=0, bounds_error=False)
-        #cbrowni = f(doy_grid)
-        cbrowni = interp1d(doy_grid, doys, cbrown)
-        cbrowni[np.isnan(cbrowni)] = 0
-        scbrown = smoothn(np.array(cbrowni) * slai, W=slai, isrobust=True, s=1,
-                    TolZ=1e-6, axis=0)[0] / slai
-        # Could also set them to nan
-        LOG.info("Done smoothing...")
-        slai[:, mask] = 0
-        scab[:, mask] = 0
-        scbrown[:, mask] = 0
-        return (["lai", "cab", "cbrown"], [slai, scab, scbrown])
+        scbrown = smoothn(np.array(cbrowni), W=slai, isrobust=True, s=0.5,
+                        TolZ=1e-6, axis=0)[0]
+        # Interpolate to state grid
+        laii = interp1d(doy_grid, doys, slai)
+        cabi = interp1d(doy_grid, doys, scab)
+        cbrowni =  interp1d(doy_grid, doys, scbrown)
+        return (["lai", "cab", "cbrown"], [laii, cabi, cbrowni])
 
     def save_s2_output(self, parameter_names, output_data,
-                       output_format="GTiff"):
-        
-        save_output_parameters(self.time_grid, self.observations,
+                       time_grid=None, output_format="GTiff"):
+        if time_grid is None:
+            time_grid = self.time_grid
+        save_output_parameters(time_grid, self.observations,
                                self.output_folder,
                                parameter_names, output_data,
                                output_format=output_format,
