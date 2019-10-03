@@ -2,9 +2,7 @@
 import argparse
 import datetime as dt
 
-from kaska.logger import create_logger
-from kaska.inference_runner import kaska_runner
-from kaska.inverters import get_emulator, get_inverter
+from kaska.entry import run_process
 
 
 def str2date(string):
@@ -36,31 +34,8 @@ arg_parser.add_argument('--block_size', default=256, type=int,
 args = arg_parser.parse_args()
 #print(args.start_date, args.end_date, args.temporal_grid_space, args.parent_folder, args.state_mask, args.output_folder, args.disable_debug_log, args.block_size)
 
-# Setup logger
-logfile = f"KaSKA_{dt.datetime.now():%Y%M%d_%H%M}.log"
+# Call function that runs the KaSKA process
 debug = not args.disable_debug_log
-LOG = create_logger(debug=debug, fname=logfile)
-LOG.info("Running KaSKA with arguments:")
-LOG.info("start date : "+args.start_date.strftime('%Y%m%d'))
-LOG.info("end date : "+args.end_date.strftime('%Y%m%d'))
-LOG.info("temporal grid spacing (days): "+str(args.temporal_grid_space))
-LOG.info("data folder : "+args.parent_folder)
-LOG.info("state mask : "+args.state_mask)
-LOG.info("output folder : "+args.output_folder)
-LOG.info("debug logging : "+("ON" if debug else "OFF"))
-LOG.info("block size : "+str(args.block_size)+"x"+str(args.block_size))
-
-#start_date = dt.datetime(2017, 5, 1)
-#end_date = dt.datetime(2017, 9, 1)
-#temporal_grid_space = 5
-#parent_folder = "/home/ucfajlg/Data/python/KaFKA_Validation/LMU/s2_obs/"
-#state_mask = "/home/ucfajlg/Data/python/KaFKA_Validation/LMU/carto/ESU.tif"
-
-# Prepare arguments needed to run main kaska executable
-s2_emulator = get_emulator("prosail", "Sentinel2")
-approx_inverter = get_inverter("prosail_5paras", "Sentinel2")
-dask_client = None
-
-kaska_runner(args.start_date, args.end_date, args.temporal_grid_space, args.state_mask,
-             args.parent_folder, approx_inverter, s2_emulator, args.output_folder,
-             dask_client=dask_client, block_size=[args.block_size, args.block_size])
+run_process(args.start_date, args.end_date, args.temporal_grid_space,
+            args.parent_folder, args.state_mask, args.output_folder,
+            debug=debug, block_size=[args.block_size, args.block_size])
