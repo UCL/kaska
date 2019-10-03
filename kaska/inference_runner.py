@@ -193,7 +193,6 @@ def kaska_runner(
     """Runs a KaSKA problem for S2 producing parameter estimates between
     `start_date` and `end_date` with a temporal spacing `temporal_grid_space`.
 
-
     Parameters
     ----------
     start_date : datetime object
@@ -217,6 +216,8 @@ def kaska_runner(
         Allows the distribution of the processing using a dask distributed
         cluster. If this is None, then the processing is run tiled but
         sequentially.
+    block_size : int list[2], optional
+        The size of the tile to break the image into (in pixels).
 
     Returns
     -------
