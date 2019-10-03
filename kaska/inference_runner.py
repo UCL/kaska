@@ -17,10 +17,9 @@ import numpy as np
 
 from osgeo import gdal
 
-from .utils import get_chunks
+from .utils import get_chunks, define_temporal_grid
 from .s2_observations import Sentinel2Observations
 from .kaska import KaSKA
-from .kaska import define_temporal_grid
 
 Config = namedtuple(
     "Config", "s2_obs temporal_grid state_mask inverter output_folder"
