@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import datetime as dt
 from .logger import create_logger
 from .inference_runner import kaska_runner

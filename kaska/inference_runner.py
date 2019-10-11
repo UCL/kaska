@@ -122,7 +122,9 @@ def stitch_outputs(output_folder, parameter_list):
             ],
         )
         shutil.move(p / "temporary.tif", (p / f"{parameter:s}.tif").as_posix())
-
+        # Remove unneeded leftover files
+        [f.unlink() for f in p.glob("*.vrt")]
+        [f.unlink() for f in p.glob("*.ovr")]
         LOG.info(f"Saved {parameter:s} file as {output_tiffs[parameter]:s}")
     return output_tiffs
 
