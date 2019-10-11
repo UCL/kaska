@@ -20,14 +20,6 @@ from .utils import save_output_parameters
 
 LOG = logging.getLogger(__name__)
             
-def define_temporal_grid(start_date, end_date, temporal_grid_space):
-    """Creates a temporal grid"""
-    temporal_grid = [start_date + i*dt.timedelta(days=temporal_grid_space) 
-                    for i in range(int(np.ceil(366/temporal_grid_space)))
-                    if start_date + i*dt.timedelta(days=temporal_grid_space)
-                                    <= end_date]
-    return temporal_grid
-
 class KaSKA(object):
     """The main KaSKA object"""
 

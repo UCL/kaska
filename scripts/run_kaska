@@ -1,33 +1,41 @@
 #!/bin/env python
-from kaska.entry import run_process
 import argparse
 import datetime as dt
+
+from kaska.entry import run_process
+
 
 def str2date(string):
     return dt.datetime.strptime(string, '%Y%m%d')
 
+
+# Define and parse user arguments
 arg_parser = argparse.ArgumentParser(description='Run the KaSKA analysis '
                                      'for given time grid, data, and state mask.')
+
 arg_parser.add_argument('start_date', type=str2date,
                         help='The start date in the format YYYYMMDD , eg. 20170501 for 1st May 2017.')
 arg_parser.add_argument('end_date', type=str2date,
                         help='The end date in the format YYYYMMDD , eg. 20170501 for 1st May 2017.')
 arg_parser.add_argument('temporal_grid_space', type=int,
                         help='The spacing of the time grid, in days.')
+
 arg_parser.add_argument('parent_folder',
                         help='The full path to the folder containing the data. See README for the expected folder tree structure.')
 arg_parser.add_argument('state_mask',
                         help='The full path of the tif file containing the state mask.')
 arg_parser.add_argument('output_folder',
                         help="The full path of the output folder")
+
+arg_parser.add_argument('--disable_debug_log', action='store_true', default=False,
+                        help='Disable the debug-level logging, leaving only info-level logging on. By default, logging reports debug messages as well.')
+arg_parser.add_argument('--block_size', default=256, type=int,
+                        help='The size of the side of the square tile to break the image into. Default is 256.')
 args = arg_parser.parse_args()
-#print(args.start_date, args.end_date, args.temporal_grid_space, args.parent_folder, args.state_mask)
+#print(args.start_date, args.end_date, args.temporal_grid_space, args.parent_folder, args.state_mask, args.output_folder, args.disable_debug_log, args.block_size)
 
-#start_date = dt.datetime(2017, 5, 1)
-#end_date = dt.datetime(2017, 9, 1)
-#temporal_grid_space = 5
-#parent_folder = "/home/ucfajlg/Data/python/KaFKA_Validation/LMU/s2_obs/"
-#state_mask = "/home/ucfajlg/Data/python/KaFKA_Validation/LMU/carto/ESU.tif"
-
+# Call function that runs the KaSKA process
+debug = not args.disable_debug_log
 run_process(args.start_date, args.end_date, args.temporal_grid_space,
-             args.parent_folder, args.state_mask, args.output_folder)
+            args.parent_folder, args.state_mask, args.output_folder,
+            debug=debug, block_size=[args.block_size, args.block_size])
