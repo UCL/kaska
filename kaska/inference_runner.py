@@ -17,10 +17,9 @@ import numpy as np
 
 from osgeo import gdal
 
-from .utils import get_chunks
+from .utils import get_chunks, define_temporal_grid
 from .s2_observations import Sentinel2Observations
 from .kaska import KaSKA
-from .kaska import define_temporal_grid
 
 Config = namedtuple(
     "Config", "s2_obs temporal_grid state_mask inverter output_folder"
@@ -194,7 +193,6 @@ def kaska_runner(
     """Runs a KaSKA problem for S2 producing parameter estimates between
     `start_date` and `end_date` with a temporal spacing `temporal_grid_space`.
 
-
     Parameters
     ----------
     start_date : datetime object
@@ -218,6 +216,8 @@ def kaska_runner(
         Allows the distribution of the processing using a dask distributed
         cluster. If this is None, then the processing is run tiled but
         sequentially.
+    block_size : int list[2], optional
+        The size of the tile to break the image into (in pixels).
 
     Returns
     -------
