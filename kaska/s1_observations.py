@@ -49,7 +49,7 @@ class Sentinel1Observations(object):
             "VV": "sigma0_vv_norm_multi_db",
             "VH": "sigma0_vh_norm_multi_db",
             "theta": "localIncidenceAngle"
-            }):
+        }):
         self.time_grid = time_grid
         self.state_mask = state_mask
         self.nc_file = Path(netCDF_file)

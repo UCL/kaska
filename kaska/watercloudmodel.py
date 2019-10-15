@@ -309,12 +309,12 @@ def cost_jac(x, svh, svv, theta, sigma=0.5):
             np.sum(dvv[0] * diff_vv),
             np.sum(dvv[1] * diff_vv),
             np.sum(dvv[2] * diff_vv),
-            # np.sum(dvv[3]*diff_vv), # Removed D parameter
+            #np.sum(dvv[3]*diff_vv), # Removed D parameter
             np.sum(dvh[0] * diff_vh),
             np.sum(dvh[1] * diff_vh),
             np.sum(dvh[2] * diff_vh)
         ]),
-        # np.sum(dvh[3]*diff_vh)]),# Removed D parameter
+        #np.sum(dvh[3]*diff_vh)]),# Removed D parameter
         dvv[-1] * diff_vv + dvh[-1] * diff_vh
     ])
     return -jac / sigma**2
@@ -376,12 +376,12 @@ def cost_hess(x, svh, svv, theta, sigma=0.5):
                 np.sum(dvv[0]),
                 np.sum(dvv[1]),
                 np.sum(dvv[2]),
-                # np.sum(dvv[3]*diff_vv), # Removed D parameter
+                #np.sum(dvv[3]*diff_vv), # Removed D parameter
                 np.sum(dvh[0]),
                 np.sum(dvh[1]),
                 np.sum(dvh[2])
             ]),
-            # np.sum(dvh[3]*diff_vh)]),# Removed D parameter
+            #np.sum(dvh[3]*diff_vh)]),# Removed D parameter
             dvv[-1] + dvh[-1]
         ])**2) / (sigma**2)
 
@@ -399,4 +399,4 @@ def cost_hess(x, svh, svv, theta, sigma=0.5):
     bot_rows = np.vstack([ABCS_vv, ABCS_vh, np.diag(SS_vv + SS_vh)])
     hessian_residual = np.hstack([top_rows_vv, top_rows_vh, bot_rows])
     cost_f_hessian = linear_hess_term - hessian_residual / sigma**2
-    return cost_f_hessian  # , linear_hess_term
+    return cost_f_hessian  #, linear_hess_term
