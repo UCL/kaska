@@ -3,7 +3,6 @@
 
 import logging
 
-
 from .version import __version__
 
 
@@ -28,9 +27,8 @@ def create_logger(debug=True, fname=None):
         logger.setLevel(logging.DEBUG)
     else:
         logger.setLevel(logging.INFO)
-    formatter = logging.Formatter(
-        "%(asctime)s - %(name)s -" " %(levelname)s - %(message)s"
-    )
+    formatter = logging.Formatter("%(asctime)s - %(name)s -"
+                                  " %(levelname)s - %(message)s")
 
     ch = logging.StreamHandler()
     if debug:
@@ -50,5 +48,5 @@ def create_logger(debug=True, fname=None):
         logger.addHandler(fh)
         logger.info(f"Logging to {fname:s}")
     logger.propagate = True
-    
+
     return logger
