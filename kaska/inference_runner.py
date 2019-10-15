@@ -21,9 +21,8 @@ from .utils import get_chunks, define_temporal_grid
 from .s2_observations import Sentinel2Observations
 from .kaska import KaSKA
 
-Config = namedtuple(
-    "Config", "s2_obs temporal_grid state_mask inverter output_folder"
-)
+Config = namedtuple("Config",
+                    "s2_obs temporal_grid state_mask inverter output_folder")
 
 LOG = logging.getLogger(__name__)
 
@@ -62,14 +61,10 @@ def stitch_outputs(output_folder, parameter_list):
         files = sorted([fich for fich in p.glob(f"*{parameter:s}_A*_0x*.tif")])
         dates = sorted(
             list(
-                set(
-                    [
-                        fich.stem.split(parameter)[1].split("_")[1]
-                        for fich in files
-                    ]
-                )
-            )
-        )
+                set([
+                    fich.stem.split(parameter)[1].split("_")[1]
+                    for fich in files
+                ])))
         fnames = []
         # Now for each data, stitch up all the chunks for that parameter
         for date in dates:
@@ -78,8 +73,7 @@ def stitch_outputs(output_folder, parameter_list):
                 fich.as_posix() for fich in files if fich.stem.find(date) >= 0
             ]
             dst_ds = gdal.BuildVRT(
-                (p / f"{parameter:s}_{date:s}.vrt").as_posix(), sel_files
-            )
+                (p / f"{parameter:s}_{date:s}.vrt").as_posix(), sel_files)
             fnames.append(dst_ds.GetDescription())
             dst_ds = None
 
@@ -104,7 +98,8 @@ def stitch_outputs(output_folder, parameter_list):
             ),
         )
         for band in range(1, dst_ds.RasterCount + 1):
-            dst_ds.GetRasterBand(band).SetMetadata({"DoY": dates[band - 1][1:]})
+            dst_ds.GetRasterBand(band).SetMetadata(
+                {"DoY": dates[band - 1][1:]})
         output_tiffs[parameter] = dst_ds.GetDescription()
         dst_ds = None
         g = gdal.Open((p / f"{parameter:s}.tif").as_posix(), gdal.GA_Update)
@@ -180,18 +175,16 @@ def process_tile(the_chunk, config):
         return parameter_names
 
 
-def kaska_runner(
-    start_date,
-    end_date,
-    temporal_grid_space,
-    state_mask,
-    s2_folder,
-    approx_inverter,
-    s2_emulator,
-    output_folder,
-    dask_client=None,
-    block_size= [256, 256]
-):
+def kaska_runner(start_date,
+                 end_date,
+                 temporal_grid_space,
+                 state_mask,
+                 s2_folder,
+                 approx_inverter,
+                 s2_emulator,
+                 output_folder,
+                 dask_client=None,
+                 block_size=[256, 256]):
     """Runs a KaSKA problem for S2 producing parameter estimates between
     `start_date` and `end_date` with a temporal spacing `temporal_grid_space`.
 
@@ -226,9 +219,8 @@ def kaska_runner(
     list
         A list of the processed parameters files.
     """
-    temporal_grid = define_temporal_grid(
-        start_date, end_date, temporal_grid_space
-    )
+    temporal_grid = define_temporal_grid(start_date, end_date,
+                                         temporal_grid_space)
     s2_obs = Sentinel2Observations(
         s2_folder,
         s2_emulator,
@@ -240,16 +232,16 @@ def kaska_runner(
     output_folder = Path(output_folder)
     output_folder.mkdir(parents=True, exist_ok=True)
     # "s2_obs temporal_grid state_mask inverter output_folder"
-    config = Config(
-        s2_obs, temporal_grid, state_mask, approx_inverter, output_folder
-    )
+    config = Config(s2_obs, temporal_grid, state_mask, approx_inverter,
+                    output_folder)
     # Avoid reading mask in memory in case we fill it up
     g = gdal.Open(state_mask)
     ny, nx = g.RasterYSize, g.RasterXSize
 
     # Do the splitting
-    them_chunks = [the_chunk for the_chunk in get_chunks(nx, ny,
-                                                         block_size=block_size)]
+    them_chunks = [
+        the_chunk for the_chunk in get_chunks(nx, ny, block_size=block_size)
+    ]
 
     wrapper = partial(process_tile, config=config)
     if dask_client is None:
