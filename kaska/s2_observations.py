@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 """Dealing with S2 observations"""
 
-
 import datetime as dt
 import logging
 from collections import namedtuple
@@ -18,28 +17,27 @@ gdal.UseExceptions()
 
 LOG = logging.getLogger(__name__)
 # A SIAC data storage type
-S2MSIdata = namedtuple(
-    "S2MSIdata", "time observations uncertainty mask metadata emulator"
-)
+S2MSIdata = namedtuple("S2MSIdata",
+                       "time observations uncertainty mask metadata emulator")
 
 
 class Sentinel2Observations(object):
-    def __init__(
-        self,
-        parent_folder,
-        emulator,
-        state_mask,
-        band_prob_threshold=20,
-        chunk=None,
-        time_grid=None
-    ):
+    def __init__(self,
+                 parent_folder,
+                 emulator,
+                 state_mask,
+                 band_prob_threshold=20,
+                 chunk=None,
+                 time_grid=None):
         self.band_prob_threshold = band_prob_threshold
         parent_folder = Path(parent_folder)
         if not parent_folder.exists():
             LOG.info(f"S2 data folder: {parent_folder}")
             raise IOError("S2 data folder doesn't exist")
-        self.band_map = ['B01', 'B02', 'B03', 'B04', 'B05', 'B06', 'B07',
-                        'B08', 'B8A', 'B09', 'B10','B11', 'B12']
+        self.band_map = [
+            'B01', 'B02', 'B03', 'B04', 'B05', 'B06', 'B07', 'B08', 'B8A',
+            'B09', 'B10', 'B11', 'B12'
+        ]
         # self.band_map = ['05', '08']
 
         self.parent = parent_folder
@@ -47,9 +45,8 @@ class Sentinel2Observations(object):
         self.state_mask = state_mask
 
         f = np.load(emulator, allow_pickle=True)
-        self.emulator = Two_NN(
-            Hidden_Layers=f.f.Hidden_Layers, Output_Layers=f.f.Output_Layers
-        )
+        self.emulator = Two_NN(Hidden_Layers=f.f.Hidden_Layers,
+                               Output_Layers=f.f.Output_Layers)
         LOG.debug("Read emulator in")
         LOG.debug("Searching for files....")
         self._find_granules(self.parent, time_grid)
@@ -125,45 +122,43 @@ class Sentinel2Observations(object):
         ]
         try:
             dates = [
-                    dt.datetime(*(list(map(int, f.parts[-5:-2]))))
-                    for f in test_files
-                ]
-        except ValueError:
-            dates = [
-                dt.datetime.strptime(
-                    f.parts[-1].split("_")[1], "%Y%m%dT%H%M%S"
-                )
+                dt.datetime(*(list(map(int, f.parts[-5:-2]))))
                 for f in test_files
             ]
+        except ValueError:
+            dates = [
+                dt.datetime.strptime(f.parts[-1].split("_")[1],
+                                     "%Y%m%dT%H%M%S") for f in test_files
+            ]
         # Sort dates by time, as currently S2A/S2B will be part of ordering
-        
+
         #test_files = sorted(test_files, key=lambda x:dates[test_files.index(x)])
         #dates = sorted(dates)
         if time_grid is not None:
             start_date = time_grid[0]
             end_date = time_grid[-1]
-            self.dates = [d.replace(hour=0, minute=0, second=0) for d in dates
-                            if (d >= start_date) and (d <= end_date)] 
-            test_files = [test_files[i] for i, d in enumerate(dates)
-                            if (d >= start_date) and (d <= end_date)]
+            self.dates = [
+                d.replace(hour=0, minute=0, second=0) for d in dates
+                if (d >= start_date) and (d <= end_date)
+            ]
+            test_files = [
+                test_files[i] for i, d in enumerate(dates)
+                if (d >= start_date) and (d <= end_date)
+            ]
         else:
-            self.dates = [x.replace(hour=0,minute=0, second=0) for x in dates]
+            self.dates = [x.replace(hour=0, minute=0, second=0) for x in dates]
         temp_dict = dict(zip(self.dates, [f.parent for f in test_files]))
         dates = sorted(self.dates)
-        self.date_data = {k:temp_dict[k] for k in dates}
+        self.date_data = {k: temp_dict[k] for k in dates}
         self.dates = dates
-        
+
         #self.date_data = dict(zip(self.dates, [f.parent for f in test_files]))
         self.bands_per_observation = {}
         LOG.info(f"Found {len(test_files):d} S2 granules")
-        LOG.info(
-            f"First granule: "
-            + f"{sorted(self.dates)[0].strftime('%Y-%m-%d'):s}"
-        )
-        LOG.info(
-            f"Last granule: "
-            + f"{sorted(self.dates)[-1].strftime('%Y-%m-%d'):s}"
-        )
+        LOG.info(f"First granule: " +
+                 f"{sorted(self.dates)[0].strftime('%Y-%m-%d'):s}")
+        LOG.info(f"Last granule: " +
+                 f"{sorted(self.dates)[-1].strftime('%Y-%m-%d'):s}")
 
         for the_date in self.dates:
             self.bands_per_observation[the_date] = len(self.band_map)
@@ -178,8 +173,7 @@ class Sentinel2Observations(object):
         start_time = min(time_grid)
         end_time = max(time_grid)
         obs_dates = [
-            date
-            for date in self.dates
+            date for date in self.dates
             if ((date >= start_time) & (date <= end_time))
         ]
         data = [self.read_granule(date) for date in obs_dates]
@@ -190,9 +184,8 @@ class Sentinel2Observations(object):
         mask = [x[1] for x in data if x[1] is not None]
         metadata = [[x[2], x[3], x[4]] for x in data if x[1] is not None]
         uncertainty = [x[5] for x in data if x[1] is not None]
-        s2_obs = S2MSIdata(
-            obs_dates, observations, uncertainty, mask, metadata, self.emulator
-        )
+        s2_obs = S2MSIdata(obs_dates, observations, uncertainty, mask,
+                           metadata, self.emulator)
         return s2_obs
 
     def read_granule(self, timestep):
@@ -204,10 +197,9 @@ class Sentinel2Observations(object):
             f.name.split("B02")[0] for f in current_folder.glob("*B02_sur.tif")
         ][0]
         cloud_mask = current_folder.parent / f"cloud.tif"
-        
-        cloud_mask = reproject_data(
-            str(cloud_mask), target_img=self.state_mask
-        ).ReadAsArray()
+
+        cloud_mask = reproject_data(str(cloud_mask),
+                                    target_img=self.state_mask).ReadAsArray()
         mask = cloud_mask <= self.band_prob_threshold
         if mask.sum() == 0:
             # No pixels! Pointless to carry on reading!
@@ -217,36 +209,39 @@ class Sentinel2Observations(object):
         rho_surface = []
         rho_unc = []
         for the_band in self.band_map:
-            original_s2_file = current_folder / (
-                f"{fname_prefix:s}" + f"{the_band:s}_sur.tif"
-            )
+            original_s2_file = current_folder / (f"{fname_prefix:s}" +
+                                                 f"{the_band:s}_sur.tif")
             LOG.debug(f"Original file {str(original_s2_file):s}")
-            rho = reproject_data(
-                str(original_s2_file), target_img=self.state_mask
-            ).ReadAsArray()
-            
+            rho = reproject_data(str(original_s2_file),
+                                 target_img=self.state_mask).ReadAsArray()
+
             rho_surface.append(rho)
-            original_s2_file = current_folder / (
-                f"{fname_prefix:s}" + f"{the_band:s}_sur_unc.tif"
-            )
+            original_s2_file = current_folder / (f"{fname_prefix:s}" +
+                                                 f"{the_band:s}_sur_unc.tif")
             LOG.debug(f"Uncertainty file {str(original_s2_file):s}")
-            unc = reproject_data(
-                str(original_s2_file), target_img=self.state_mask
-            ).ReadAsArray()
+            unc = reproject_data(str(original_s2_file),
+                                 target_img=self.state_mask).ReadAsArray()
             rho_unc.append(unc)
         # For reference...
         #bands = ['B01', 'B02', 'B03', 'B04', 'B05', 'B06', 'B07', 'B08',
         #         'B8A', 'B09', 'B10','B11', 'B12']
         # b_ind = np.array([1, 2, 3, 4, 5, 6, 7, 8])
-        
+
         rho_surface = np.array(rho_surface)
-        
-        
-        mask1 = np.all(rho_surface[[1, 2, 3, 4, 5, 6, 7, 8, ]] > 0,
-                       axis=0) & (~mask)
+
+        mask1 = np.all(rho_surface[[
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+        ]] > 0, axis=0) & (~mask)
         mask = ~mask1
         rho_surface = rho_surface / 10000.0
-        
+
         #mask = np.all(rho_surface > 0, axis=0) & (~mask)
 
         rho_unc = np.array(rho_unc) / 10000.0
@@ -258,9 +253,8 @@ class Sentinel2Observations(object):
             LOG.info(f"{str(timestep):s} -> No clear observations")
             return None, None, None, None, None, None
         LOG.info(
-            f"{str(timestep):s} -> Total of {mask.sum():d} clear pixels "
-            + f"({100.*mask.sum()/np.prod(mask.shape):f}%)"
-        )
+            f"{str(timestep):s} -> Total of {mask.sum():d} clear pixels " +
+            f"({100.*mask.sum()/np.prod(mask.shape):f}%)")
         # Now read angles
         sun_angles = reproject_data(
             str(current_folder.parent / "ANG_DATA/SAA_SZA.tif"),
@@ -287,7 +281,7 @@ class Sentinel2Observations(object):
 
 if __name__ == "__main__":
     time_grid = []
-    today = dt.datetime(2017,1,1)
+    today = dt.datetime(2017, 1, 1)
     while (today <= dt.datetime(2017, 12, 31)):
         time_grid.append(today)
         today += dt.timedelta(days=5)
@@ -298,7 +292,7 @@ if __name__ == "__main__":
         "/home/ucfajlg/Data/python/KaFKA_Validation/LMU/carto/ESU.tif",
         band_prob_threshold=20,
         chunk=None,
-        time_grid=time_grid
-    )
-    retval = s2_obs.read_time_series([dt.datetime(2017, 1, 1),
-                                      dt.datetime(2017,12,31)])
+        time_grid=time_grid)
+    retval = s2_obs.read_time_series(
+        [dt.datetime(2017, 1, 1),
+         dt.datetime(2017, 12, 31)])
