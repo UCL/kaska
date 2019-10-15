@@ -21,7 +21,6 @@ import numpy as np
 from numba import jit
 
 
-
 def wcm(x, theta=30.):
     """The Water Cloud Model for one polarisation. This function phrases 
     the WCM for a time series: We assume that the A, B, and C terms are
@@ -46,15 +45,15 @@ def wcm(x, theta=30.):
         [array] -- Backscatter
     """
     m = np.cos(np.deg2rad(theta))
-    n_obs = int((x.shape[0]-3)/3)
+    n_obs = int((x.shape[0] - 3) / 3)
     a, b, c = x[:3]
-    V1 = x[3:(3+n_obs)]
-    V2 = x[(3+n_obs):(3+2*n_obs)]
-    s = x[(3+2*n_obs):]
-    
-    tau = np.exp(-2*b*V2/m)
-    sigma_soil = tau*(c+s)
-    sigma_veg = a*V1*(1-tau)
+    V1 = x[3:(3 + n_obs)]
+    V2 = x[(3 + n_obs):(3 + 2 * n_obs)]
+    s = x[(3 + 2 * n_obs):]
+
+    tau = np.exp(-2 * b * V2 / m)
+    sigma_soil = tau * (c + s)
+    sigma_veg = a * V1 * (1 - tau)
     return sigma_soil + sigma_veg
 
 
@@ -71,23 +70,22 @@ def wcm_jac(x, theta=30.):
         [array] -- Backscatter"""
 
     m = np.cos(np.deg2rad(theta))
-    n_obs = int((x.shape[0]-3)/3)
+    n_obs = int((x.shape[0] - 3) / 3)
     a, b, c = x[:3]
-    V1 = x[3:(3+n_obs)]
-    V2 = x[(3+n_obs):(3+2*n_obs)]
-    s = x[(3+2*n_obs):]
-    tau = np.exp(-2*b*V2/m)
+    V1 = x[3:(3 + n_obs)]
+    V2 = x[(3 + n_obs):(3 + 2 * n_obs)]
+    s = x[(3 + 2 * n_obs):]
+    tau = np.exp(-2 * b * V2 / m)
 
-    der_dA = V1 - V1*tau
-    der_dV1 = a - a*tau
-    der_dB = (-2*V2/m)*tau*(-a*V1 + s)
-    der_dV2 = (-2*b/m)*tau*(-a*V1 + s)
+    der_dA = V1 - V1 * tau
+    der_dV1 = a - a * tau
+    der_dB = (-2 * V2 / m) * tau * (-a * V1 + s)
+    der_dV2 = (-2 * b / m) * tau * (-a * V1 + s)
     der_dC = tau
     der_dsigmasoil = tau
-    
+
     #return [der_dA, der_dB, der_dC, der_dV1, der_dV2, der_dsigmasoil]
     return [der_dA, der_dB, der_dC, der_dsigmasoil]
-
 
 
 def wcm_hess(x, theta=30.):
@@ -103,15 +101,15 @@ def wcm_hess(x, theta=30.):
         [array] -- Backscatter Hessian"""
     m = np.cos(np.deg2rad(theta))
     a, b, c = x[:3]
-    n_obs = int((x.shape[0]-3)/3)
-    
-    V1 = x[3:(3+n_obs)]
-    V2 = x[(3+n_obs):(3+2*n_obs)]
-    s = x[(3+2*n_obs):]
+    n_obs = int((x.shape[0] - 3) / 3)
 
-    tau         = np.exp(-2*b*V2/m)
-    d_tau       = -2*V2* tau / m * np.ones_like(s)
-    v1_d_tau    = -V1*d_tau
+    V1 = x[3:(3 + n_obs)]
+    V2 = x[(3 + n_obs):(3 + 2 * n_obs)]
+    s = x[(3 + 2 * n_obs):]
+
+    tau = np.exp(-2 * b * V2 / m)
+    d_tau = -2 * V2 * tau / m * np.ones_like(s)
+    v1_d_tau = -V1 * d_tau
     zero_vector = np.zeros_like(s)
 
     d_aa = zero_vector
@@ -120,10 +118,10 @@ def wcm_hess(x, theta=30.):
     d_as = zero_vector
 
     d_ba = v1_d_tau
-    d_bb = (4 * tau *V2*V2*(c + s - a*V1))/ m**2
+    d_bb = (4 * tau * V2 * V2 * (c + s - a * V1)) / m**2
     d_bc = d_tau
     d_bs = d_tau
- 
+
     d_ca = zero_vector
     d_cb = d_tau
     d_cc = zero_vector
@@ -133,18 +131,15 @@ def wcm_hess(x, theta=30.):
     d_sb = d_tau
     d_sc = zero_vector
     d_ss = zero_vector
-    
-#    hess = np.hstack([np.vstack([np.diag(d_aa), np.diag(d_ab), np.diag(d_ac), np.diag(d_as)]),
-#                      np.vstack([np.diag(d_ba), np.diag(d_bb), np.diag(d_bc), np.diag(d_bs)]),
-#                      np.vstack([np.diag(d_ca), np.diag(d_cb), np.diag(d_cc), np.diag(d_cs)]),
-#                      np.vstack([np.diag(d_sa), np.diag(d_sb), np.diag(d_sc), np.diag(d_ss)]),
-#                     ])
 
-    return (    d_aa, d_ab, d_ac, d_as,
-                d_ba, d_bb, d_bc, d_bs,
-                d_ca, d_cb, d_cc, d_cs,
-                d_sa, d_sb, d_sc, d_ss )
+    #    hess = np.hstack([np.vstack([np.diag(d_aa), np.diag(d_ab), np.diag(d_ac), np.diag(d_as)]),
+    #                      np.vstack([np.diag(d_ba), np.diag(d_bb), np.diag(d_bc), np.diag(d_bs)]),
+    #                      np.vstack([np.diag(d_ca), np.diag(d_cb), np.diag(d_cc), np.diag(d_cs)]),
+    #                      np.vstack([np.diag(d_sa), np.diag(d_sb), np.diag(d_sc), np.diag(d_ss)]),
+    #                     ])
 
+    return (d_aa, d_ab, d_ac, d_as, d_ba, d_bb, d_bc, d_bs, d_ca, d_cb, d_cc,
+            d_cs, d_sa, d_sb, d_sc, d_ss)
 
 
 def hessian_time_residual(hess_xx, diff_xx):
@@ -179,23 +174,23 @@ def hessian_time_residual(hess_xx, diff_xx):
     #            d_ca, d_cb, d_cc, d_cs,
     #            d_sa, d_sb, d_sc, d_ss )
     # First row
-    AA = np.sum(hess_xx[0] * diff_xx) # daa
-    AB = np.sum(hess_xx[1] * diff_xx) 
+    AA = np.sum(hess_xx[0] * diff_xx)  # daa
+    AB = np.sum(hess_xx[1] * diff_xx)
     AC = np.sum(hess_xx[2] * diff_xx)
-    AS =        hess_xx[3] * diff_xx
-#     ABCS = np.concatenate([np.array([AA, AB, AC]), AS])
+    AS = hess_xx[3] * diff_xx
+    #     ABCS = np.concatenate([np.array([AA, AB, AC]), AS])
     # Second row
     BA = np.sum(hess_xx[4] * diff_xx)
     BB = np.sum(hess_xx[5] * diff_xx)
     BC = np.sum(hess_xx[6] * diff_xx)
-    BS =        hess_xx[7] * diff_xx
-#     BACS = np.concatenate([np.array([BA, BB, BC]), BS])
+    BS = hess_xx[7] * diff_xx
+    #     BACS = np.concatenate([np.array([BA, BB, BC]), BS])
     # Third row
     CA = np.sum(hess_xx[8] * diff_xx)
     CB = np.sum(hess_xx[9] * diff_xx)
     CC = np.sum(hess_xx[10] * diff_xx)
-    CS =        hess_xx[11] * diff_xx
-#     CABS = np.concatenate([np.array([CA, CB, CC]), CS])
+    CS = hess_xx[11] * diff_xx
+    #     CABS = np.concatenate([np.array([CA, CB, CC]), CS])
     # All other rows
     SA = hess_xx[12] * diff_xx
     SB = hess_xx[13] * diff_xx
@@ -205,16 +200,15 @@ def hessian_time_residual(hess_xx, diff_xx):
     #SA = np.array([np.sum(hess_xx[0]*i) for i in hess_xx[15]])*diff_xx
     #SB = np.array([np.sum(hess_xx[5]*i) for i in hess_xx[15]])*diff_xx
     #SC = np.array([np.sum(hess_xx[10]*i) for i in hess_xx[15]])*diff_xx
-    
-    
-    
+
     # So the top left corner of the matrix is 3x3
     # and contains the correlatins between A, B and C:
-    
-    ABC_ABC = np.array([[AA, AB, AC],
-                        [BA, BB, BC],
-                        [CA, CB, CC],
-                       ])
+
+    ABC_ABC = np.array([
+        [AA, AB, AC],
+        [BA, BB, BC],
+        [CA, CB, CC],
+    ])
     # These are the AS, AB and AC contributions
     ABCS = np.array([SA, SB, SC])
     return ABC_ABC, ABCS, SS
@@ -247,11 +241,11 @@ def cost(x, svh, svv, theta, sigma=0.5):
     """
     a_vv, b_vv, c_vv = x[:3]
     a_vh, b_vh, c_vh = x[3:6]
-    n_obs = int((x.shape[0]-6)/3)
-    
-    V1 = x[6:(6+n_obs)]
-    V2 = x[(6+n_obs):(6+2*n_obs)]
-    s = x[(6+2*n_obs):]
+    n_obs = int((x.shape[0] - 6) / 3)
+
+    V1 = x[6:(6 + n_obs)]
+    V2 = x[(6 + n_obs):(6 + 2 * n_obs)]
+    s = x[(6 + 2 * n_obs):]
     x_vv = np.r_[a_vv, b_vv, c_vv, V1, V2, s]
     x_vh = np.r_[a_vh, b_vh, c_vh, V1, V2, s]
     #x_vv = np.array([a_vv, b_vv, c_vv, V1, V2, s])
@@ -259,12 +253,11 @@ def cost(x, svh, svv, theta, sigma=0.5):
 
     sigma_vv = wcm(x_vv, theta=theta)
     sigma_vh = wcm(x_vh, theta=theta)
-    diff_vv = (svv - sigma_vv) 
-    diff_vh = (svh - sigma_vh) 
-    cost = 0.5*(diff_vv**2 + diff_vh**2)/(sigma**2)
+    diff_vv = (svv - sigma_vv)
+    diff_vh = (svh - sigma_vh)
+    cost = 0.5 * (diff_vv**2 + diff_vh**2) / (sigma**2)
     cost0 = np.sum(cost)
     return cost0
-
 
 
 def cost_jac(x, svh, svv, theta, sigma=0.5):
@@ -295,33 +288,36 @@ def cost_jac(x, svh, svv, theta, sigma=0.5):
 
     a_vv, b_vv, c_vv = x[:3]
     a_vh, b_vh, c_vh = x[3:6]
-    n_obs = int((x.shape[0]-6)/3)
-    
-    V1 = x[6:(6+n_obs)]
-    V2 = x[(6+n_obs):(6+2*n_obs)]
-    s = x[(6+2*n_obs):]
+    n_obs = int((x.shape[0] - 6) / 3)
+
+    V1 = x[6:(6 + n_obs)]
+    V2 = x[(6 + n_obs):(6 + 2 * n_obs)]
+    s = x[(6 + 2 * n_obs):]
     x_vv = np.r_[a_vv, b_vv, c_vv, V1, V2, s]
     x_vh = np.r_[a_vh, b_vh, c_vh, V1, V2, s]
     #x_vv = np.array([a_vv, b_vv, c_vv, V1, V2, s])
     #x_vh = np.array([a_vh, b_vh, c_vh, V1, V2, s])
     sigma_vv = wcm(x_vv, theta=theta)
     sigma_vh = wcm(x_vh, theta=theta)
-    diff_vv = (svv - sigma_vv) 
-    diff_vh = (svh - sigma_vh) 
+    diff_vv = (svv - sigma_vv)
+    diff_vh = (svh - sigma_vh)
     dvv = wcm_jac(x_vv, theta=theta)
     dvh = wcm_jac(x_vh, theta=theta)
-    
-    jac = np.concatenate([np.array([np.sum(dvv[0]*diff_vv), 
-                             np.sum(dvv[1]*diff_vv), 
-                             np.sum(dvv[2]*diff_vv), 
-                             #np.sum(dvv[3]*diff_vv), # Removed D parameter
-                             np.sum(dvh[0]*diff_vh), 
-                             np.sum(dvh[1]*diff_vh),
-                             np.sum(dvh[2]*diff_vh)]), 
-                             #np.sum(dvh[3]*diff_vh)]),# Removed D parameter
-                             dvv[-1]*diff_vv + dvh[-1]*diff_vh])
-    return -jac/sigma**2
 
+    jac = np.concatenate([
+        np.array([
+            np.sum(dvv[0] * diff_vv),
+            np.sum(dvv[1] * diff_vv),
+            np.sum(dvv[2] * diff_vv),
+            #np.sum(dvv[3]*diff_vv), # Removed D parameter
+            np.sum(dvh[0] * diff_vh),
+            np.sum(dvh[1] * diff_vh),
+            np.sum(dvh[2] * diff_vh)
+        ]),
+        #np.sum(dvh[3]*diff_vh)]),# Removed D parameter
+        dvv[-1] * diff_vv + dvh[-1] * diff_vh
+    ])
+    return -jac / sigma**2
 
 
 def cost_hess(x, svh, svv, theta, sigma=0.5):
@@ -351,11 +347,11 @@ def cost_hess(x, svh, svv, theta, sigma=0.5):
     """
     a_vv, b_vv, c_vv = x[:3]
     a_vh, b_vh, c_vh = x[3:6]
-    n_obs = int((x.shape[0]-6)/3)
-    
-    V1 = x[6:(6+n_obs)]
-    V2 = x[(6+n_obs):(6+2*n_obs)]
-    s = x[(6+2*n_obs):]
+    n_obs = int((x.shape[0] - 6) / 3)
+
+    V1 = x[6:(6 + n_obs)]
+    V2 = x[(6 + n_obs):(6 + 2 * n_obs)]
+    s = x[(6 + 2 * n_obs):]
     x_vv = np.r_[a_vv, b_vv, c_vv, V1, V2, s]
     x_vh = np.r_[a_vh, b_vh, c_vh, V1, V2, s]
     #x_vv = np.array([a_vv, b_vv, c_vv, V1, V2, s])
@@ -363,9 +359,9 @@ def cost_hess(x, svh, svv, theta, sigma=0.5):
 
     sigma_vv = wcm(x_vv, theta=theta)
     sigma_vh = wcm(x_vh, theta=theta)
-    
-    diff_vv = (svv - sigma_vv) 
-    diff_vh = (svh - sigma_vh) 
+
+    diff_vv = (svv - sigma_vv)
+    diff_vh = (svh - sigma_vh)
 
     dvv = wcm_jac(x_vv, theta=theta)
     dvh = wcm_jac(x_vh, theta=theta)
@@ -374,16 +370,21 @@ def cost_hess(x, svh, svv, theta, sigma=0.5):
     # The hessian contribution to the cost function is given by
     # H'C_{obs}H'^{T} - H''C_{obs}(H(x)-y)
     # since C_obs is diagonal, the first term is diagonal
-    linear_hess_term =  np.diag(np.concatenate([np.array([np.sum(dvv[0]), 
-                             np.sum(dvv[1]), 
-                             np.sum(dvv[2]), 
-                             #np.sum(dvv[3]*diff_vv), # Removed D parameter
-                             np.sum(dvh[0]), 
-                             np.sum(dvh[1]),
-                             np.sum(dvh[2])]), 
-                             #np.sum(dvh[3]*diff_vh)]),# Removed D parameter
-                             dvv[-1] + dvh[-1]])**2)/(sigma**2)
-    
+    linear_hess_term = np.diag(
+        np.concatenate([
+            np.array([
+                np.sum(dvv[0]),
+                np.sum(dvv[1]),
+                np.sum(dvv[2]),
+                #np.sum(dvv[3]*diff_vv), # Removed D parameter
+                np.sum(dvh[0]),
+                np.sum(dvh[1]),
+                np.sum(dvh[2])
+            ]),
+            #np.sum(dvh[3]*diff_vh)]),# Removed D parameter
+            dvv[-1] + dvh[-1]
+        ])**2) / (sigma**2)
+
     ABC_ABC_vv, ABCS_vv, SS_vv = hessian_time_residual(hess_vv, diff_vv)
     #top_rows = np.vstack([ABC_ABC, ABCS.T])
     #bot_rows = np.vstack([ABCS, np.diag(SS)])
@@ -393,9 +394,9 @@ def cost_hess(x, svh, svv, theta, sigma=0.5):
     #top_rows = np.vstack([ABC_ABC, ABCS.T])
     #bot_rows = np.vstack([ABCS, np.diag(SS)])
     #hessian_res_vh  = np.hstack([top_rows, bot_rows])
-    top_rows_vv = np.vstack([ABC_ABC_vv, np.zeros_like(ABC_ABC_vv), ABCS_vv.T ])
-    top_rows_vh = np.vstack([np.zeros_like(ABC_ABC_vh), ABC_ABC_vh,  ABCS_vh.T ])
+    top_rows_vv = np.vstack([ABC_ABC_vv, np.zeros_like(ABC_ABC_vv), ABCS_vv.T])
+    top_rows_vh = np.vstack([np.zeros_like(ABC_ABC_vh), ABC_ABC_vh, ABCS_vh.T])
     bot_rows = np.vstack([ABCS_vv, ABCS_vh, np.diag(SS_vv + SS_vh)])
     hessian_residual = np.hstack([top_rows_vv, top_rows_vh, bot_rows])
-    cost_f_hessian = linear_hess_term - hessian_residual/sigma**2
-    return  cost_f_hessian#, linear_hess_term
+    cost_f_hessian = linear_hess_term - hessian_residual / sigma**2
+    return cost_f_hessian  #, linear_hess_term
