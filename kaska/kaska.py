@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 """Main module."""
 import logging
 
@@ -19,13 +18,18 @@ from .smoothn import smoothn
 from .utils import save_output_parameters
 
 LOG = logging.getLogger(__name__)
-            
+
+
 class KaSKA(object):
     """The main KaSKA object"""
 
-    def __init__(self, observations, time_grid, state_mask, approx_inverter,
-                output_folder,
-                chunk = None):
+    def __init__(self,
+                 observations,
+                 time_grid,
+                 state_mask,
+                 approx_inverter,
+                 output_folder,
+                 chunk=None):
         self.time_grid = time_grid
         self.observations = observations
         self.state_mask = state_mask
@@ -42,7 +46,8 @@ class KaSKA(object):
         LOG.info("Doing first pass inversion!")
         S = {}
         for k in self.observations.dates:
-            retval = self.inverter.invert_observations(self.observations, k,
+            retval = self.inverter.invert_observations(self.observations,
+                                                       k,
                                                        state_mask=state_mask)
             if retval is not None:
                 S[k] = retval
@@ -66,7 +71,7 @@ class KaSKA(object):
         param_grid = np.zeros((n_params, len(dates), nx, ny))
         for i, k in enumerate(dates):
             for j in range(n_params):
-                    param_grid[j, i, :, :] = first_passer_dict[k][j]
+                param_grid[j, i, :, :] = first_passer_dict[k][j]
         # param_grid = np.zeros((n_params, len(self.time_grid), nx, ny))
         # idx = np.argmin(np.abs(self.time_grid -
         #                 np.array(dates)[:, None]), axis=1)
@@ -108,7 +113,7 @@ class KaSKA(object):
         # transformation function, as well as boundaries, which could be
         # associated with the NN
         lai = -2 * np.log(parameter_block[-2, :, :, :])
-        cab = -100*np.log(parameter_block[1, :, :, :])
+        cab = -100 * np.log(parameter_block[1, :, :, :])
         cbrown = parameter_block[2, :, :, :]
         # Basically, remove weird values outside of boundaries, nans and stuff
         # Could be done simply with the previously stated data structure, as
@@ -128,11 +133,14 @@ class KaSKA(object):
         # Linear 3D stack interpolator. Assuming dimension 0 is time. Note use
         # of fill_value to indicate missing data (0)
         LOG.info("Smoothing LAI...")
-        f = interp1d(doys, lai, axis=0, bounds_error=False,
-                     fill_value=0)
+        f = interp1d(doys, lai, axis=0, bounds_error=False, fill_value=0)
         laii = f(doy_grid)
-        slai = smoothn(np.array(laii), W=2*np.array(laii), isrobust=True, s=1.5,
-                       TolZ=1e-6, axis=0)[0]
+        slai = smoothn(np.array(laii),
+                       W=2 * np.array(laii),
+                       isrobust=True,
+                       s=1.5,
+                       TolZ=1e-6,
+                       axis=0)[0]
         slai[slai < 0] = 0
         # The last bit is to fix LAI to 0
         # going forward, use LAI as weighting to try to dampen flappiness in
@@ -140,13 +148,21 @@ class KaSKA(object):
         LOG.info("Smoothing Cab...")
         f = interp1d(doys, cab, axis=0, bounds_error=False)
         cabi = f(doy_grid)
-        scab = smoothn(np.array(cabi), W=slai, isrobust=True, s=1,
-                        TolZ=1e-6, axis=0)[0]
+        scab = smoothn(np.array(cabi),
+                       W=slai,
+                       isrobust=True,
+                       s=1,
+                       TolZ=1e-6,
+                       axis=0)[0]
         LOG.info("Smoothing Cbrown...")
-        f = interp1d(doys, cbrown, axis=0, bounds_error=False)                                        
+        f = interp1d(doys, cbrown, axis=0, bounds_error=False)
         cbrowni = f(doy_grid)
-        scbrown = smoothn(np.array(cbrowni) * slai, W=slai, isrobust=True, s=1,
-                    TolZ=1e-6, axis=0)[0] / slai
+        scbrown = smoothn(np.array(cbrowni) * slai,
+                          W=slai,
+                          isrobust=True,
+                          s=1,
+                          TolZ=1e-6,
+                          axis=0)[0] / slai
         # Could also set them to nan
         LOG.info("Done smoothing...")
         slai[:, mask] = 0
@@ -154,11 +170,15 @@ class KaSKA(object):
         scbrown[:, mask] = 0
         return (["lai", "cab", "cbrown"], [slai, scab, scbrown])
 
-    def save_s2_output(self, parameter_names, output_data,
+    def save_s2_output(self,
+                       parameter_names,
+                       output_data,
                        output_format="GTiff"):
-        
-        save_output_parameters(self.time_grid, self.observations,
+
+        save_output_parameters(self.time_grid,
+                               self.observations,
                                self.output_folder,
-                               parameter_names, output_data,
+                               parameter_names,
+                               output_data,
                                output_format=output_format,
                                chunk=self.chunk)
