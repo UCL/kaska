@@ -76,7 +76,7 @@ if __name__ == "__main__":
     Avh, Bvh, Cvh = -14, 0.01, 0.1
     sigma_soil0 = np.zeros(n_sar_obs) * 0.2  # Say
     x0_all = np.r_[Avv, Bvv, Cvv, Avh, Bvh, Cvh,
-                   sigma_soil0]  #, V1, V2, sigma_soil]
+                   sigma_soil0]  # , V1, V2, sigma_soil]
     nt, ny, nx = lai_s1.shape
     Avv_out = np.zeros((ny, nx))
     Bvv_out = np.zeros((ny, nx))

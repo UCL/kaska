@@ -14,8 +14,9 @@ def H(y, t0=0):
     h = np.zeros_like(y)
     args = tuple([slice(0, y.shape[i]) for i in y.ndim])
 
-def smoothn(y,nS0=10,axis=None,smoothOrder=2.0,sd=None,verbose=False,\
- s0=None,z0=None,isrobust=False,W=None,s=None,MaxIter=100,TolZ=1e-3,weightstr='bisquare'):
+def smoothn(y, nS0=10, axis=None, smoothOrder=2.0, sd=None, verbose=False, \
+    s0=None, z0=None, isrobust=False, W=None, s=None, \
+    MaxIter=100, TolZ=1e-3, weightstr='bisquare'):
     '''
    function [z,s,exitflag,Wtot] = smoothn(varargin)
 
@@ -175,29 +176,29 @@ def smoothn(y,nS0=10,axis=None,smoothOrder=2.0,sd=None,verbose=False,\
         mask = y.mask
         y = np.array(y)
         y[mask] = 0.
-        if np.any(W != None):
+        if np.any(W is not None):
             W = np.array(W)
             W[mask] = 0.
-        if np.any(sd != None):
+        if np.any(sd is not None):
             W = np.array(1. / sd**2)
             W[mask] = 0.
             sd = None
         y[mask] = np.nan
 
-    if np.any(sd != None):
+    if np.any(sd is not None):
         sd_ = np.array(sd)
         mask = (sd > 0.)
         W = np.zeros_like(sd_)
         W[mask] = 1. / sd_[mask]**2
         sd = None
 
-    if np.any(W != None):
+    if np.any(W is not None):
         W = W / W.max()
 
     sizy = y.shape
 
     # sort axis
-    if axis == None:
+    if axis is None:
         axis = tuple(np.arange(y.ndim))
 
     noe = y.size  # number of elements
@@ -208,50 +209,50 @@ def smoothn(y,nS0=10,axis=None,smoothOrder=2.0,sd=None,verbose=False,\
         return z, s, exitflag, Wtot
     #---
     # Smoothness parameter and weights
-    #if s != None:
-    #  s = []
-    if np.all(W == None):
+    # if s is not None:
+    #   s = []
+    if np.all(W is None):
         W = ones(sizy)
 
-    #if z0 == None:
-    #  z0 = y.copy()
+    # if z0 == None:
+    #   z0 = y.copy()
 
-    #---
+    # ---
     # "Weighting function" criterion
     weightstr = weightstr.lower()
-    #---
+    # ---
     # Weights. Zero weights are assigned to not finite values (Inf or NaN),
     # (Inf/NaN values = missing data).
     IsFinite = np.array(isfinite(y)).astype(bool)
     nof = IsFinite.sum()  # number of finite elements
     W = W * IsFinite
     if any(W < 0):
-        raise RuntimeError('smoothn:NegativeWeights',\
+        raise RuntimeError('smoothn:NegativeWeights',
             'Weights must all be >=0')
     else:
-        #W = W/np.max(W)
+        # W = W/np.max(W)
         pass
-    #---
+    # ---
     # Weighted or missing data?
     isweighted = any(W != 1)
-    #---
+    # ---
     # Robust smoothing?
-    #isrobust
-    #---
-    # Automatic smoothing?
+    # isrobust
+    # ---
+    #  Automatic smoothing?
     isauto = not s
-    #---
+    # ---
     # DCTN and IDCTN are required
     try:
         from scipy.fftpack.realtransforms import dct, idct
-    except:
+    except ImportError:
         z = y
         exitflag = -1
         Wtot = 0
         return z, s, exitflag, Wtot
 
-    ## Creation of the Lambda tensor
-    #---
+    # # Creation of the Lambda tensor
+    # ---
     # Lambda contains the eingenvalues of the difference matrix used in this
     # penalized least squares process.
     axis = tuple(np.array(axis).flatten())
@@ -265,13 +266,13 @@ def smoothn(y,nS0=10,axis=None,smoothOrder=2.0,sd=None,verbose=False,\
         # (arange(1,sizy[i]+1).reshape(siz0) - 1.)/sizy[i]
         Lambda = Lambda + (cos(
             pi * (arange(1, sizy[i] + 1) - 1.) / sizy[i]).reshape(siz0))
-        #else:
+        # else:
         #  Lambda = Lambda + siz0
     Lambda = -2. * (len(axis) - Lambda)
     if not isauto:
         Gamma = 1. / (1 + (s * abs(Lambda))**smoothOrder)
 
-    ## Upper and lower bound for the smoothness parameter
+    # # Upper and lower bound for the smoothness parameter
     # The average leverage (h) is by definition in [0 1]. Weak smoothing occurs
     # if h is close to 1, while over-smoothing appears when h is near 0. Upper
     # and lower bounds for h are given to avoid under- or over-smoothing. See
@@ -292,71 +293,71 @@ def smoothn(y,nS0=10,axis=None,smoothOrder=2.0,sd=None,verbose=False,\
         sMaxBnd = np.sqrt(((
             (1 + sqrt(1 + 8 * hMin**(2. / N))) / 4. / hMin**(2. / N))**2 - 1) /
                           16.)
-    except:
+    except ValueError:
         sMinBnd = None
         sMaxBnd = None
-    ## Initialize before iterating
+    # # Initialize before iterating
     #---
     Wtot = W
-    #--- Initial conditions for z
+    # --- Initial conditions for z
     if isweighted:
-        #--- With weighted/missing data
+        # --- With weighted/missing data
         # An initial guess is provided to ensure faster convergence. For that
         # purpose, a nearest neighbor interpolation followed by a coarse
         # smoothing are performed.
-        #---
-        if z0 != None:  # an initial guess (z0) has been provided
+        # ---
+        if z0 is not None:  # an initial guess (z0) has been provided
             z = z0
         else:
-            z = y  #InitialGuess(y,IsFinite);
+            z = y  # InitialGuess(y,IsFinite);
             z[~IsFinite] = 0.
     else:
         z = zeros(sizy)
-    #---
+    # ---
     z0 = z
     y[~IsFinite] = 0
     # arbitrary values for missing y-data
-    #---
+    # ---
     tol = 1.
     RobustIterativeProcess = True
     RobustStep = 1
     nit = 0
-    #--- Error on p. Smoothness parameter s = 10^p
+    # --- Error on p. Smoothness parameter s = 10^p
     errp = 0.1
-    #opt = optimset('TolX',errp);
-    #--- Relaxation factor RF: to speedup convergence
+    # opt = optimset('TolX',errp);
+    # --- Relaxation factor RF: to speedup convergence
     RF = 1 + 0.75 * isweighted
     # ??
-    ## Main iterative process
-    #---
+    # # Main iterative process
+    # ---
     if isauto:
         try:
             xpost = array([(0.9 * log10(sMinBnd) + log10(sMaxBnd) * 0.1)])
-        except:
+        except ValueError:
             array([100.])
     else:
         xpost = array([log10(s)])
     while RobustIterativeProcess:
-        #--- "amount" of weights (see the function GCVscore)
+        # --- "amount" of weights (see the function GCVscore)
         aow = sum(Wtot) / noe
         # 0 < aow <= 1
-        #---
+        # ---
         while tol > TolZ and nit < MaxIter:
             if verbose:
                 print('tol', tol, 'nit', nit)
             nit = nit + 1
             DCTy = dctND(Wtot * (y - z) + z, f=dct)
             if isauto and not remainder(log2(nit), 1):
-                #---
+                # ---
                 # The generalized cross-validation (GCV) method is used.
                 # We seek the smoothing parameter s that minimizes the GCV
                 # score i.e. s = Argmin(GCVscore).
                 # Because this process is time-consuming, it is performed from
                 # time to time (when nit is a power of 2)
-                #---
+                # ---
                 # errp in here somewhere
 
-                #xpost,f,d = lbfgsb.fmin_l_bfgs_b(gcv,xpost,fprime=None,factr=10.,\
+                # xpost,f,d = lbfgsb.fmin_l_bfgs_b(gcv,xpost,fprime=None,factr=10.,\
                 #   approx_grad=True,bounds=[(log10(sMinBnd),log10(sMaxBnd))],\
                 #   args=(Lambda,aow,DCTy,IsFinite,Wtot,y,nof,noe))
 
@@ -370,16 +371,17 @@ def smoothn(y,nS0=10,axis=None,smoothOrder=2.0,sd=None,verbose=False,\
                     for i, p in enumerate(ss):
                         g[i] = gcv(p, Lambda, aow, DCTy, IsFinite, Wtot, y,
                                    nof, noe, smoothOrder)
-                        #print 10**p,g[i]
+                        # print 10**p,g[i]
                     xpost = [ss[g == g.min()]]
-                    #print '==============='
-                    #print nit,tol,g.min(),xpost[0],s
-                    #print '==============='
+                    # print '==============='
+                    # print nit,tol,g.min(),xpost[0],s
+                    # print '==============='
                 else:
                     xpost = [s0]
-                xpost,f,d = lbfgsb.fmin_l_bfgs_b(gcv,xpost,fprime=None,factr=1e7,\
-                   approx_grad=True,bounds=[(log10(sMinBnd),log10(sMaxBnd))],\
-                   args=(Lambda,aow,DCTy,IsFinite,Wtot,y,nof,noe,smoothOrder))
+                xpost, f, d = lbfgsb.fmin_l_bfgs_b(gcv, xpost, fprime=None, \
+                                factr=1e7, approx_grad=False,
+                                bounds=[(log10(sMinBnd), log10(sMaxBnd))], \
+                   args=(Lambda, aow, DCTy, IsFinite, Wtot, y, nof, noe, smoothOrder))
             s = 10**xpost[0]
             # update the value we use for the initial s estimate
             s0 = xpost[0]
@@ -394,18 +396,18 @@ def smoothn(y,nS0=10,axis=None,smoothOrder=2.0,sd=None,verbose=False,\
             # re-initialization
         exitflag = nit < MaxIter
 
-        if isrobust:  #-- Robust Smoothing: iteratively re-weighted process
-            #--- average leverage
+        if isrobust:  # -- Robust Smoothing: iteratively re-weighted process
+            # --- average leverage
             h = sqrt(1 + 16. * s)
             h = sqrt(1 + h) / sqrt(2) / h
             h = h**N
-            #--- take robust weights into account
+            # --- take robust weights into account
             Wtot = W * RobustWeights(y - z, IsFinite, h, weightstr)
-            #--- re-initialize for another iterative weighted process
+            # --- re-initialize for another iterative weighted process
             isweighted = True
             tol = 1
             nit = 0
-            #---
+            # ---
             RobustStep = RobustStep + 1
             RobustIterativeProcess = RobustStep < 3
             # 3 robust steps are enough.
@@ -413,15 +415,15 @@ def smoothn(y,nS0=10,axis=None,smoothOrder=2.0,sd=None,verbose=False,\
             RobustIterativeProcess = False
             # stop the whole process
 
-    ## Warning messages
-    #---
+    # # Warning messages
+    # ---
     if isauto:
         if abs(log10(s) - log10(sMinBnd)) < errp:
-            warning('MATLAB:smoothn:SLowerBound',\
-                ['s = %.3f '%(s) + ': the lower bound for s '\
+            warning('MATLAB:smoothn:SLowerBound',
+                ['s = %.3f '%(s) + ': the lower bound for s '
                 + 'has been reached. Put s as an input variable if required.'])
         elif abs(log10(s) - log10(sMaxBnd)) < errp:
-            warning('MATLAB:smoothn:SUpperBound',\
+            warning('MATLAB:smoothn:SUpperBound',
                 ['s = %.3f '%(s) + ': the upper bound for s '\
                 + 'has been reached. Put s as an input variable if required.'])
         #warning('MATLAB:smoothn:MaxIter',\
@@ -482,15 +484,15 @@ def RobustWeights(r, I, h, wstr):
     return W
 
 
-## Initial Guess with weighted/missing data
-#function z = InitialGuess(y,I)
+# # Initial Guess with weighted/missing data
+# function z = InitialGuess(y,I)
 def InitialGuess(y, I):
-    #-- nearest neighbor interpolation (in case of missing values)
+    # -- nearest neighbor interpolation (in case of missing values)
     if any(~I):
         try:
             from scipy.ndimage.morphology import distance_transform_edt
-            #if license('test','image_toolbox')
-            #[z,L] = bwdist(I);
+            # if license('test','image_toolbox')
+            # [z,L] = bwdist(I);
             L = distance_transform_edt(1 - I)
             z = y
             z[~I] = y[L[~I]]
@@ -534,14 +536,14 @@ def dctND(data, f=dct):
     elif nd == 2:
         return f(f(data, norm='ortho', type=2).T, norm='ortho', type=2).T
     elif nd == 3:
-        return f(f(f(data,norm='ortho',type=2,axis=0)\
-                         ,norm='ortho',type=2,axis=1)\
-                         ,norm='ortho',type=2,axis=2)
+        return f(f(f(data, norm='ortho', type=2, axis=0),
+                         norm='ortho', type=2, axis=1),
+                         norm='ortho', type=2, axis=2)
     elif nd == 4:
-        return f(f(f(f(data,norm='ortho',type=2,axis=0)\
-                           ,norm='ortho',type=2,axis=1)\
-                           ,norm='ortho',type=2,axis=2)\
-                           ,norm='ortho',type=2,axis=3)
+        return f(f(f(f(data, norm='ortho', type=2, axis=0),
+                           norm='ortho', type=2, axis=1),
+                           norm='ortho', type=2, axis=2),
+                           norm='ortho', type=2, axis=3)
 
 
 def peaks(n):
@@ -559,7 +561,7 @@ def peaks(n):
         c = random() * 2 - 1.
         f = exp(-((x - x0) / sdx)**2 - ((y - y0) / sdy)**2 -
                 (((x - x0) / sdx)) * ((y - y0) / sdy) * c)
-        #f /= f.sum()
+        # f /= f.sum()
         f *= random()
         z += f
     return z

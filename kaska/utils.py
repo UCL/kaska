@@ -155,7 +155,8 @@ def save_output_parameters(
     output_data,
     output_format="GTiff",
     chunk=None,
-    options=['COMPRESS=DEFLATE', 'BIGTIFF=YES', 'PREDICTOR=1', 'TILED=YES']):
+    options=['COMPRESS=DEFLATE', 'BIGTIFF=YES', 'PREDICTOR=1', 'TILED=YES']
+        ):
     """Saving the output parameters as (probably all times) GeoTIFFs
     """
     output_folder = Path(output_folder)
