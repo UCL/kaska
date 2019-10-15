@@ -14,8 +14,10 @@ def H(y, t0=0):
     h = np.zeros_like(y)
     args = tuple([slice(0, y.shape[i]) for i in y.ndim])
 
-def smoothn(y,nS0=10,axis=None,smoothOrder=2.0,sd=None,verbose=False,\
- s0=None,z0=None,isrobust=False,W=None,s=None,MaxIter=100,TolZ=1e-3,weightstr='bisquare'):
+
+def smoothn(y,nS0=10,axis=None,smoothOrder=2.0,sd=None,verbose=False,
+            s0=None,z0=None,isrobust=False,W=None,s=None,MaxIter=100,
+            TolZ=1e-3,weightstr='bisquare'):
     '''
    function [z,s,exitflag,Wtot] = smoothn(varargin)
 
@@ -227,7 +229,7 @@ def smoothn(y,nS0=10,axis=None,smoothOrder=2.0,sd=None,verbose=False,\
     W = W * IsFinite
     if any(W < 0):
         raise RuntimeError('smoothn:NegativeWeights',\
-            'Weights must all be >=0')
+                           'Weights must all be >=0')
     else:
         #W = W/np.max(W)
         pass
@@ -377,9 +379,11 @@ def smoothn(y,nS0=10,axis=None,smoothOrder=2.0,sd=None,verbose=False,\
                     #print '==============='
                 else:
                     xpost = [s0]
-                xpost,f,d = lbfgsb.fmin_l_bfgs_b(gcv,xpost,fprime=None,factr=1e7,\
-                   approx_grad=True,bounds=[(log10(sMinBnd),log10(sMaxBnd))],\
-                   args=(Lambda,aow,DCTy,IsFinite,Wtot,y,nof,noe,smoothOrder))
+                xpost,f,d = lbfgsb.fmin_l_bfgs_b(gcv,xpost,fprime=None,
+                                                 factr=1e7,approx_grad=True,
+                                                 bounds=[(log10(sMinBnd),log10(sMaxBnd))],
+                                                 args=(Lambda,aow,DCTy,IsFinite,Wtot,
+                                                       y,nof,noe,smoothOrder))
             s = 10**xpost[0]
             # update the value we use for the initial s estimate
             s0 = xpost[0]
@@ -417,13 +421,13 @@ def smoothn(y,nS0=10,axis=None,smoothOrder=2.0,sd=None,verbose=False,\
     #---
     if isauto:
         if abs(log10(s) - log10(sMinBnd)) < errp:
-            warning('MATLAB:smoothn:SLowerBound',\
-                ['s = %.3f '%(s) + ': the lower bound for s '\
-                + 'has been reached. Put s as an input variable if required.'])
+            warning('MATLAB:smoothn:SLowerBound',
+                    ['s = %.3f '%(s) + ': the lower bound for s '
+                     + 'has been reached. Put s as an input variable if required.'])
         elif abs(log10(s) - log10(sMaxBnd)) < errp:
-            warning('MATLAB:smoothn:SUpperBound',\
-                ['s = %.3f '%(s) + ': the upper bound for s '\
-                + 'has been reached. Put s as an input variable if required.'])
+            warning('MATLAB:smoothn:SUpperBound',
+                    ['s = %.3f '%(s) + ': the upper bound for s '
+                     + 'has been reached. Put s as an input variable if required.'])
         #warning('MATLAB:smoothn:MaxIter',\
         #    ['Maximum number of iterations (%d'%(MaxIter) + ') has '\
         #    + 'been exceeded. Increase MaxIter option or decrease TolZ value.'])
@@ -534,14 +538,14 @@ def dctND(data, f=dct):
     elif nd == 2:
         return f(f(data, norm='ortho', type=2).T, norm='ortho', type=2).T
     elif nd == 3:
-        return f(f(f(data,norm='ortho',type=2,axis=0)\
-                         ,norm='ortho',type=2,axis=1)\
-                         ,norm='ortho',type=2,axis=2)
+        return f(f(f(data,norm='ortho',type=2,axis=0),
+                            norm='ortho',type=2,axis=1),
+                            norm='ortho',type=2,axis=2)
     elif nd == 4:
-        return f(f(f(f(data,norm='ortho',type=2,axis=0)\
-                           ,norm='ortho',type=2,axis=1)\
-                           ,norm='ortho',type=2,axis=2)\
-                           ,norm='ortho',type=2,axis=3)
+        return f(f(f(f(data,norm='ortho',type=2,axis=0),
+                           norm='ortho',type=2,axis=1),
+                           norm='ortho',type=2,axis=2),
+                           norm='ortho',type=2,axis=3)
 
 
 def peaks(n):
