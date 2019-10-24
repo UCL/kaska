@@ -6,6 +6,8 @@ import datetime as dt
 import logging
 from collections import namedtuple
 from pathlib import Path
+import xml.etree.ElementTree as ET
+from concurrent.futures import ThreadPoolExecutor
 
 import gdal
 import numpy as np
@@ -143,42 +145,23 @@ class Sentinel2Observations(object):
         """Finds granules within the given time grid if given.
         Currently does so by checking for Feng's AOT file.
         """
+        folders = sorted([x for f in self.parent.iterdir()
+                          for x in f.rglob("*.SAFE")
+                          if x.name.find("MSIL1C") >= 0])
 
-        # Get list of files. This is needed to follow symlinks.
-        test_files = [
-            x for f in self.parent.iterdir() for x in f.rglob("**/*_aot.tif")
-        ]
-        # Fish out dates from file names.
-        try:
-            dates = [
-                    dt.datetime(*(list(map(int, f.parts[-5:-2]))))
-                    for f in test_files
-                ]
-        except ValueError:
-            dates = [
-                dt.datetime.strptime(
-                    f.parts[-1].split("_")[1], "%Y%m%dT%H%M%S"
-                )
-                for f in test_files
-            ]
-        # Restrict dates to time grid if given, and fill self.dates
-        if time_grid is not None:
-            start_date = time_grid[0]
-            end_date = time_grid[-1]
-            self.dates = [d.replace(hour=0, minute=0, second=0) for d in dates
-                            if (d >= start_date) and (d <= end_date)] 
-            test_files = [test_files[i] for i, d in enumerate(dates)
-                            if (d >= start_date) and (d <= end_date)]
-        else:
-            self.dates = [x.replace(hour=0,minute=0, second=0) for x in dates]
-        # Fill self.date_data dictionary with sorted dates-folders data,
-        # and self.dates with sorted dates data.
-        temp_dict = dict(zip(self.dates, [f.parent for f in test_files]))
-        dates = sorted(self.dates)  # Sort dates by time, as currently S2A/S2B
-                                    # will be part of ordering
-        self.date_data = {k:temp_dict[k] for k in dates}
-        self.dates = dates
-        LOG.info(f"Found {len(test_files):d} S2 granules")
+        # Apply multithreaded
+        dates = []
+        with ThreadPoolExecutor(max_workers=10) as executor:
+            for params in executor.map(
+                    lambda x: self._process_xml(x/"MTD_MSIL1C.xml"), folders):
+                dates.append(params)
+
+        self.dates = [x[0].replace(hour=0, minute=0, second=0, microsecond=0)
+                      for x in dates]
+        self.date_data = dict(zip(self.dates, folders))
+        #self.date_data = dict(dates)
+
+        LOG.info(f"Found {len(dates):d} S2 granules")
         LOG.info(
             f"First granule: "
             + f"{sorted(self.dates)[0].strftime('%Y-%m-%d'):s}"
@@ -192,6 +175,20 @@ class Sentinel2Observations(object):
         self.bands_per_observation = {}
         for the_date in self.dates:
             self.bands_per_observation[the_date] = len(self.band_map)
+
+    def _process_xml(self, metadata_file):
+        tree = ET.parse(metadata_file.as_posix())
+        root = tree.getroot()
+        acq_time = [time.text for time in root.iter("PRODUCT_START_TIME")]
+        date = dt.datetime.strptime(acq_time[0], "%Y-%m-%dT%H:%M:%S.%fZ")
+        refl_files = [metadata_file.parent/f"{granule.text:s}_sur.tif"
+                      for granule in root.iter('IMAGE_FILE')
+                      if not granule.text.endswith("TCI")]
+        # Can check that all refl_files exist
+        # Can also figure out where the cloud mask is (e.g. 'mask.tif'
+        # one folder up from the tif files)
+        # Angles are also one folder up in folder ANG_DATA
+        return date, refl_files
 
     def read_time_series(self, time_grid):
         """Reads a time series of S2 data
