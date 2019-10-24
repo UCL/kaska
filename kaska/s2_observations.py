@@ -39,10 +39,10 @@ class Sentinel2Observations(object):
         Class members initialised in __init__ :
         parent : the path to the parent folder containing all the data.
         emulator :
-        original_mask : the mask to be applied to the data (tif file) originally
-                        given as input argument.
-        state_mask : the mask to be applied to the data (tif file) after possible
-                     alterations.
+        original_mask : the mask to be applied to the data (tif file)
+                        originally given as input argument.
+        state_mask : the mask to be applied to the data (tif file) after
+                     possible alterations.
         band_prob_threshold : (optional)
         band_map : the list of available bands - hardcoded
         chunk : the size of the chunk/tile for parallel processing (optional)
@@ -51,7 +51,8 @@ class Sentinel2Observations(object):
         dates : list of dates to run the analysis on (data files available
                 for those dates)
         date_data : dictionary of date-folder pairs, ordered in date
-        bands_per_observation : dictionary of date-band_map pairs, ordered in date
+        bands_per_observation : dictionary of date-band_map pairs, ordered
+                                in date
         """
         parent_folder = Path(parent_folder)
         if not parent_folder.exists():
@@ -70,7 +71,7 @@ class Sentinel2Observations(object):
 
         self.band_prob_threshold = band_prob_threshold
         self.band_map = ['B01', 'B02', 'B03', 'B04', 'B05', 'B06', 'B07',
-                        'B08', 'B8A', 'B09', 'B10','B11', 'B12']
+                         'B08', 'B8A', 'B09', 'B10', 'B11', 'B12']
 
         self.chunk = chunk
 
@@ -170,10 +171,11 @@ class Sentinel2Observations(object):
                             if (d >= start_date) and (d <= end_date)]
         else:
             self.dates = [x.replace(hour=0,minute=0, second=0) for x in dates]
-        # Fill self.date_data dictionary with sorted dates-folders data, and self.dates
-        # with sorted dates data.
+        # Fill self.date_data dictionary with sorted dates-folders data,
+        # and self.dates with sorted dates data.
         temp_dict = dict(zip(self.dates, [f.parent for f in test_files]))
-        dates = sorted(self.dates) # Sort dates by time, as currently S2A/S2B will be part of ordering
+        dates = sorted(self.dates)  # Sort dates by time, as currently S2A/S2B
+                                    # will be part of ordering
         self.date_data = {k:temp_dict[k] for k in dates}
         self.dates = dates
         LOG.info(f"Found {len(test_files):d} S2 granules")
@@ -309,7 +311,7 @@ class Sentinel2Observations(object):
 
 
 if __name__ == "__main__":
-    #import pickle
+    # import pickle
 
     time_grid = []
     today = dt.datetime(2017,1,1)
@@ -318,9 +320,9 @@ if __name__ == "__main__":
         today += dt.timedelta(days=5)
 
     s2_obs = Sentinel2Observations(
-#        "/home/ucfajlg/Data/python/KaFKA_Validation/LMU/s2_obs/",
-#        "/home/ucfafyi/DATA/Prosail/prosail_2NN.npz",
-#        "/home/ucfajlg/Data/python/KaFKA_Validation/LMU/carto/ESU.tif",
+        #        "/home/ucfajlg/Data/python/KaFKA_Validation/LMU/s2_obs/",
+        #        "/home/ucfafyi/DATA/Prosail/prosail_2NN.npz",
+        #        "/home/ucfajlg/Data/python/KaFKA_Validation/LMU/carto/ESU.tif",
         "/home/ilektra/kaska/kaska/tests/data/s2_data",
         "/home/ilektra/kaska/kaska/inverters/prosail_2NN.npz",
         "/home/ilektra/kaska/kaska/tests/data/ESU.tif",
@@ -331,4 +333,4 @@ if __name__ == "__main__":
     retval = s2_obs.read_time_series([dt.datetime(2017, 1, 1),
                                       dt.datetime(2017,12,31)])
 
-    #pickle.dumps(retval)
+    # pickle.dumps(retval)

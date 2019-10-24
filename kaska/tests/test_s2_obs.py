@@ -3,18 +3,18 @@
 import os
 
 import sys
-#sys.path.append("../")
+# sys.path.append("../")
 
 import pytest
 import datetime as dt
 from pathlib import Path
-#import gdal
-#import numpy as np
+# import gdal
+# import numpy as np
 
+from ..s2_observations import Sentinel2Observations
 
 TEST_PATH = os.path.dirname(__file__)
 
-from ..s2_observations import Sentinel2Observations
 
 def test_s2_data():
     """Test the reading of s2 time series data.
@@ -22,7 +22,7 @@ def test_s2_data():
     import pickle
 
     time_grid = []
-    today = dt.datetime(2017,1,1)
+    today = dt.datetime(2017, 1, 1)
     while (today <= dt.datetime(2017, 2, 1)):
         time_grid.append(today)
         today += dt.timedelta(days=5)
@@ -30,7 +30,7 @@ def test_s2_data():
     parent = TEST_PATH
     emulator = TEST_PATH + "/../inverters/prosail_2NN.npz"
     mask = TEST_PATH + "/data/ESU.tif"
-    #source = TEST_PATH +  "/data/s2_test_file.tif"
+    # source = TEST_PATH +  "/data/s2_test_file.tif"
     s2_obs = Sentinel2Observations(
         parent,
         emulator,
@@ -57,6 +57,6 @@ def test_s2_data():
     assert s2_obs.dates == ref_dates
     assert [s2_obs.date_data[d] for d in s2_obs.dates] == ref_files
 
-    #retval = s2_obs.read_time_series([dt.datetime(2017, 1, 1),
+    # retval = s2_obs.read_time_series([dt.datetime(2017, 1, 1),
     #                                  dt.datetime(2017,12,31)])
-    #pickle.dumps(retval)
+    # pickle.dumps(retval)
