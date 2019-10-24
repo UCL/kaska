@@ -1,0 +1,2341 @@
+************* Module kaska.parmap
+kaska/parmap.py:37:14: C0326: Exactly one space required after comma
+def parmap(fun,seq,N=None,Nt=1,chunksize=1,ordered=True,\
+              ^ (bad-whitespace)
+kaska/parmap.py:37:18: C0326: Exactly one space required after comma
+def parmap(fun,seq,N=None,Nt=1,chunksize=1,ordered=True,\
+                  ^ (bad-whitespace)
+kaska/parmap.py:37:25: C0326: Exactly one space required after comma
+def parmap(fun,seq,N=None,Nt=1,chunksize=1,ordered=True,\
+                         ^ (bad-whitespace)
+kaska/parmap.py:37:30: C0326: Exactly one space required after comma
+def parmap(fun,seq,N=None,Nt=1,chunksize=1,ordered=True,\
+                              ^ (bad-whitespace)
+kaska/parmap.py:37:42: C0326: Exactly one space required after comma
+def parmap(fun,seq,N=None,Nt=1,chunksize=1,ordered=True,\
+                                          ^ (bad-whitespace)
+kaska/parmap.py:38:28: C0326: Exactly one space required after comma
+                daemon=False,progress=False):
+                            ^ (bad-whitespace)
+kaska/parmap.py:81:72: C0303: Trailing whitespace (trailing-whitespace)
+kaska/parmap.py:109:80: C0303: Trailing whitespace (trailing-whitespace)
+kaska/parmap.py:157:29: C0326: Exactly one space required after comma
+    chunksize = max(chunksize,Nt)
+                             ^ (bad-whitespace)
+kaska/parmap.py:165:32: C0326: Exactly one space required after comma
+        if   isinstance(progress,(str,unicode))\
+                                ^ (bad-whitespace)
+kaska/parmap.py:165:37: C0326: Exactly one space required after comma
+        if   isinstance(progress,(str,unicode))\
+                                     ^ (bad-whitespace)
+kaska/parmap.py:166:43: C0326: Exactly one space required after comma
+         and progress.lower() in ['jupyter','notebook','nb']:
+                                           ^ (bad-whitespace)
+kaska/parmap.py:166:54: C0326: Exactly one space required after comma
+         and progress.lower() in ['jupyter','notebook','nb']:
+                                                      ^ (bad-whitespace)
+kaska/parmap.py:167:41: C0326: Exactly one space required after comma
+            counter = partial(_counter_nb,tot=tot)
+                                         ^ (bad-whitespace)
+kaska/parmap.py:169:38: C0326: Exactly one space required after comma
+            counter = partial(_counter,tot=tot)
+                                      ^ (bad-whitespace)
+kaska/parmap.py:171:32: C0326: Exactly one space required after comma
+        if   isinstance(progress,(str,unicode))\
+                                ^ (bad-whitespace)
+kaska/parmap.py:171:37: C0326: Exactly one space required after comma
+        if   isinstance(progress,(str,unicode))\
+                                     ^ (bad-whitespace)
+kaska/parmap.py:172:43: C0326: Exactly one space required after comma
+         and progress.lower() in ['jupyter','notebook','nb']\
+                                           ^ (bad-whitespace)
+kaska/parmap.py:172:54: C0326: Exactly one space required after comma
+         and progress.lower() in ['jupyter','notebook','nb']\
+                                                      ^ (bad-whitespace)
+kaska/parmap.py:173:25: C0326: Exactly one space required after comma
+         and hasattr(tqdm,'tqdm_notebook'):
+                         ^ (bad-whitespace)
+kaska/parmap.py:174:48: C0326: Exactly one space required after comma
+            counter = partial(tqdm.tqdm_notebook,total=tot)
+                                                ^ (bad-whitespace)
+kaska/parmap.py:176:0: C0301: Line too long (102/100) (line-too-long)
+kaska/parmap.py:176:39: C0326: Exactly one space required after comma
+            counter = partial(tqdm.tqdm,total=tot) # Set the total since tqdm won't be able to get it.
+                                       ^ (bad-whitespace)
+kaska/parmap.py:180:26: C0326: Exactly one space required after comma
+            out = imap(fun,seq)
+                          ^ (bad-whitespace)
+kaska/parmap.py:183:31: C0326: Exactly one space required after comma
+            out = pool.imap(fun,seq)
+                               ^ (bad-whitespace)
+kaska/parmap.py:186:0: W0311: Bad indentation. Found 11 spaces, expected 12 (bad-indentation)
+kaska/parmap.py:198:64: C0326: Exactly one space required after comma
+    workers = [mp.Process(target=_worker, args=(fun, q_in, q_out,Nt))
+                                                                ^ (bad-whitespace)
+kaska/parmap.py:199:0: C0330: Wrong continued indentation (remove 1 space).
+                for _ in xrange(N)]
+               |^ (bad-continuation)
+kaska/parmap.py:207:47: C0326: Exactly one space required after comma
+        for iixs in _iter_chunks(enumerate(seq),chunksize):
+                                               ^ (bad-whitespace)
+kaska/parmap.py:234:49: C0326: Exactly one space required after comma
+        out = _sort_generator_unique_integers(out,key=lambda a:a[0])
+                                                 ^ (bad-whitespace)
+kaska/parmap.py:234:62: C0326: Exactly one space required after :
+        out = _sort_generator_unique_integers(out,key=lambda a:a[0])
+                                                              ^ (bad-whitespace)
+kaska/parmap.py:245:18: C0326: Exactly one space required after comma
+def _counter(items,tot=None):
+                  ^ (bad-whitespace)
+kaska/parmap.py:246:10: C0326: Exactly one space required after comma
+    for ii,item in enumerate(items):
+          ^ (bad-whitespace)
+kaska/parmap.py:248:22: C0326: Exactly one space required after comma
+            _txtbar(ii,tot,ticks=50,text='')
+                      ^ (bad-whitespace)
+kaska/parmap.py:248:26: C0326: Exactly one space required after comma
+            _txtbar(ii,tot,ticks=50,text='')
+                          ^ (bad-whitespace)
+kaska/parmap.py:248:35: C0326: Exactly one space required after comma
+            _txtbar(ii,tot,ticks=50,text='')
+                                   ^ (bad-whitespace)
+kaska/parmap.py:251:30: C0326: Exactly one space required after comma
+            print('\r%s' % txt,end='')
+                              ^ (bad-whitespace)
+kaska/parmap.py:255:21: C0326: Exactly one space required after comma
+def _counter_nb(items,tot=None):
+                     ^ (bad-whitespace)
+kaska/parmap.py:256:40: C0326: Exactly one space required after comma
+    from ipywidgets import FloatProgress,FloatText
+                                        ^ (bad-whitespace)
+kaska/parmap.py:258:0: C0303: Trailing whitespace (trailing-whitespace)
+kaska/parmap.py:260:31: C0326: Exactly one space required after comma
+        f = FloatProgress(min=0,max=tot)
+                               ^ (bad-whitespace)
+kaska/parmap.py:265:0: C0303: Trailing whitespace (trailing-whitespace)
+kaska/parmap.py:266:10: C0326: Exactly one space required after comma
+    for ii,item in enumerate(items):
+          ^ (bad-whitespace)
+kaska/parmap.py:267:20: C0303: Trailing whitespace (trailing-whitespace)
+kaska/parmap.py:270:15: C0326: Exactly one space required after comma
+def _worker(fun,q_in,q_out,Nt):
+               ^ (bad-whitespace)
+kaska/parmap.py:270:20: C0326: Exactly one space required after comma
+def _worker(fun,q_in,q_out,Nt):
+                    ^ (bad-whitespace)
+kaska/parmap.py:270:26: C0326: Exactly one space required after comma
+def _worker(fun,q_in,q_out,Nt):
+                          ^ (bad-whitespace)
+kaska/parmap.py:286:13: C0326: Exactly one space required after comma
+            i,x = ix
+             ^ (bad-whitespace)
+kaska/parmap.py:288:21: C0326: Exactly one space required after comma
+        list(_map(_ap,iixs)) # list forces the iteration
+                     ^ (bad-whitespace)
+kaska/parmap.py:291:10: C0326: Exactly one space required after comparison
+    if Nt >1:
+          ^ (bad-whitespace)
+kaska/parmap.py:294:20: C0326: Exactly one space required after comma
+def _iter_chunks(seq,n):
+                    ^ (bad-whitespace)
+kaska/parmap.py:299:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/parmap.py:313:41: C0326: Exactly one space required after comma
+def _sort_generator_unique_integers(items,start=0,key=None):
+                                         ^ (bad-whitespace)
+kaska/parmap.py:313:49: C0326: Exactly one space required after comma
+def _sort_generator_unique_integers(items,start=0,key=None):
+                                                 ^ (bad-whitespace)
+kaska/parmap.py:343:17: C0326: Exactly one space required after comma
+def _txtbar(count,N,ticks=50,text='Progress'):
+                 ^ (bad-whitespace)
+kaska/parmap.py:343:19: C0326: Exactly one space required after comma
+def _txtbar(count,N,ticks=50,text='Progress'):
+                   ^ (bad-whitespace)
+kaska/parmap.py:343:28: C0326: Exactly one space required after comma
+def _txtbar(count,N,ticks=50,text='Progress'):
+                            ^ (bad-whitespace)
+kaska/parmap.py:361:21: C0326: Exactly one space required after comma
+    ticks = min(ticks,N)
+                     ^ (bad-whitespace)
+kaska/parmap.py:368:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/parmap.py:369:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/parmap.py:370:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/parmap.py:375:16: C0326: Exactly one space required around comparison
+    if len(text)>0:
+                ^ (bad-whitespace)
+kaska/parmap.py:376:13: C0326: Exactly one space required after assignment
+        text +=': '
+             ^^ (bad-whitespace)
+kaska/parmap.py:378:47: C0326: Exactly one space required after comma
+    txt = '{:s}{:s}{:s} : {:3d}%  '.format(text,'#'*Npound,'-'*Nspace,Nprint)
+                                               ^ (bad-whitespace)
+kaska/parmap.py:378:58: C0326: Exactly one space required after comma
+    txt = '{:s}{:s}{:s} : {:3d}%  '.format(text,'#'*Npound,'-'*Nspace,Nprint)
+                                                          ^ (bad-whitespace)
+kaska/parmap.py:378:69: C0326: Exactly one space required after comma
+    txt = '{:s}{:s}{:s} : {:3d}%  '.format(text,'#'*Npound,'-'*Nspace,Nprint)
+                                                                     ^ (bad-whitespace)
+kaska/parmap.py:379:22: C0326: Exactly one space required after comma
+    print('\r%s' % txt,end='')
+                      ^ (bad-whitespace)
+kaska/parmap.py:29:4: C0103: Class name "unicode" doesn't conform to PascalCase naming style (invalid-name)
+kaska/parmap.py:30:4: C0103: Class name "xrange" doesn't conform to PascalCase naming style (invalid-name)
+kaska/parmap.py:31:4: C0103: Class name "imap" doesn't conform to PascalCase naming style (invalid-name)
+kaska/parmap.py:33:4: E0611: No name 'imap' in module 'itertools' (no-name-in-module)
+kaska/parmap.py:37:0: C0103: Argument name "N" doesn't conform to snake_case naming style (invalid-name)
+kaska/parmap.py:37:0: C0103: Argument name "Nt" doesn't conform to snake_case naming style (invalid-name)
+kaska/parmap.py:37:0: R0913: Too many arguments (8/5) (too-many-arguments)
+kaska/parmap.py:37:0: R0914: Too many local variables (20/15) (too-many-locals)
+kaska/parmap.py:220:8: W0612: Unused variable 'count' (unused-variable)
+kaska/parmap.py:37:0: R0912: Too many branches (18/12) (too-many-branches)
+kaska/parmap.py:37:0: R0915: Too many statements (52/50) (too-many-statements)
+kaska/parmap.py:246:8: C0103: Variable name "ii" doesn't conform to snake_case naming style (invalid-name)
+kaska/parmap.py:260:8: C0103: Variable name "f" doesn't conform to snake_case naming style (invalid-name)
+kaska/parmap.py:262:8: C0103: Variable name "f" doesn't conform to snake_case naming style (invalid-name)
+kaska/parmap.py:266:8: C0103: Variable name "ii" doesn't conform to snake_case naming style (invalid-name)
+kaska/parmap.py:266:8: W0612: Unused variable 'ii' (unused-variable)
+kaska/parmap.py:270:0: C0103: Argument name "Nt" doesn't conform to snake_case naming style (invalid-name)
+kaska/parmap.py:285:8: C0103: Argument name "ix" doesn't conform to snake_case naming style (invalid-name)
+kaska/parmap.py:286:14: C0103: Variable name "x" doesn't conform to snake_case naming style (invalid-name)
+kaska/parmap.py:294:0: C0103: Argument name "n" doesn't conform to snake_case naming style (invalid-name)
+kaska/parmap.py:323:12: C0103: Variable name "ik" doesn't conform to snake_case naming style (invalid-name)
+kaska/parmap.py:325:12: C0103: Variable name "ik" doesn't conform to snake_case naming style (invalid-name)
+kaska/parmap.py:343:0: C0103: Argument name "N" doesn't conform to snake_case naming style (invalid-name)
+kaska/parmap.py:362:4: C0103: Variable name "isCount" doesn't conform to snake_case naming style (invalid-name)
+kaska/parmap.py:368:4: C0103: Variable name "Npound" doesn't conform to snake_case naming style (invalid-name)
+kaska/parmap.py:369:4: C0103: Variable name "Nspace" doesn't conform to snake_case naming style (invalid-name)
+kaska/parmap.py:370:4: C0103: Variable name "Nprint" doesn't conform to snake_case naming style (invalid-name)
+kaska/parmap.py:373:8: C0103: Variable name "Nprint" doesn't conform to snake_case naming style (invalid-name)
+kaska/parmap.py:375:7: C1801: Do not use `len(SEQUENCE)` to determine if a sequence is empty (len-as-condition)
+kaska/parmap.py:12:0: W0611: Unused import threading (unused-import)
+kaska/parmap.py:14:0: W0611: Unused defaultdict imported from collections (unused-import)
+kaska/parmap.py:17:4: W0611: Unused Queue imported from queue (unused-import)
+************* Module kaska.version
+kaska/version.py:1:0: C0111: Missing module docstring (missing-docstring)
+************* Module kaska.logger
+kaska/logger.py:6:24: C0326: No space allowed around keyword argument assignment
+def create_logger(fname = None):
+                        ^ (bad-whitespace)
+kaska/logger.py:20:34: C0303: Trailing whitespace (trailing-whitespace)
+kaska/logger.py:22:0: C0304: Final newline missing (missing-final-newline)
+kaska/logger.py:1:0: C0111: Missing module docstring (missing-docstring)
+kaska/logger.py:6:0: C0111: Missing function docstring (missing-docstring)
+kaska/logger.py:12:8: C0103: Variable name "ch" doesn't conform to snake_case naming style (invalid-name)
+kaska/logger.py:18:8: C0103: Variable name "fh" doesn't conform to snake_case naming style (invalid-name)
+kaska/logger.py:1:0: W0611: Unused import os (unused-import)
+************* Module kaska.kaska_cost
+kaska/kaska_cost.py:6:55: C0303: Trailing whitespace (trailing-whitespace)
+kaska/kaska_cost.py:7:0: C0330: Wrong continued indentation (add 13 spaces).
+                    'y y_unc y_fwd dH_fwd diff prior_cost dprior_cost')
+                    ^            | (bad-continuation)
+kaska/kaska_cost.py:13:0: C0303: Trailing whitespace (trailing-whitespace)
+kaska/kaska_cost.py:20:0: C0303: Trailing whitespace (trailing-whitespace)
+kaska/kaska_cost.py:22:22: C0326: Exactly one space required after assignment
+        self.n_tsteps =  self.time_grid.shape[0]
+                      ^ (bad-whitespace)
+kaska/kaska_cost.py:24:0: C0303: Trailing whitespace (trailing-whitespace)
+kaska/kaska_cost.py:27:32: C0326: Exactly one space required before assignment
+        self.common_computations= None
+                                ^ (bad-whitespace)
+kaska/kaska_cost.py:33:0: C0330: Wrong continued indentation (add 11 spaces).
+                    np.array(self.time_grid) ),
+                    ^          | (bad-continuation)
+kaska/kaska_cost.py:33:45: C0326: No space allowed before bracket
+                    np.array(self.time_grid) ),
+                                             ^ (bad-whitespace)
+kaska/kaska_cost.py:34:0: C0330: Wrong continued indentation (add 4 spaces).
+                    axis=1)
+                    ^   | (bad-continuation)
+kaska/kaska_cost.py:41:0: C0303: Trailing whitespace (trailing-whitespace)
+kaska/kaska_cost.py:45:46: C0303: Trailing whitespace (trailing-whitespace)
+kaska/kaska_cost.py:48:65: C0303: Trailing whitespace (trailing-whitespace)
+kaska/kaska_cost.py:58:30: C0326: No space allowed before bracket
+        d = (x- self.mu_prior )
+                              ^ (bad-whitespace)
+kaska/kaska_cost.py:75:51: C0303: Trailing whitespace (trailing-whitespace)
+kaska/kaska_cost.py:77:0: C0303: Trailing whitespace (trailing-whitespace)
+kaska/kaska_cost.py:1:0: C0111: Missing module docstring (missing-docstring)
+kaska/kaska_cost.py:6:0: C0103: Class name "common_computations" doesn't conform to PascalCase naming style (invalid-name)
+kaska/kaska_cost.py:28:8: C0103: Attribute name "x" doesn't conform to snake_case naming style (invalid-name)
+kaska/kaska_cost.py:9:0: C0111: Missing class docstring (missing-docstring)
+kaska/kaska_cost.py:9:0: R0205: Class 'CostWrapper' inherits from object, can be safely removed from bases in python3 (useless-object-inheritance)
+kaska/kaska_cost.py:9:0: R0902: Too many instance attributes (11/7) (too-many-instance-attributes)
+kaska/kaska_cost.py:10:4: R0913: Too many arguments (7/5) (too-many-arguments)
+kaska/kaska_cost.py:30:4: C0103: Argument name "x" doesn't conform to snake_case naming style (invalid-name)
+kaska/kaska_cost.py:30:4: C0111: Missing method docstring (missing-docstring)
+kaska/kaska_cost.py:30:4: R0914: Too many local variables (34/15) (too-many-locals)
+kaska/kaska_cost.py:49:16: C0200: Consider using enumerate instead of iterating with range and len (consider-using-enumerate)
+kaska/kaska_cost.py:50:20: C0103: Variable name "y" doesn't conform to snake_case naming style (invalid-name)
+kaska/kaska_cost.py:53:20: C0103: Variable name "dH_fwd" doesn't conform to snake_case naming style (invalid-name)
+kaska/kaska_cost.py:56:20: E1137: 'obs_dcost' does not support item assignment (unsupported-assignment-operation)
+kaska/kaska_cost.py:58:8: C0103: Variable name "d" doesn't conform to snake_case naming style (invalid-name)
+kaska/kaska_cost.py:64:12: C0103: Variable name "xp" doesn't conform to snake_case naming style (invalid-name)
+kaska/kaska_cost.py:30:0: W0613: Unused argument 'args' (unused-argument)
+kaska/kaska_cost.py:9:0: R0903: Too few public methods (1/2) (too-few-public-methods)
+************* Module kaska.s2_observations
+kaska/s2_observations.py:37:0: C0330: Wrong hanging indentation before block (add 4 spaces).
+        self,
+        ^   | (bad-continuation)
+kaska/s2_observations.py:38:0: C0330: Wrong hanging indentation before block (add 4 spaces).
+        parent_folder,
+        ^   | (bad-continuation)
+kaska/s2_observations.py:39:0: C0330: Wrong hanging indentation before block (add 4 spaces).
+        emulator,
+        ^   | (bad-continuation)
+kaska/s2_observations.py:40:0: C0330: Wrong hanging indentation before block (add 4 spaces).
+        state_mask,
+        ^   | (bad-continuation)
+kaska/s2_observations.py:41:0: C0330: Wrong hanging indentation before block (add 4 spaces).
+        band_prob_threshold=20,
+        ^   | (bad-continuation)
+kaska/s2_observations.py:42:0: C0330: Wrong hanging indentation before block (add 4 spaces).
+        chunk=None,
+        ^   | (bad-continuation)
+kaska/s2_observations.py:43:0: C0330: Wrong hanging indentation before block (add 4 spaces).
+        time_grid=None
+        ^   | (bad-continuation)
+kaska/s2_observations.py:51:0: C0330: Wrong continued indentation (add 1 space).
+                        'B08', 'B8A', 'B09', 'B10','B11', 'B12']
+                        ^| (bad-continuation)
+kaska/s2_observations.py:51:50: C0326: Exactly one space required after comma
+                        'B08', 'B8A', 'B09', 'B10','B11', 'B12']
+                                                  ^ (bad-whitespace)
+kaska/s2_observations.py:104:0: C0330: Wrong hanging indentation (remove 4 spaces).
+                    dt.datetime(*(list(map(int, f.parts[-5:-2]))))
+                |   ^ (bad-continuation)
+kaska/s2_observations.py:105:0: C0330: Wrong hanging indentation (remove 4 spaces).
+                    for f in test_files
+                |   ^ (bad-continuation)
+kaska/s2_observations.py:120:0: C0330: Wrong continued indentation (remove 2 spaces).
+                            if (d >= start_date) and (d <= end_date)] 
+                          | ^ (bad-continuation)
+kaska/s2_observations.py:120:69: C0303: Trailing whitespace (trailing-whitespace)
+kaska/s2_observations.py:122:42: C0326: Exactly one space required after comma
+            self.dates = [x.replace(hour=0,minute=0, second=0) for x in dates]
+                                          ^ (bad-whitespace)
+kaska/s2_observations.py:174:0: C0303: Trailing whitespace (trailing-whitespace)
+kaska/s2_observations.py:194:0: C0303: Trailing whitespace (trailing-whitespace)
+kaska/s2_observations.py:208:0: C0303: Trailing whitespace (trailing-whitespace)
+kaska/s2_observations.py:210:0: C0303: Trailing whitespace (trailing-whitespace)
+kaska/s2_observations.py:211:0: C0303: Trailing whitespace (trailing-whitespace)
+kaska/s2_observations.py:216:0: C0303: Trailing whitespace (trailing-whitespace)
+kaska/s2_observations.py:257:28: C0326: Exactly one space required after comma
+    today = dt.datetime(2017,1,1)
+                            ^ (bad-whitespace)
+kaska/s2_observations.py:257:30: C0326: Exactly one space required after comma
+    today = dt.datetime(2017,1,1)
+                              ^ (bad-whitespace)
+kaska/s2_observations.py:258:0: C0325: Unnecessary parens after 'while' keyword (superfluous-parens)
+kaska/s2_observations.py:271:54: C0326: Exactly one space required after comma
+                                      dt.datetime(2017,12,31)])
+                                                      ^ (bad-whitespace)
+kaska/s2_observations.py:271:57: C0326: Exactly one space required after comma
+                                      dt.datetime(2017,12,31)])
+                                                         ^ (bad-whitespace)
+kaska/s2_observations.py:22:4: C0103: Constant name "ch" doesn't conform to UPPER_CASE naming style (invalid-name)
+kaska/s2_observations.py:24:4: C0103: Constant name "formatter" doesn't conform to UPPER_CASE naming style (invalid-name)
+kaska/s2_observations.py:35:0: C0111: Missing class docstring (missing-docstring)
+kaska/s2_observations.py:35:0: R0205: Class 'Sentinel2Observations' inherits from object, can be safely removed from bases in python3 (useless-object-inheritance)
+kaska/s2_observations.py:35:0: R0902: Too many instance attributes (14/7) (too-many-instance-attributes)
+kaska/s2_observations.py:43:8: W0621: Redefining name 'time_grid' from outer scope (line 256) (redefined-outer-name)
+kaska/s2_observations.py:36:4: R0913: Too many arguments (7/5) (too-many-arguments)
+kaska/s2_observations.py:48:12: W1203: Use % formatting in logging functions and pass the % parameters as arguments (logging-fstring-interpolation)
+kaska/s2_observations.py:58:8: C0103: Variable name "f" doesn't conform to snake_case naming style (invalid-name)
+kaska/s2_observations.py:66:4: C0111: Missing method docstring (missing-docstring)
+kaska/s2_observations.py:81:4: C0111: Missing method docstring (missing-docstring)
+kaska/s2_observations.py:83:12: C0103: Variable name "g" doesn't conform to snake_case naming style (invalid-name)
+kaska/s2_observations.py:85:12: C0103: Variable name "geoT" doesn't conform to snake_case naming style (invalid-name)
+kaska/s2_observations.py:88:12: C0103: Variable name "geoT" doesn't conform to snake_case naming style (invalid-name)
+kaska/s2_observations.py:95:44: W0621: Redefining name 'time_grid' from outer scope (line 256) (redefined-outer-name)
+kaska/s2_observations.py:120:31: R1716: Simplify chained comparison between the operands (chained-comparison)
+kaska/s2_observations.py:125:8: W1203: Use % formatting in logging functions and pass the % parameters as arguments (logging-fstring-interpolation)
+kaska/s2_observations.py:138:31: W0621: Redefining name 'time_grid' from outer scope (line 256) (redefined-outer-name)
+kaska/s2_observations.py:160:8: W0621: Redefining name 's2_obs' from outer scope (line 262) (redefined-outer-name)
+kaska/s2_observations.py:165:4: R0914: Too many local variables (21/15) (too-many-locals)
+kaska/s2_observations.py:190:12: W1203: Use % formatting in logging functions and pass the % parameters as arguments (logging-fstring-interpolation)
+kaska/s2_observations.py:199:12: W1203: Use % formatting in logging functions and pass the % parameters as arguments (logging-fstring-interpolation)
+kaska/s2_observations.py:225:12: W1203: Use % formatting in logging functions and pass the % parameters as arguments (logging-fstring-interpolation)
+kaska/s2_observations.py:67:8: W0201: Attribute 'ulx' defined outside __init__ (attribute-defined-outside-init)
+kaska/s2_observations.py:68:8: W0201: Attribute 'uly' defined outside __init__ (attribute-defined-outside-init)
+kaska/s2_observations.py:69:8: W0201: Attribute 'lrx' defined outside __init__ (attribute-defined-outside-init)
+kaska/s2_observations.py:70:8: W0201: Attribute 'lry' defined outside __init__ (attribute-defined-outside-init)
+kaska/s2_observations.py:256:4: C0103: Constant name "time_grid" doesn't conform to UPPER_CASE naming style (invalid-name)
+kaska/s2_observations.py:257:4: C0103: Constant name "today" doesn't conform to UPPER_CASE naming style (invalid-name)
+kaska/s2_observations.py:262:4: C0103: Constant name "s2_obs" doesn't conform to UPPER_CASE naming style (invalid-name)
+kaska/s2_observations.py:270:4: C0103: Constant name "retval" doesn't conform to UPPER_CASE naming style (invalid-name)
+************* Module kaska.utils
+kaska/utils.py:15:0: C0330: Wrong continued indentation (add 11 spaces).
+        target_img=None,
+        ^          | (bad-continuation)
+kaska/utils.py:16:0: C0330: Wrong continued indentation (add 11 spaces).
+        dstSRS=None,
+        ^          | (bad-continuation)
+kaska/utils.py:17:0: C0330: Wrong continued indentation (add 11 spaces).
+        srcNodata=np.nan,
+        ^          | (bad-continuation)
+kaska/utils.py:18:0: C0330: Wrong continued indentation (add 11 spaces).
+        dstNodata=np.nan,
+        ^          | (bad-continuation)
+kaska/utils.py:19:0: C0330: Wrong continued indentation (add 11 spaces).
+        outputType=None,
+        ^          | (bad-continuation)
+kaska/utils.py:20:0: C0330: Wrong continued indentation (add 11 spaces).
+        verbose=False,
+        ^          | (bad-continuation)
+kaska/utils.py:21:0: C0330: Wrong continued indentation (add 11 spaces).
+        xmin=None,
+        ^          | (bad-continuation)
+kaska/utils.py:22:0: C0330: Wrong continued indentation (add 11 spaces).
+        xmax=None,
+        ^          | (bad-continuation)
+kaska/utils.py:23:0: C0330: Wrong continued indentation (add 11 spaces).
+        ymin=None,
+        ^          | (bad-continuation)
+kaska/utils.py:24:0: C0330: Wrong continued indentation (add 11 spaces).
+        ymax=None,
+        ^          | (bad-continuation)
+kaska/utils.py:25:0: C0330: Wrong continued indentation (add 11 spaces).
+        xRes=None,
+        ^          | (bad-continuation)
+kaska/utils.py:26:0: C0330: Wrong continued indentation (add 11 spaces).
+        yRes=None,
+        ^          | (bad-continuation)
+kaska/utils.py:27:0: C0330: Wrong continued indentation (add 11 spaces).
+        xSize=None,
+        ^          | (bad-continuation)
+kaska/utils.py:28:0: C0330: Wrong continued indentation (add 11 spaces).
+        ySize=None,
+        ^          | (bad-continuation)
+kaska/utils.py:29:0: C0330: Wrong continued indentation (add 11 spaces).
+        resample=1,
+        ^          | (bad-continuation)
+kaska/utils.py:30:0: C0330: Wrong continued indentation.
+    ):
+    ^             || (bad-continuation)
+kaska/utils.py:43:0: W0311: Bad indentation. Found 12 spaces, expected 8 (bad-indentation)
+kaska/utils.py:44:0: W0311: Bad indentation. Found 16 spaces, expected 12 (bad-indentation)
+kaska/utils.py:51:0: W0311: Bad indentation. Found 12 spaces, expected 8 (bad-indentation)
+kaska/utils.py:52:0: W0311: Bad indentation. Found 16 spaces, expected 12 (bad-indentation)
+kaska/utils.py:59:0: W0311: Bad indentation. Found 12 spaces, expected 8 (bad-indentation)
+kaska/utils.py:64:0: W0311: Bad indentation. Found 12 spaces, expected 8 (bad-indentation)
+kaska/utils.py:65:0: W0311: Bad indentation. Found 16 spaces, expected 12 (bad-indentation)
+kaska/utils.py:66:0: W0311: Bad indentation. Found 12 spaces, expected 8 (bad-indentation)
+kaska/utils.py:67:0: W0311: Bad indentation. Found 16 spaces, expected 12 (bad-indentation)
+kaska/utils.py:68:0: W0311: Bad indentation. Found 12 spaces, expected 8 (bad-indentation)
+kaska/utils.py:69:0: W0311: Bad indentation. Found 12 spaces, expected 8 (bad-indentation)
+kaska/utils.py:71:0: W0311: Bad indentation. Found 12 spaces, expected 8 (bad-indentation)
+kaska/utils.py:72:0: W0311: Bad indentation. Found 16 spaces, expected 12 (bad-indentation)
+kaska/utils.py:73:0: W0311: Bad indentation. Found 12 spaces, expected 8 (bad-indentation)
+kaska/utils.py:74:0: W0311: Bad indentation. Found 16 spaces, expected 12 (bad-indentation)
+kaska/utils.py:76:0: W0311: Bad indentation. Found 12 spaces, expected 8 (bad-indentation)
+kaska/utils.py:77:0: W0311: Bad indentation. Found 16 spaces, expected 12 (bad-indentation)
+kaska/utils.py:78:0: W0311: Bad indentation. Found 12 spaces, expected 8 (bad-indentation)
+kaska/utils.py:79:0: W0311: Bad indentation. Found 16 spaces, expected 12 (bad-indentation)
+kaska/utils.py:81:0: W0311: Bad indentation. Found 12 spaces, expected 8 (bad-indentation)
+kaska/utils.py:85:0: W0311: Bad indentation. Found 12 spaces, expected 8 (bad-indentation)
+kaska/utils.py:89:0: W0311: Bad indentation. Found 12 spaces, expected 8 (bad-indentation)
+kaska/utils.py:90:0: W0311: Bad indentation. Found 12 spaces, expected 8 (bad-indentation)
+kaska/utils.py:91:0: W0311: Bad indentation. Found 12 spaces, expected 8 (bad-indentation)
+kaska/utils.py:92:0: W0311: Bad indentation. Found 12 spaces, expected 8 (bad-indentation)
+kaska/utils.py:108:0: W0311: Bad indentation. Found 12 spaces, expected 8 (bad-indentation)
+kaska/utils.py:125:0: C0330: Wrong continued indentation (remove 2 spaces).
+                + "g.GetRasterBand(<band>) to avoid reading the whole file."
+              | ^ (bad-continuation)
+kaska/utils.py:126:0: C0330: Wrong continued indentation (remove 2 spaces).
+                % gg.RasterCount
+              | ^ (bad-continuation)
+kaska/utils.py:127:0: C0330: Wrong continued indentation.
+            )
+            ^|| (bad-continuation)
+kaska/utils.py:1:0: C0111: Missing module docstring (missing-docstring)
+kaska/utils.py:8:0: C0111: Missing function docstring (missing-docstring)
+kaska/utils.py:9:4: C0103: Variable name "f" doesn't conform to snake_case naming style (invalid-name)
+kaska/utils.py:10:15: E0602: Undefined variable 'Two_NN' (undefined-variable)
+kaska/utils.py:14:0: C0103: Argument name "dstSRS" doesn't conform to snake_case naming style (invalid-name)
+kaska/utils.py:14:0: C0103: Argument name "srcNodata" doesn't conform to snake_case naming style (invalid-name)
+kaska/utils.py:14:0: C0103: Argument name "dstNodata" doesn't conform to snake_case naming style (invalid-name)
+kaska/utils.py:14:0: C0103: Argument name "outputType" doesn't conform to snake_case naming style (invalid-name)
+kaska/utils.py:14:0: C0103: Argument name "xRes" doesn't conform to snake_case naming style (invalid-name)
+kaska/utils.py:14:0: C0103: Argument name "yRes" doesn't conform to snake_case naming style (invalid-name)
+kaska/utils.py:14:0: C0103: Argument name "xSize" doesn't conform to snake_case naming style (invalid-name)
+kaska/utils.py:14:0: C0103: Argument name "ySize" doesn't conform to snake_case naming style (invalid-name)
+kaska/utils.py:14:0: R0913: Too many arguments (16/5) (too-many-arguments)
+kaska/utils.py:14:0: R0914: Too many local variables (22/15) (too-many-locals)
+kaska/utils.py:58:4: R1720: Unnecessary "elif" after "raise" (no-else-raise)
+kaska/utils.py:65:16: C0103: Variable name "g" doesn't conform to snake_case naming style (invalid-name)
+kaska/utils.py:67:16: C0103: Variable name "g" doesn't conform to snake_case naming style (invalid-name)
+kaska/utils.py:92:12: C0103: Variable name "gg" doesn't conform to snake_case naming style (invalid-name)
+kaska/utils.py:108:12: C0103: Variable name "gg" doesn't conform to snake_case naming style (invalid-name)
+************* Module kaska.kaska
+kaska/kaska.py:28:0: C0303: Trailing whitespace (trailing-whitespace)
+kaska/kaska.py:31:74: C0303: Trailing whitespace (trailing-whitespace)
+kaska/kaska.py:32:0: C0330: Wrong continued indentation (add 1 space).
+                    for i in range(int(np.ceil(366/temporal_grid_space)))
+                    ^| (bad-continuation)
+kaska/kaska.py:33:0: C0330: Wrong continued indentation (add 1 space).
+                    if start_date + i*dt.timedelta(days=temporal_grid_space)
+                    ^| (bad-continuation)
+kaska/kaska.py:34:0: C0330: Wrong continued indentation (remove 15 spaces).
+                                    <= end_date]
+                     |              ^ (bad-continuation)
+kaska/kaska.py:41:0: C0330: Wrong continued indentation (add 1 space).
+                output_folder):
+                ^| (bad-continuation)
+kaska/kaska.py:62:70: C0303: Trailing whitespace (trailing-whitespace)
+kaska/kaska.py:65:0: C0303: Trailing whitespace (trailing-whitespace)
+kaska/kaska.py:70:0: C0303: Trailing whitespace (trailing-whitespace)
+kaska/kaska.py:77:0: W0311: Bad indentation. Found 20 spaces, expected 16 (bad-indentation)
+kaska/kaska.py:97:70: C0303: Trailing whitespace (trailing-whitespace)
+kaska/kaska.py:150:0: C0330: Wrong continued indentation (remove 1 space).
+                        TolZ=1e-6, axis=0)[0]
+                       |^ (bad-continuation)
+kaska/kaska.py:151:62: C0303: Trailing whitespace (trailing-whitespace)
+kaska/kaska.py:154:0: C0330: Wrong continued indentation (add 6 spaces).
+                    TolZ=1e-6, axis=0)[0] / slai
+                    ^     | (bad-continuation)
+kaska/kaska.py:156:0: C0303: Trailing whitespace (trailing-whitespace)
+kaska/kaska.py:172:0: C0330: Wrong continued indentation (add 1 space).
+                                        temporal_grid_space)
+                                        ^| (bad-continuation)
+kaska/kaska.py:174:0: C0330: Wrong continued indentation (add 15 spaces).
+                    "inverters/prosail_2NN.npz")
+                    ^              | (bad-continuation)
+kaska/kaska.py:185:0: C0330: Wrong continued indentation (add 27 spaces).
+                    "inverters/Prosail_5_paras.h5"))
+                    ^                          | (bad-continuation)
+kaska/kaska.py:187:0: C0330: Wrong continued indentation (remove 3 spaces).
+                     "/tmp/")
+                  |  ^ (bad-continuation)
+kaska/kaska.py:188:0: C0304: Final newline missing (missing-final-newline)
+kaska/kaska.py:20:4: C0103: Constant name "ch" doesn't conform to UPPER_CASE naming style (invalid-name)
+kaska/kaska.py:22:4: C0103: Constant name "formatter" doesn't conform to UPPER_CASE naming style (invalid-name)
+kaska/kaska.py:29:25: W0621: Redefining name 'start_date' from outer scope (line 168) (redefined-outer-name)
+kaska/kaska.py:29:37: W0621: Redefining name 'end_date' from outer scope (line 169) (redefined-outer-name)
+kaska/kaska.py:29:47: W0621: Redefining name 'temporal_grid_space' from outer scope (line 170) (redefined-outer-name)
+kaska/kaska.py:31:4: W0621: Redefining name 'temporal_grid' from outer scope (line 171) (redefined-outer-name)
+kaska/kaska.py:37:0: R0205: Class 'KaSKA' inherits from object, can be safely removed from bases in python3 (useless-object-inheritance)
+kaska/kaska.py:40:48: W0621: Redefining name 'state_mask' from outer scope (line 183) (redefined-outer-name)
+kaska/kaska.py:40:60: W0621: Redefining name 'approx_inverter' from outer scope (line 184) (redefined-outer-name)
+kaska/kaska.py:40:4: R0913: Too many arguments (6/5) (too-many-arguments)
+kaska/kaska.py:52:8: C0103: Variable name "S" doesn't conform to snake_case naming style (invalid-name)
+kaska/kaska.py:73:18: C0103: Variable name "nx" doesn't conform to snake_case naming style (invalid-name)
+kaska/kaska.py:73:22: C0103: Variable name "ny" doesn't conform to snake_case naming style (invalid-name)
+kaska/kaska.py:59:4: R0201: Method could be a function (no-self-use)
+kaska/kaska.py:141:8: W0621: Redefining name 'slai' from outer scope (line 188) (redefined-outer-name)
+kaska/kaska.py:149:8: W0621: Redefining name 'scab' from outer scope (line 188) (redefined-outer-name)
+kaska/kaska.py:153:8: W0621: Redefining name 'scbrown' from outer scope (line 188) (redefined-outer-name)
+kaska/kaska.py:110:4: R0914: Too many local variables (17/15) (too-many-locals)
+kaska/kaska.py:138:8: C0103: Variable name "f" doesn't conform to snake_case naming style (invalid-name)
+kaska/kaska.py:147:8: C0103: Variable name "f" doesn't conform to snake_case naming style (invalid-name)
+kaska/kaska.py:151:8: C0103: Variable name "f" doesn't conform to snake_case naming style (invalid-name)
+kaska/kaska.py:168:4: C0103: Constant name "start_date" doesn't conform to UPPER_CASE naming style (invalid-name)
+kaska/kaska.py:169:4: C0103: Constant name "end_date" doesn't conform to UPPER_CASE naming style (invalid-name)
+kaska/kaska.py:170:4: C0103: Constant name "temporal_grid_space" doesn't conform to UPPER_CASE naming style (invalid-name)
+kaska/kaska.py:171:4: C0103: Constant name "temporal_grid" doesn't conform to UPPER_CASE naming style (invalid-name)
+kaska/kaska.py:173:4: C0103: Constant name "nn_inverter" doesn't conform to UPPER_CASE naming style (invalid-name)
+kaska/kaska.py:175:4: C0103: Constant name "s2_obs" doesn't conform to UPPER_CASE naming style (invalid-name)
+kaska/kaska.py:183:4: C0103: Constant name "state_mask" doesn't conform to UPPER_CASE naming style (invalid-name)
+kaska/kaska.py:184:4: C0103: Constant name "approx_inverter" doesn't conform to UPPER_CASE naming style (invalid-name)
+kaska/kaska.py:186:4: C0103: Constant name "kaska" doesn't conform to UPPER_CASE naming style (invalid-name)
+kaska/kaska.py:188:4: C0103: Constant name "slai" doesn't conform to UPPER_CASE naming style (invalid-name)
+kaska/kaska.py:188:10: C0103: Constant name "scab" doesn't conform to UPPER_CASE naming style (invalid-name)
+kaska/kaska.py:188:16: C0103: Constant name "scbrown" doesn't conform to UPPER_CASE naming style (invalid-name)
+************* Module kaska.kaska_out
+kaska/kaska_out.py:38:0: C0303: Trailing whitespace (trailing-whitespace)
+kaska/kaska_out.py:45:0: C0330: Wrong continued indentation (add 1 space).
+                                        (param, timestep.strftime("A%Y%j")))
+                                        ^| (bad-continuation)
+kaska/kaska_out.py:48:0: C0330: Wrong continued indentation (add 1 space).
+                                        (param, timestep.strftime("A%Y%j"),
+                                        ^| (bad-continuation)
+kaska/kaska_out.py:49:0: C0330: Wrong continued indentation (add 1 space).
+                                        self.prefix))
+                                        ^| (bad-continuation)
+kaska/kaska_out.py:53:0: C0330: Wrong continued indentation (add 3 spaces).
+                                                    'BIGTIFF=YES',
+                                                    ^  | (bad-continuation)
+kaska/kaska_out.py:54:0: C0330: Wrong continued indentation (add 3 spaces).
+                                                    'PREDICTOR=1',
+                                                    ^  | (bad-continuation)
+kaska/kaska_out.py:55:0: C0330: Wrong continued indentation (add 3 spaces).
+                                                    'TILED=YES'])
+                                                    ^  | (bad-continuation)
+kaska/kaska_out.py:62:31: C0303: Trailing whitespace (trailing-whitespace)
+kaska/kaska_out.py:63:0: C0330: Wrong continued indentation (remove 8 spaces).
+                            for (ii, param) in enumerate(self.parameter_list)]
+                    |       ^ (bad-continuation)
+kaska/kaska_out.py:14:0: R0205: Class 'KaskaOutput' inherits from object, can be safely removed from bases in python3 (useless-object-inheritance)
+kaska/kaska_out.py:14:0: R0902: Too many instance attributes (8/7) (too-many-instance-attributes)
+kaska/kaska_out.py:16:4: R0913: Too many arguments (8/5) (too-many-arguments)
+kaska/kaska_out.py:31:8: E0602: Undefined variable 'LOG' (undefined-variable)
+kaska/kaska_out.py:32:8: E0602: Undefined variable 'LOG' (undefined-variable)
+kaska/kaska_out.py:33:8: E0602: Undefined variable 'LOG' (undefined-variable)
+kaska/kaska_out.py:34:8: E0602: Undefined variable 'LOG' (undefined-variable)
+kaska/kaska_out.py:36:4: C0111: Missing method docstring (missing-docstring)
+kaska/kaska_out.py:40:12: C0103: Variable name "ii" doesn't conform to snake_case naming style (invalid-name)
+kaska/kaska_out.py:41:16: C0103: Variable name "jj" doesn't conform to snake_case naming style (invalid-name)
+kaska/kaska_out.py:58:16: C0103: Variable name "A" doesn't conform to snake_case naming style (invalid-name)
+kaska/kaska_out.py:61:8: E0602: Undefined variable 'LOG' (undefined-variable)
+kaska/kaska_out.py:67:12: E0602: Undefined variable 'LOG' (undefined-variable)
+kaska/kaska_out.py:37:30: W0613: Unused argument 'n_params' (unused-argument)
+kaska/kaska_out.py:64:8: W0612: Unused variable 'retval' (unused-variable)
+kaska/kaska_out.py:14:0: R0903: Too few public methods (1/2) (too-few-public-methods)
+kaska/kaska_out.py:4:0: W0611: Unused import logging (unused-import)
+kaska/kaska_out.py:8:0: W0611: Unused osr imported from osgeo (unused-import)
+************* Module kaska.smoothn
+kaska/smoothn.py:5:44: C0326: Exactly one space required after comma
+from scipy.fftpack.realtransforms import dct,idct
+                                            ^ (bad-whitespace)
+kaska/smoothn.py:9:7: C0326: Exactly one space required after comma
+def H(y,t0=0):
+       ^ (bad-whitespace)
+kaska/smoothn.py:10:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:13:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:14:53: C0303: Trailing whitespace (trailing-whitespace)
+kaska/smoothn.py:14:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:14:23: C0326: Exactly one space required after comma
+  args = tuple([slice(0,y.shape[i]) for i in y.ndim])   
+                       ^ (bad-whitespace)
+kaska/smoothn.py:16:13: C0326: Exactly one space required after comma
+def smoothn(y,nS0=10,axis=None,smoothOrder=2.0,sd=None,verbose=False,\
+             ^ (bad-whitespace)
+kaska/smoothn.py:16:20: C0326: Exactly one space required after comma
+def smoothn(y,nS0=10,axis=None,smoothOrder=2.0,sd=None,verbose=False,\
+                    ^ (bad-whitespace)
+kaska/smoothn.py:16:30: C0326: Exactly one space required after comma
+def smoothn(y,nS0=10,axis=None,smoothOrder=2.0,sd=None,verbose=False,\
+                              ^ (bad-whitespace)
+kaska/smoothn.py:16:46: C0326: Exactly one space required after comma
+def smoothn(y,nS0=10,axis=None,smoothOrder=2.0,sd=None,verbose=False,\
+                                              ^ (bad-whitespace)
+kaska/smoothn.py:16:54: C0326: Exactly one space required after comma
+def smoothn(y,nS0=10,axis=None,smoothOrder=2.0,sd=None,verbose=False,\
+                                                      ^ (bad-whitespace)
+kaska/smoothn.py:17:8: C0326: Exactly one space required after comma
+	s0=None,z0=None,isrobust=False,W=None,s=None,MaxIter=100,TolZ=1e-3,weightstr='bisquare'):
+        ^ (bad-whitespace)
+kaska/smoothn.py:17:16: C0326: Exactly one space required after comma
+	s0=None,z0=None,isrobust=False,W=None,s=None,MaxIter=100,TolZ=1e-3,weightstr='bisquare'):
+                ^ (bad-whitespace)
+kaska/smoothn.py:17:31: C0326: Exactly one space required after comma
+	s0=None,z0=None,isrobust=False,W=None,s=None,MaxIter=100,TolZ=1e-3,weightstr='bisquare'):
+                               ^ (bad-whitespace)
+kaska/smoothn.py:17:38: C0326: Exactly one space required after comma
+	s0=None,z0=None,isrobust=False,W=None,s=None,MaxIter=100,TolZ=1e-3,weightstr='bisquare'):
+                                      ^ (bad-whitespace)
+kaska/smoothn.py:17:45: C0326: Exactly one space required after comma
+	s0=None,z0=None,isrobust=False,W=None,s=None,MaxIter=100,TolZ=1e-3,weightstr='bisquare'):
+                                             ^ (bad-whitespace)
+kaska/smoothn.py:17:57: C0326: Exactly one space required after comma
+	s0=None,z0=None,isrobust=False,W=None,s=None,MaxIter=100,TolZ=1e-3,weightstr='bisquare'):
+                                                         ^ (bad-whitespace)
+kaska/smoothn.py:17:67: C0326: Exactly one space required after comma
+	s0=None,z0=None,isrobust=False,W=None,s=None,MaxIter=100,TolZ=1e-3,weightstr='bisquare'):
+                                                                   ^ (bad-whitespace)
+kaska/smoothn.py:83:12: C0303: Trailing whitespace (trailing-whitespace)
+kaska/smoothn.py:85:71: C0303: Trailing whitespace (trailing-whitespace)
+kaska/smoothn.py:165:113: C0303: Trailing whitespace (trailing-whitespace)
+kaska/smoothn.py:165:0: C0301: Line too long (113/100) (line-too-long)
+kaska/smoothn.py:18:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:172:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:173:0: W0311: Bad indentation. Found 4 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:174:0: W0311: Bad indentation. Found 4 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:175:0: W0311: Bad indentation. Found 4 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:176:0: W0311: Bad indentation. Found 4 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:177:0: W0311: Bad indentation. Found 4 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:178:0: W0311: Bad indentation. Found 6 spaces, expected 12 (bad-indentation)
+kaska/smoothn.py:178:9: C0326: Exactly one space required before assignment
+      W  = np.array(W)
+         ^ (bad-whitespace)
+kaska/smoothn.py:179:0: W0311: Bad indentation. Found 6 spaces, expected 12 (bad-indentation)
+kaska/smoothn.py:180:0: W0311: Bad indentation. Found 4 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:181:0: W0311: Bad indentation. Found 6 spaces, expected 12 (bad-indentation)
+kaska/smoothn.py:182:0: W0311: Bad indentation. Found 6 spaces, expected 12 (bad-indentation)
+kaska/smoothn.py:183:0: W0311: Bad indentation. Found 6 spaces, expected 12 (bad-indentation)
+kaska/smoothn.py:184:0: W0311: Bad indentation. Found 4 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:185:0: C0303: Trailing whitespace (trailing-whitespace)
+kaska/smoothn.py:186:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:187:0: W0311: Bad indentation. Found 4 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:188:0: W0311: Bad indentation. Found 4 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:189:0: W0311: Bad indentation. Found 4 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:190:0: W0311: Bad indentation. Found 4 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:191:0: W0311: Bad indentation. Found 4 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:193:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:194:0: W0311: Bad indentation. Found 4 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:196:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:196:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:199:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:200:0: W0311: Bad indentation. Found 4 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:202:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:203:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:203:8: C0326: Exactly one space required around comparison
+  if noe<2:
+        ^ (bad-whitespace)
+kaska/smoothn.py:204:0: W0311: Bad indentation. Found 4 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:205:0: W0311: Bad indentation. Found 4 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:205:21: C0326: Exactly one space required around assignment
+    exitflag = 0;Wtot=0
+                     ^ (bad-whitespace)
+kaska/smoothn.py:206:0: W0311: Bad indentation. Found 4 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:206:12: C0326: Exactly one space required after comma
+    return z,s,exitflag,Wtot
+            ^ (bad-whitespace)
+kaska/smoothn.py:206:14: C0326: Exactly one space required after comma
+    return z,s,exitflag,Wtot
+              ^ (bad-whitespace)
+kaska/smoothn.py:206:23: C0326: Exactly one space required after comma
+    return z,s,exitflag,Wtot
+                       ^ (bad-whitespace)
+kaska/smoothn.py:211:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:212:0: W0311: Bad indentation. Found 4 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:212:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:219:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:223:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:223:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:224:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:225:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:225:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:226:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:226:10: C0326: Exactly one space required around comparison
+  if any(W<0):
+          ^ (bad-whitespace)
+kaska/smoothn.py:227:0: W0311: Bad indentation. Found 4 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:229:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:231:0: W0311: Bad indentation. Found 6 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:234:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:234:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:240:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:240:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:243:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:244:0: W0311: Bad indentation. Found 4 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:244:48: C0326: Exactly one space required after comma
+    from scipy.fftpack.realtransforms import dct,idct
+                                                ^ (bad-whitespace)
+kaska/smoothn.py:245:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:246:0: W0311: Bad indentation. Found 4 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:247:0: W0311: Bad indentation. Found 4 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:247:22: C0326: Exactly one space required around assignment
+    exitflag = -1;Wtot=0
+                      ^ (bad-whitespace)
+kaska/smoothn.py:248:0: W0311: Bad indentation. Found 4 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:248:12: C0326: Exactly one space required after comma
+    return z,s,exitflag,Wtot
+            ^ (bad-whitespace)
+kaska/smoothn.py:248:14: C0326: Exactly one space required after comma
+    return z,s,exitflag,Wtot
+              ^ (bad-whitespace)
+kaska/smoothn.py:248:23: C0326: Exactly one space required after comma
+    return z,s,exitflag,Wtot
+                       ^ (bad-whitespace)
+kaska/smoothn.py:254:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:255:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:255:4: C0326: Exactly one space required after assignment
+  d =  y.ndim;
+    ^ (bad-whitespace)
+kaska/smoothn.py:255:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:256:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:256:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:257:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:259:0: W0311: Bad indentation. Found 4 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:259:18: C0326: Exactly one space required after comma
+    siz0 = ones((1,y.ndim))[0].astype(int);
+                  ^ (bad-whitespace)
+kaska/smoothn.py:259:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:260:0: W0311: Bad indentation. Found 4 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:260:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:263:0: W0311: Bad indentation. Found 4 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:263:39: C0326: Exactly one space required after comma
+    Lambda = Lambda + (cos(pi*(arange(1,sizy[i]+1) - 1.)/sizy[i]).reshape(siz0))
+                                       ^ (bad-whitespace)
+kaska/smoothn.py:266:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:266:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:267:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:268:0: W0311: Bad indentation. Found 4 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:268:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:276:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:276:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:277:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:277:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:279:25: C0303: Trailing whitespace (trailing-whitespace)
+kaska/smoothn.py:282:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:283:0: W0311: Bad indentation. Found 4 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:283:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:284:0: W0311: Bad indentation. Found 4 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:284:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:285:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:286:0: W0311: Bad indentation. Found 4 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:287:0: W0311: Bad indentation. Found 4 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:290:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:290:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:292:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:298:0: W0311: Bad indentation. Found 4 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:299:0: W0311: Bad indentation. Found 8 spaces, expected 12 (bad-indentation)
+kaska/smoothn.py:299:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:300:0: W0311: Bad indentation. Found 4 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:301:0: W0311: Bad indentation. Found 8 spaces, expected 12 (bad-indentation)
+kaska/smoothn.py:302:0: W0311: Bad indentation. Found 8 spaces, expected 12 (bad-indentation)
+kaska/smoothn.py:303:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:304:0: W0311: Bad indentation. Found 4 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:304:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:306:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:306:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:307:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:307:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:309:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:309:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:310:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:310:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:311:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:311:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:312:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:312:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:314:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:314:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:317:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:317:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:321:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:322:0: W0311: Bad indentation. Found 4 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:323:0: W0311: Bad indentation. Found 6 spaces, expected 12 (bad-indentation)
+kaska/smoothn.py:324:0: W0311: Bad indentation. Found 4 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:325:0: W0311: Bad indentation. Found 6 spaces, expected 12 (bad-indentation)
+kaska/smoothn.py:326:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:327:0: W0311: Bad indentation. Found 4 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:328:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:330:0: W0311: Bad indentation. Found 4 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:330:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:332:0: W0311: Bad indentation. Found 4 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:332:13: C0326: Exactly one space required around comparison
+    while tol>TolZ and nit<MaxIter:
+             ^ (bad-whitespace)
+kaska/smoothn.py:332:26: C0326: Exactly one space required around comparison
+    while tol>TolZ and nit<MaxIter:
+                          ^ (bad-whitespace)
+kaska/smoothn.py:333:0: W0311: Bad indentation. Found 8 spaces, expected 12 (bad-indentation)
+kaska/smoothn.py:334:0: W0311: Bad indentation. Found 10 spaces, expected 16 (bad-indentation)
+kaska/smoothn.py:334:21: C0326: Exactly one space required after comma
+          print('tol',tol,'nit',nit)
+                     ^ (bad-whitespace)
+kaska/smoothn.py:334:25: C0326: Exactly one space required after comma
+          print('tol',tol,'nit',nit)
+                         ^ (bad-whitespace)
+kaska/smoothn.py:334:31: C0326: Exactly one space required after comma
+          print('tol',tol,'nit',nit)
+                               ^ (bad-whitespace)
+kaska/smoothn.py:335:0: W0311: Bad indentation. Found 8 spaces, expected 12 (bad-indentation)
+kaska/smoothn.py:335:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:336:0: W0311: Bad indentation. Found 8 spaces, expected 12 (bad-indentation)
+kaska/smoothn.py:336:33: C0326: Exactly one space required after comma
+        DCTy = dctND(Wtot*(y-z)+z,f=dct);
+                                 ^ (bad-whitespace)
+kaska/smoothn.py:336:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:337:0: W0311: Bad indentation. Found 8 spaces, expected 12 (bad-indentation)
+kaska/smoothn.py:337:45: C0326: Exactly one space required after comma
+        if isauto and not remainder(log2(nit),1):
+                                             ^ (bad-whitespace)
+kaska/smoothn.py:346:0: C0303: Trailing whitespace (trailing-whitespace)
+kaska/smoothn.py:354:0: W0311: Bad indentation. Found 12 spaces, expected 16 (bad-indentation)
+kaska/smoothn.py:355:0: W0311: Bad indentation. Found 14 spaces, expected 20 (bad-indentation)
+kaska/smoothn.py:356:0: W0311: Bad indentation. Found 14 spaces, expected 20 (bad-indentation)
+kaska/smoothn.py:357:0: W0311: Bad indentation. Found 14 spaces, expected 20 (bad-indentation)
+kaska/smoothn.py:357:19: C0326: Exactly one space required after comma
+              for i,p in enumerate(ss):
+                   ^ (bad-whitespace)
+kaska/smoothn.py:358:0: W0311: Bad indentation. Found 16 spaces, expected 24 (bad-indentation)
+kaska/smoothn.py:358:28: C0326: Exactly one space required after comma
+                g[i] = gcv(p,Lambda,aow,DCTy,IsFinite,Wtot,y,nof,noe,smoothOrder)
+                            ^ (bad-whitespace)
+kaska/smoothn.py:358:35: C0326: Exactly one space required after comma
+                g[i] = gcv(p,Lambda,aow,DCTy,IsFinite,Wtot,y,nof,noe,smoothOrder)
+                                   ^ (bad-whitespace)
+kaska/smoothn.py:358:39: C0326: Exactly one space required after comma
+                g[i] = gcv(p,Lambda,aow,DCTy,IsFinite,Wtot,y,nof,noe,smoothOrder)
+                                       ^ (bad-whitespace)
+kaska/smoothn.py:358:44: C0326: Exactly one space required after comma
+                g[i] = gcv(p,Lambda,aow,DCTy,IsFinite,Wtot,y,nof,noe,smoothOrder)
+                                            ^ (bad-whitespace)
+kaska/smoothn.py:358:53: C0326: Exactly one space required after comma
+                g[i] = gcv(p,Lambda,aow,DCTy,IsFinite,Wtot,y,nof,noe,smoothOrder)
+                                                     ^ (bad-whitespace)
+kaska/smoothn.py:358:58: C0326: Exactly one space required after comma
+                g[i] = gcv(p,Lambda,aow,DCTy,IsFinite,Wtot,y,nof,noe,smoothOrder)
+                                                          ^ (bad-whitespace)
+kaska/smoothn.py:358:60: C0326: Exactly one space required after comma
+                g[i] = gcv(p,Lambda,aow,DCTy,IsFinite,Wtot,y,nof,noe,smoothOrder)
+                                                            ^ (bad-whitespace)
+kaska/smoothn.py:358:64: C0326: Exactly one space required after comma
+                g[i] = gcv(p,Lambda,aow,DCTy,IsFinite,Wtot,y,nof,noe,smoothOrder)
+                                                                ^ (bad-whitespace)
+kaska/smoothn.py:358:68: C0326: Exactly one space required after comma
+                g[i] = gcv(p,Lambda,aow,DCTy,IsFinite,Wtot,y,nof,noe,smoothOrder)
+                                                                    ^ (bad-whitespace)
+kaska/smoothn.py:360:0: W0311: Bad indentation. Found 14 spaces, expected 20 (bad-indentation)
+kaska/smoothn.py:360:27: C0326: Exactly one space required around comparison
+              xpost = [ss[g==g.min()]]
+                           ^^ (bad-whitespace)
+kaska/smoothn.py:364:0: W0311: Bad indentation. Found 12 spaces, expected 16 (bad-indentation)
+kaska/smoothn.py:365:0: W0311: Bad indentation. Found 14 spaces, expected 20 (bad-indentation)
+kaska/smoothn.py:366:0: W0311: Bad indentation. Found 12 spaces, expected 16 (bad-indentation)
+kaska/smoothn.py:366:17: C0326: Exactly one space required after comma
+            xpost,f,d = lbfgsb.fmin_l_bfgs_b(gcv,xpost,fprime=None,factr=1e7,\
+                 ^ (bad-whitespace)
+kaska/smoothn.py:366:19: C0326: Exactly one space required after comma
+            xpost,f,d = lbfgsb.fmin_l_bfgs_b(gcv,xpost,fprime=None,factr=1e7,\
+                   ^ (bad-whitespace)
+kaska/smoothn.py:366:48: C0326: Exactly one space required after comma
+            xpost,f,d = lbfgsb.fmin_l_bfgs_b(gcv,xpost,fprime=None,factr=1e7,\
+                                                ^ (bad-whitespace)
+kaska/smoothn.py:366:54: C0326: Exactly one space required after comma
+            xpost,f,d = lbfgsb.fmin_l_bfgs_b(gcv,xpost,fprime=None,factr=1e7,\
+                                                      ^ (bad-whitespace)
+kaska/smoothn.py:366:66: C0326: Exactly one space required after comma
+            xpost,f,d = lbfgsb.fmin_l_bfgs_b(gcv,xpost,fprime=None,factr=1e7,\
+                                                                  ^ (bad-whitespace)
+kaska/smoothn.py:367:31: C0326: Exactly one space required after comma
+               approx_grad=True,bounds=[(log10(sMinBnd),log10(sMaxBnd))],\
+                               ^ (bad-whitespace)
+kaska/smoothn.py:367:55: C0326: Exactly one space required after comma
+               approx_grad=True,bounds=[(log10(sMinBnd),log10(sMaxBnd))],\
+                                                       ^ (bad-whitespace)
+kaska/smoothn.py:368:27: C0326: Exactly one space required after comma
+               args=(Lambda,aow,DCTy,IsFinite,Wtot,y,nof,noe,smoothOrder))
+                           ^ (bad-whitespace)
+kaska/smoothn.py:368:31: C0326: Exactly one space required after comma
+               args=(Lambda,aow,DCTy,IsFinite,Wtot,y,nof,noe,smoothOrder))
+                               ^ (bad-whitespace)
+kaska/smoothn.py:368:36: C0326: Exactly one space required after comma
+               args=(Lambda,aow,DCTy,IsFinite,Wtot,y,nof,noe,smoothOrder))
+                                    ^ (bad-whitespace)
+kaska/smoothn.py:368:45: C0326: Exactly one space required after comma
+               args=(Lambda,aow,DCTy,IsFinite,Wtot,y,nof,noe,smoothOrder))
+                                             ^ (bad-whitespace)
+kaska/smoothn.py:368:50: C0326: Exactly one space required after comma
+               args=(Lambda,aow,DCTy,IsFinite,Wtot,y,nof,noe,smoothOrder))
+                                                  ^ (bad-whitespace)
+kaska/smoothn.py:368:52: C0326: Exactly one space required after comma
+               args=(Lambda,aow,DCTy,IsFinite,Wtot,y,nof,noe,smoothOrder))
+                                                    ^ (bad-whitespace)
+kaska/smoothn.py:368:56: C0326: Exactly one space required after comma
+               args=(Lambda,aow,DCTy,IsFinite,Wtot,y,nof,noe,smoothOrder))
+                                                        ^ (bad-whitespace)
+kaska/smoothn.py:368:60: C0326: Exactly one space required after comma
+               args=(Lambda,aow,DCTy,IsFinite,Wtot,y,nof,noe,smoothOrder))
+                                                            ^ (bad-whitespace)
+kaska/smoothn.py:369:0: W0311: Bad indentation. Found 8 spaces, expected 12 (bad-indentation)
+kaska/smoothn.py:369:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:371:0: W0311: Bad indentation. Found 8 spaces, expected 12 (bad-indentation)
+kaska/smoothn.py:373:0: W0311: Bad indentation. Found 8 spaces, expected 12 (bad-indentation)
+kaska/smoothn.py:373:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:375:0: W0311: Bad indentation. Found 8 spaces, expected 12 (bad-indentation)
+kaska/smoothn.py:375:31: C0326: Exactly one space required after comma
+        z = RF*dctND(Gamma*DCTy,f=idct) + (1-RF)*z;
+                               ^ (bad-whitespace)
+kaska/smoothn.py:375:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:377:0: W0311: Bad indentation. Found 8 spaces, expected 12 (bad-indentation)
+kaska/smoothn.py:377:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:378:0: C0303: Trailing whitespace (trailing-whitespace)
+kaska/smoothn.py:379:0: W0311: Bad indentation. Found 8 spaces, expected 12 (bad-indentation)
+kaska/smoothn.py:379:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:380:0: W0311: Bad indentation. Found 4 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:380:18: C0326: Exactly one space required around comparison
+    exitflag = nit<MaxIter;
+                  ^ (bad-whitespace)
+kaska/smoothn.py:380:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:382:0: W0311: Bad indentation. Found 4 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:384:26: C0303: Trailing whitespace (trailing-whitespace)
+kaska/smoothn.py:384:0: W0311: Bad indentation. Found 8 spaces, expected 12 (bad-indentation)
+kaska/smoothn.py:384:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:385:32: C0303: Trailing whitespace (trailing-whitespace)
+kaska/smoothn.py:385:0: W0311: Bad indentation. Found 8 spaces, expected 12 (bad-indentation)
+kaska/smoothn.py:385:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:386:0: W0311: Bad indentation. Found 8 spaces, expected 12 (bad-indentation)
+kaska/smoothn.py:386:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:388:0: W0311: Bad indentation. Found 8 spaces, expected 12 (bad-indentation)
+kaska/smoothn.py:388:34: C0326: Exactly one space required after comma
+        Wtot = W*RobustWeights(y-z,IsFinite,h,weightstr);
+                                  ^ (bad-whitespace)
+kaska/smoothn.py:388:43: C0326: Exactly one space required after comma
+        Wtot = W*RobustWeights(y-z,IsFinite,h,weightstr);
+                                           ^ (bad-whitespace)
+kaska/smoothn.py:388:45: C0326: Exactly one space required after comma
+        Wtot = W*RobustWeights(y-z,IsFinite,h,weightstr);
+                                             ^ (bad-whitespace)
+kaska/smoothn.py:388:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:390:44: C0303: Trailing whitespace (trailing-whitespace)
+kaska/smoothn.py:390:0: W0311: Bad indentation. Found 8 spaces, expected 12 (bad-indentation)
+kaska/smoothn.py:390:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:392:0: W0311: Bad indentation. Found 8 spaces, expected 12 (bad-indentation)
+kaska/smoothn.py:392:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:393:0: W0311: Bad indentation. Found 8 spaces, expected 12 (bad-indentation)
+kaska/smoothn.py:393:43: C0326: Exactly one space required around comparison
+        RobustIterativeProcess = RobustStep<3; # 3 robust steps are enough.
+                                           ^ (bad-whitespace)
+kaska/smoothn.py:393:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:394:0: W0311: Bad indentation. Found 4 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:395:0: W0311: Bad indentation. Found 8 spaces, expected 12 (bad-indentation)
+kaska/smoothn.py:395:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:399:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:400:0: W0311: Bad indentation. Found 4 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:400:35: C0326: Exactly one space required around comparison
+    if abs(log10(s)-log10(sMinBnd))<errp:
+                                   ^ (bad-whitespace)
+kaska/smoothn.py:401:0: W0311: Bad indentation. Found 8 spaces, expected 12 (bad-indentation)
+kaska/smoothn.py:404:0: W0311: Bad indentation. Found 4 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:404:37: C0326: Exactly one space required around comparison
+    elif abs(log10(s)-log10(sMaxBnd))<errp:
+                                     ^ (bad-whitespace)
+kaska/smoothn.py:405:0: W0311: Bad indentation. Found 8 spaces, expected 12 (bad-indentation)
+kaska/smoothn.py:411:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:411:10: C0326: Exactly one space required after comma
+  return z,s,exitflag,Wtot
+          ^ (bad-whitespace)
+kaska/smoothn.py:411:12: C0326: Exactly one space required after comma
+  return z,s,exitflag,Wtot
+            ^ (bad-whitespace)
+kaska/smoothn.py:411:21: C0326: Exactly one space required after comma
+  return z,s,exitflag,Wtot
+                     ^ (bad-whitespace)
+kaska/smoothn.py:413:14: C0326: Exactly one space required after comma
+def warning(s1,s2):
+              ^ (bad-whitespace)
+kaska/smoothn.py:414:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:415:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:420:9: C0326: Exactly one space required after comma
+def gcv(p,Lambda,aow,DCTy,IsFinite,Wtot,y,nof,noe,smoothOrder):
+         ^ (bad-whitespace)
+kaska/smoothn.py:420:16: C0326: Exactly one space required after comma
+def gcv(p,Lambda,aow,DCTy,IsFinite,Wtot,y,nof,noe,smoothOrder):
+                ^ (bad-whitespace)
+kaska/smoothn.py:420:20: C0326: Exactly one space required after comma
+def gcv(p,Lambda,aow,DCTy,IsFinite,Wtot,y,nof,noe,smoothOrder):
+                    ^ (bad-whitespace)
+kaska/smoothn.py:420:25: C0326: Exactly one space required after comma
+def gcv(p,Lambda,aow,DCTy,IsFinite,Wtot,y,nof,noe,smoothOrder):
+                         ^ (bad-whitespace)
+kaska/smoothn.py:420:34: C0326: Exactly one space required after comma
+def gcv(p,Lambda,aow,DCTy,IsFinite,Wtot,y,nof,noe,smoothOrder):
+                                  ^ (bad-whitespace)
+kaska/smoothn.py:420:39: C0326: Exactly one space required after comma
+def gcv(p,Lambda,aow,DCTy,IsFinite,Wtot,y,nof,noe,smoothOrder):
+                                       ^ (bad-whitespace)
+kaska/smoothn.py:420:41: C0326: Exactly one space required after comma
+def gcv(p,Lambda,aow,DCTy,IsFinite,Wtot,y,nof,noe,smoothOrder):
+                                         ^ (bad-whitespace)
+kaska/smoothn.py:420:45: C0326: Exactly one space required after comma
+def gcv(p,Lambda,aow,DCTy,IsFinite,Wtot,y,nof,noe,smoothOrder):
+                                             ^ (bad-whitespace)
+kaska/smoothn.py:420:49: C0326: Exactly one space required after comma
+def gcv(p,Lambda,aow,DCTy,IsFinite,Wtot,y,nof,noe,smoothOrder):
+                                                 ^ (bad-whitespace)
+kaska/smoothn.py:423:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:424:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:426:10: C0326: Exactly one space required around comparison
+    if aow>0.9: # aow = 1 means that all of the data are equally weighted
+          ^ (bad-whitespace)
+kaska/smoothn.py:428:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:431:31: C0326: Exactly one space required after comma
+        yhat = dctND(Gamma*DCTy,f=idct);
+                               ^ (bad-whitespace)
+kaska/smoothn.py:431:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:432:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:434:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:435:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:440:19: C0326: Exactly one space required after comma
+def RobustWeights(r,I,h,wstr):
+                   ^ (bad-whitespace)
+kaska/smoothn.py:440:21: C0326: Exactly one space required after comma
+def RobustWeights(r,I,h,wstr):
+                     ^ (bad-whitespace)
+kaska/smoothn.py:440:23: C0326: Exactly one space required after comma
+def RobustWeights(r,I,h,wstr):
+                       ^ (bad-whitespace)
+kaska/smoothn.py:442:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:443:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:445:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:447:24: C0326: Exactly one space required around comparison
+        c = 2.795; W = u<c; # Talworth weights
+                        ^ (bad-whitespace)
+kaska/smoothn.py:447:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:449:46: C0326: Exactly one space required around comparison
+        c = 4.685; W = (1-(u/c)**2)**2.*((u/c)<1); # bisquare weights
+                                              ^ (bad-whitespace)
+kaska/smoothn.py:449:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:451:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:456:18: C0326: Exactly one space required after comma
+def InitialGuess(y,I):
+                  ^ (bad-whitespace)
+kaska/smoothn.py:460:0: W0311: Bad indentation. Found 10 spaces, expected 12 (bad-indentation)
+kaska/smoothn.py:463:0: W0311: Bad indentation. Found 10 spaces, expected 12 (bad-indentation)
+kaska/smoothn.py:464:0: W0311: Bad indentation. Found 10 spaces, expected 12 (bad-indentation)
+kaska/smoothn.py:464:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:465:0: W0311: Bad indentation. Found 10 spaces, expected 12 (bad-indentation)
+kaska/smoothn.py:465:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:470:0: W0311: Bad indentation. Found 10 spaces, expected 12 (bad-indentation)
+kaska/smoothn.py:470:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:471:0: W0311: Bad indentation. Found 10 spaces, expected 12 (bad-indentation)
+kaska/smoothn.py:471:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:473:0: W0301: Unnecessary semicolon (unnecessary-semicolon)
+kaska/smoothn.py:475:15: C0326: Exactly one space required after comma
+    z = dctND(z,f=dct)
+               ^ (bad-whitespace)
+kaska/smoothn.py:480:0: W0311: Bad indentation. Found 6 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:480:26: C0326: Exactly one space required after comma
+      d.append(arange(m[i],k[i]))
+                          ^ (bad-whitespace)
+kaska/smoothn.py:483:15: C0326: Exactly one space required after comma
+    z = dctND(z,f=idct)
+               ^ (bad-whitespace)
+kaska/smoothn.py:500:14: C0326: Exactly one space required after comma
+def dctND(data,f=dct):
+              ^ (bad-whitespace)
+kaska/smoothn.py:501:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:502:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:503:0: W0311: Bad indentation. Found 4 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:503:17: C0326: Exactly one space required after comma
+    return f(data,norm='ortho',type=2)
+                 ^ (bad-whitespace)
+kaska/smoothn.py:503:30: C0326: Exactly one space required after comma
+    return f(data,norm='ortho',type=2)
+                              ^ (bad-whitespace)
+kaska/smoothn.py:504:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:505:0: W0311: Bad indentation. Found 4 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:505:19: C0326: Exactly one space required after comma
+    return f(f(data,norm='ortho',type=2).T,norm='ortho',type=2).T
+                   ^ (bad-whitespace)
+kaska/smoothn.py:505:32: C0326: Exactly one space required after comma
+    return f(f(data,norm='ortho',type=2).T,norm='ortho',type=2).T
+                                ^ (bad-whitespace)
+kaska/smoothn.py:505:42: C0326: Exactly one space required after comma
+    return f(f(data,norm='ortho',type=2).T,norm='ortho',type=2).T
+                                          ^ (bad-whitespace)
+kaska/smoothn.py:505:55: C0326: Exactly one space required after comma
+    return f(f(data,norm='ortho',type=2).T,norm='ortho',type=2).T
+                                                       ^ (bad-whitespace)
+kaska/smoothn.py:506:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:506:10: C0326: Exactly one space required after comparison
+  elif nd ==3:
+          ^^ (bad-whitespace)
+kaska/smoothn.py:507:0: W0311: Bad indentation. Found 4 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:507:21: C0326: Exactly one space required after comma
+    return f(f(f(data,norm='ortho',type=2,axis=0)\
+                     ^ (bad-whitespace)
+kaska/smoothn.py:507:34: C0326: Exactly one space required after comma
+    return f(f(f(data,norm='ortho',type=2,axis=0)\
+                                  ^ (bad-whitespace)
+kaska/smoothn.py:507:41: C0326: Exactly one space required after comma
+    return f(f(f(data,norm='ortho',type=2,axis=0)\
+                                         ^ (bad-whitespace)
+kaska/smoothn.py:508:21: C0326: Exactly one space required after comma
+                     ,norm='ortho',type=2,axis=1)\
+                     ^ (bad-whitespace)
+kaska/smoothn.py:508:34: C0326: Exactly one space required after comma
+                     ,norm='ortho',type=2,axis=1)\
+                                  ^ (bad-whitespace)
+kaska/smoothn.py:508:41: C0326: Exactly one space required after comma
+                     ,norm='ortho',type=2,axis=1)\
+                                         ^ (bad-whitespace)
+kaska/smoothn.py:509:21: C0326: Exactly one space required after comma
+                     ,norm='ortho',type=2,axis=2)
+                     ^ (bad-whitespace)
+kaska/smoothn.py:509:34: C0326: Exactly one space required after comma
+                     ,norm='ortho',type=2,axis=2)
+                                  ^ (bad-whitespace)
+kaska/smoothn.py:509:41: C0326: Exactly one space required after comma
+                     ,norm='ortho',type=2,axis=2)
+                                         ^ (bad-whitespace)
+kaska/smoothn.py:510:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:510:10: C0326: Exactly one space required after comparison
+  elif nd ==4:
+          ^^ (bad-whitespace)
+kaska/smoothn.py:511:0: W0311: Bad indentation. Found 4 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:511:23: C0326: Exactly one space required after comma
+    return f(f(f(f(data,norm='ortho',type=2,axis=0)\
+                       ^ (bad-whitespace)
+kaska/smoothn.py:511:36: C0326: Exactly one space required after comma
+    return f(f(f(f(data,norm='ortho',type=2,axis=0)\
+                                    ^ (bad-whitespace)
+kaska/smoothn.py:511:43: C0326: Exactly one space required after comma
+    return f(f(f(f(data,norm='ortho',type=2,axis=0)\
+                                           ^ (bad-whitespace)
+kaska/smoothn.py:512:23: C0326: Exactly one space required after comma
+                       ,norm='ortho',type=2,axis=1)\
+                       ^ (bad-whitespace)
+kaska/smoothn.py:512:36: C0326: Exactly one space required after comma
+                       ,norm='ortho',type=2,axis=1)\
+                                    ^ (bad-whitespace)
+kaska/smoothn.py:512:43: C0326: Exactly one space required after comma
+                       ,norm='ortho',type=2,axis=1)\
+                                           ^ (bad-whitespace)
+kaska/smoothn.py:513:23: C0326: Exactly one space required after comma
+                       ,norm='ortho',type=2,axis=2)\
+                       ^ (bad-whitespace)
+kaska/smoothn.py:513:36: C0326: Exactly one space required after comma
+                       ,norm='ortho',type=2,axis=2)\
+                                    ^ (bad-whitespace)
+kaska/smoothn.py:513:43: C0326: Exactly one space required after comma
+                       ,norm='ortho',type=2,axis=2)\
+                                           ^ (bad-whitespace)
+kaska/smoothn.py:514:51: C0303: Trailing whitespace (trailing-whitespace)
+kaska/smoothn.py:514:23: C0326: Exactly one space required after comma
+                       ,norm='ortho',type=2,axis=3) 
+                       ^ (bad-whitespace)
+kaska/smoothn.py:514:36: C0326: Exactly one space required after comma
+                       ,norm='ortho',type=2,axis=3) 
+                                    ^ (bad-whitespace)
+kaska/smoothn.py:514:43: C0326: Exactly one space required after comma
+                       ,norm='ortho',type=2,axis=3) 
+                                           ^ (bad-whitespace)
+kaska/smoothn.py:515:13: C0303: Trailing whitespace (trailing-whitespace)
+kaska/smoothn.py:516:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:519:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:520:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:520:4: C0326: Exactly one space required after comma
+  [x,y] = meshgrid(xp,xp)
+    ^ (bad-whitespace)
+kaska/smoothn.py:520:21: C0326: Exactly one space required after comma
+  [x,y] = meshgrid(xp,xp)
+                     ^ (bad-whitespace)
+kaska/smoothn.py:521:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:522:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:523:0: W0311: Bad indentation. Found 4 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:524:0: W0311: Bad indentation. Found 4 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:525:0: W0311: Bad indentation. Found 4 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:526:0: W0311: Bad indentation. Found 4 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:527:0: W0311: Bad indentation. Found 4 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:528:0: W0311: Bad indentation. Found 4 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:530:0: W0311: Bad indentation. Found 4 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:531:0: W0311: Bad indentation. Found 4 spaces, expected 8 (bad-indentation)
+kaska/smoothn.py:532:10: C0303: Trailing whitespace (trailing-whitespace)
+kaska/smoothn.py:532:0: W0311: Bad indentation. Found 2 spaces, expected 4 (bad-indentation)
+kaska/smoothn.py:1:0: W0622: Redefining built-in 'bytes' (redefined-builtin)
+kaska/smoothn.py:1:0: W0622: Redefining built-in 'bool' (redefined-builtin)
+kaska/smoothn.py:1:0: W0622: Redefining built-in 'int' (redefined-builtin)
+kaska/smoothn.py:1:0: W0622: Redefining built-in 'float' (redefined-builtin)
+kaska/smoothn.py:1:0: W0622: Redefining built-in 'complex' (redefined-builtin)
+kaska/smoothn.py:1:0: W0622: Redefining built-in 'object' (redefined-builtin)
+kaska/smoothn.py:1:0: W0622: Redefining built-in 'str' (redefined-builtin)
+kaska/smoothn.py:1:0: W0622: Redefining built-in 'sum' (redefined-builtin)
+kaska/smoothn.py:1:0: W0622: Redefining built-in 'any' (redefined-builtin)
+kaska/smoothn.py:1:0: W0622: Redefining built-in 'all' (redefined-builtin)
+kaska/smoothn.py:1:0: W0622: Redefining built-in 'max' (redefined-builtin)
+kaska/smoothn.py:1:0: W0622: Redefining built-in 'min' (redefined-builtin)
+kaska/smoothn.py:1:0: W0622: Redefining built-in 'round' (redefined-builtin)
+kaska/smoothn.py:1:0: W0622: Redefining built-in 'abs' (redefined-builtin)
+kaska/smoothn.py:1:0: W0622: Redefining built-in 'range' (redefined-builtin)
+kaska/smoothn.py:1:0: W0622: Redefining built-in 'format' (redefined-builtin)
+kaska/smoothn.py:1:0: W0622: Redefining built-in 'map' (redefined-builtin)
+kaska/smoothn.py:1:0: C0111: Missing module docstring (missing-docstring)
+kaska/smoothn.py:1:0: W0401: Wildcard import numpy (wildcard-import)
+kaska/smoothn.py:9:0: C0103: Function name "H" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:9:0: C0103: Argument name "y" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:9:0: C0103: Argument name "t0" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:13:2: C0103: Variable name "h" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:9:8: W0613: Unused argument 't0' (unused-argument)
+kaska/smoothn.py:13:2: W0612: Unused variable 'h' (unused-variable)
+kaska/smoothn.py:14:2: W0612: Unused variable 'args' (unused-variable)
+kaska/smoothn.py:276:2: W0621: Redefining name 'N' from outer scope (line 1) (redefined-outer-name)
+kaska/smoothn.py:244:4: W0621: Redefining name 'dct' from outer scope (line 5) (redefined-outer-name)
+kaska/smoothn.py:244:4: W0621: Redefining name 'idct' from outer scope (line 5) (redefined-outer-name)
+kaska/smoothn.py:16:0: C0103: Argument name "y" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:16:0: C0103: Argument name "nS0" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:16:0: C0103: Argument name "smoothOrder" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:16:0: C0103: Argument name "sd" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:16:0: C0103: Argument name "s0" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:16:0: C0103: Argument name "z0" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:16:0: C0103: Argument name "W" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:16:0: C0103: Argument name "s" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:16:0: C0103: Argument name "MaxIter" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:16:0: C0103: Argument name "TolZ" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:16:0: R0913: Too many arguments (14/5) (too-many-arguments)
+kaska/smoothn.py:16:0: R0914: Too many local variables (52/15) (too-many-locals)
+kaska/smoothn.py:172:5: C0123: Using type() instead of isinstance() for a typecheck. (unidiomatic-typecheck)
+kaska/smoothn.py:177:14: C0121: Comparison to None should be 'expr is not None' (singleton-comparison)
+kaska/smoothn.py:180:14: C0121: Comparison to None should be 'expr is not None' (singleton-comparison)
+kaska/smoothn.py:186:12: C0121: Comparison to None should be 'expr is not None' (singleton-comparison)
+kaska/smoothn.py:190:4: E1137: 'W' does not support item assignment (unsupported-assignment-operation)
+kaska/smoothn.py:193:12: C0121: Comparison to None should be 'expr is not None' (singleton-comparison)
+kaska/smoothn.py:199:5: C0121: Comparison to None should be 'expr is None' (singleton-comparison)
+kaska/smoothn.py:204:4: C0103: Variable name "z" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:205:17: C0321: More than one statement on a single line (multiple-statements)
+kaska/smoothn.py:205:17: C0103: Variable name "Wtot" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:211:12: C0121: Comparison to None should be 'expr is None' (singleton-comparison)
+kaska/smoothn.py:223:2: C0103: Variable name "IsFinite" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:227:4: E0602: Undefined variable 'error' (undefined-variable)
+kaska/smoothn.py:245:2: W0702: No exception type(s) specified (bare-except)
+kaska/smoothn.py:244:4: W0404: Reimport 'dct' (imported line 5) (reimported)
+kaska/smoothn.py:244:4: W0404: Reimport 'idct' (imported line 5) (reimported)
+kaska/smoothn.py:246:4: C0103: Variable name "z" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:247:18: C0321: More than one statement on a single line (multiple-statements)
+kaska/smoothn.py:247:18: C0103: Variable name "Wtot" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:255:2: C0103: Variable name "d" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:256:2: C0103: Variable name "Lambda" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:263:4: C0103: Variable name "Lambda" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:266:2: C0103: Variable name "Lambda" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:268:4: C0103: Variable name "Gamma" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:276:2: C0103: Variable name "N" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:277:2: C0103: Variable name "hMin" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:277:15: C0321: More than one statement on a single line (multiple-statements)
+kaska/smoothn.py:277:15: C0103: Variable name "hMax" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:285:2: W0702: No exception type(s) specified (bare-except)
+kaska/smoothn.py:283:4: C0103: Variable name "sMinBnd" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:284:4: C0103: Variable name "sMaxBnd" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:286:4: C0103: Variable name "sMinBnd" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:287:4: C0103: Variable name "sMaxBnd" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:290:2: C0103: Variable name "Wtot" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:298:7: C0121: Comparison to None should be 'expr is not None' (singleton-comparison)
+kaska/smoothn.py:299:8: C0103: Variable name "z" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:301:8: C0103: Variable name "z" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:304:4: C0103: Variable name "z" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:310:2: C0103: Variable name "RobustIterativeProcess" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:311:2: C0103: Variable name "RobustStep" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:317:2: C0103: Variable name "RF" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:324:4: W0702: No exception type(s) specified (bare-except)
+kaska/smoothn.py:336:8: C0103: Variable name "DCTy" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:355:14: C0103: Variable name "ss" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:356:14: C0103: Variable name "g" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:357:20: C0103: Variable name "p" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:358:16: E1137: 'g' does not support item assignment (unsupported-assignment-operation)
+kaska/smoothn.py:360:29: E1101: Instance of 'tuple' has no 'min' member (no-member)
+kaska/smoothn.py:366:18: C0103: Variable name "f" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:366:20: C0103: Variable name "d" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:373:8: C0103: Variable name "Gamma" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:375:8: C0103: Variable name "z" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:384:8: C0103: Variable name "h" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:385:8: C0103: Variable name "h" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:386:8: C0103: Variable name "h" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:388:8: C0103: Variable name "Wtot" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:390:27: C0321: More than one statement on a single line (multiple-statements)
+kaska/smoothn.py:392:8: C0103: Variable name "RobustStep" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:393:8: C0103: Variable name "RobustIterativeProcess" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:395:8: C0103: Variable name "RobustIterativeProcess" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:173:4: W0612: Unused variable 'is_masked' (unused-variable)
+kaska/smoothn.py:255:2: W0612: Unused variable 'd' (unused-variable)
+kaska/smoothn.py:366:18: W0612: Unused variable 'f' (unused-variable)
+kaska/smoothn.py:16:0: R0912: Too many branches (33/12) (too-many-branches)
+kaska/smoothn.py:16:0: R0915: Too many statements (128/50) (too-many-statements)
+kaska/smoothn.py:413:0: C0103: Argument name "s1" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:413:0: C0103: Argument name "s2" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:413:0: C0111: Missing function docstring (missing-docstring)
+kaska/smoothn.py:420:0: C0103: Argument name "p" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:420:0: C0103: Argument name "Lambda" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:420:0: C0103: Argument name "DCTy" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:420:0: C0103: Argument name "IsFinite" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:420:0: C0103: Argument name "Wtot" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:420:0: C0103: Argument name "y" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:420:0: C0103: Argument name "smoothOrder" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:420:0: C0111: Missing function docstring (missing-docstring)
+kaska/smoothn.py:420:0: R0913: Too many arguments (10/5) (too-many-arguments)
+kaska/smoothn.py:420:0: R0914: Too many local variables (16/15) (too-many-locals)
+kaska/smoothn.py:423:4: C0103: Variable name "s" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:424:4: C0103: Variable name "Gamma" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:428:8: C0103: Variable name "RSS" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:432:8: C0103: Variable name "RSS" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:434:4: C0103: Variable name "TrH" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:435:4: C0103: Variable name "GCVscore" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:440:0: C0103: Function name "RobustWeights" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:440:0: C0103: Argument name "r" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:440:0: C0103: Argument name "I" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:440:0: C0103: Argument name "h" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:440:0: C0111: Missing function docstring (missing-docstring)
+kaska/smoothn.py:442:4: C0103: Variable name "MAD" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:443:4: C0103: Variable name "u" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:445:8: C0103: Variable name "c" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:445:19: C0321: More than one statement on a single line (multiple-statements)
+kaska/smoothn.py:445:19: C0103: Variable name "W" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:447:8: C0103: Variable name "c" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:447:19: C0321: More than one statement on a single line (multiple-statements)
+kaska/smoothn.py:447:19: C0103: Variable name "W" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:449:8: C0103: Variable name "c" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:449:19: C0321: More than one statement on a single line (multiple-statements)
+kaska/smoothn.py:449:19: C0103: Variable name "W" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:456:0: C0103: Function name "InitialGuess" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:456:0: C0103: Argument name "y" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:456:0: C0103: Argument name "I" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:456:0: C0111: Missing function docstring (missing-docstring)
+kaska/smoothn.py:466:8: W0702: No exception type(s) specified (bare-except)
+kaska/smoothn.py:463:10: C0103: Variable name "L" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:464:10: C0103: Variable name "z" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:470:10: C0103: Variable name "z" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:473:8: C0103: Variable name "z" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:475:4: C0103: Variable name "z" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:477:4: C0103: Variable name "m" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:478:4: C0103: Variable name "d" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:479:13: E0602: Undefined variable 'xrange' (undefined-variable)
+kaska/smoothn.py:481:4: C0103: Variable name "d" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:483:4: C0103: Variable name "z" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:500:0: C0103: Function name "dctND" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:500:0: C0103: Argument name "f" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:500:0: C0111: Missing function docstring (missing-docstring)
+kaska/smoothn.py:501:2: C0103: Variable name "nd" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:502:2: R1705: Unnecessary "elif" after "return" (no-else-return)
+kaska/smoothn.py:500:0: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
+kaska/smoothn.py:515:0: C0103: Argument name "n" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:519:2: C0103: Variable name "xp" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:520:3: C0103: Variable name "x" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:520:5: C0103: Variable name "y" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:521:2: C0103: Variable name "z" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:521:6: E1101: Instance of 'tuple' has no 'astype' member (no-member)
+kaska/smoothn.py:522:11: E0602: Undefined variable 'xrange' (undefined-variable)
+kaska/smoothn.py:523:4: C0103: Variable name "x0" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:523:9: E1102: random is not callable (not-callable)
+kaska/smoothn.py:524:4: C0103: Variable name "y0" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:524:9: E1102: random is not callable (not-callable)
+kaska/smoothn.py:525:10: E1102: random is not callable (not-callable)
+kaska/smoothn.py:527:4: C0103: Variable name "c" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:527:8: E1102: random is not callable (not-callable)
+kaska/smoothn.py:528:4: C0103: Variable name "f" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:530:4: C0103: Variable name "f" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:530:9: E1102: random is not callable (not-callable)
+kaska/smoothn.py:531:4: C0103: Variable name "z" doesn't conform to snake_case naming style (invalid-name)
+kaska/smoothn.py:522:6: W0612: Unused variable 'i' (unused-variable)
+kaska/smoothn.py:715:-1: W0105: String statement has no effect (pointless-string-statement)
+kaska/smoothn.py:1:0: W0614: Unused import sys from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import warnings from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import msg from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import unicode from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import oldnumeric from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import numarray from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import test from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import PytestTester from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import ModuleDeprecationWarning from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import VisibleDeprecationWarning from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import show_config from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import core from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import os from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import glob from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import libs_path from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import DLL_filenames from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import filename from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import env_added from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import envkey from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import exc from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import path from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import nt from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import copyreg from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import WinDLL from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import multiarray from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import umath from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import numeric from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import collections_abc from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import functools from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import itertools from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import operator from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import numbers from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import bitwise_not from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import ufunc from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import newaxis from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import pickle from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import basestring from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import builtins from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import array_function_dispatch from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import loads from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import ComplexWarning from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import zeros_like from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import ones_like from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import full from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import full_like from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import count_nonzero from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import asarray from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import asanyarray from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import ascontiguousarray from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import asfortranarray from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import require from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import isfortran from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import argwhere from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import flatnonzero from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import correlate from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import convolve from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import outer from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import tensordot from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import roll from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import rollaxis from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import normalize_axis_tuple from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import moveaxis from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import cross from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import little_endian from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import indices from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import fromfunction from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import isscalar from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import binary_repr from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import base_repr from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import load from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import identity from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import allclose from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import isclose from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import array_equal from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import array_equiv from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import seterr from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import geterr from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import setbufsize from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import getbufsize from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import seterrcall from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import geterrcall from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import errstate from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import Inf from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import inf from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import infty from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import Infinity from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import nan from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import NaN from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import False_ from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import True_ from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import extend_all from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import fastCopyAndTranspose from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import ALLOW_THREADS from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import BUFSIZE from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import CLIP from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import MAXDIMS from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import MAY_SHARE_BOUNDS from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import MAY_SHARE_EXACT from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import RAISE from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import WRAP from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import broadcast from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import can_cast from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import compare_chararrays from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import concatenate from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import copyto from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import dot from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import dtype from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import empty from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import empty_like from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import flatiter from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import frombuffer from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import fromfile from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import fromiter from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import fromstring from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import inner from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import int_asbuffer from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import lexsort from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import matmul from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import may_share_memory from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import min_scalar_type from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import ndarray from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import nditer from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import nested_iters from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import promote_types from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import putmask from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import result_type from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import set_numeric_ops from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import shares_memory from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import vdot from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import where from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import normalize_axis_index from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import newbuffer from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import getbuffer from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import overrides from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import set_module from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import multiply from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import invert from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import sin from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import UFUNC_BUFSIZE_DEFAULT from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import ERR_IGNORE from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import ERR_WARN from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import ERR_RAISE from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import ERR_CALL from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import ERR_PRINT from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import ERR_LOG from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import ERR_DEFAULT from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import PINF from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import NAN from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import numerictypes from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import longlong from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import intc from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import int_ from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import float_ from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import complex_ from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import bool_ from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import TooHardError from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import AxisError from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import e from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import euler_gamma from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import geterrobj from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import seterrobj from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import arccos from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import arccosh from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import arcsin from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import arcsinh from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import arctan from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import arctanh from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import cbrt from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import conj from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import conjugate from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import cosh from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import deg2rad from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import degrees from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import exp2 from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import expm1 from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import fabs from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import frexp from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import isinf from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import log from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import log1p from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import logical_not from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import modf from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import negative from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import rad2deg from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import radians from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import reciprocal from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import rint from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import sign from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import signbit from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import sinh from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import spacing from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import square from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import tan from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import tanh from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import trunc from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import bitwise_and from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import bitwise_or from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import bitwise_xor from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import copysign from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import divide from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import equal from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import float_power from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import floor_divide from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import fmax from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import fmin from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import fmod from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import greater from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import hypot from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import ldexp from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import left_shift from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import less from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import logaddexp from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import logaddexp2 from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import logical_and from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import logical_or from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import logical_xor from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import maximum from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import minimum from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import nextafter from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import not_equal from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import power from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import right_shift from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import subtract from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import true_divide from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import generic from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import genericTypeRank from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import maximum_sctype from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import issctype from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import obj2sctype from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import issubclass_ from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import issubsctype from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import issubdtype from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import nbytes from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import sctype2char from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import cast from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import key from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import ScalarType from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import typecodes from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import typeDict from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import typeNA from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import find_common_type from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import bytes from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import long from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import typeinfo from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import datetime_data from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import datetime_as_string from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import busday_offset from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import busday_count from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import is_busday from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import busdaycalendar from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import english_lower from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import english_upper from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import english_capitalize from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import LOWER_TABLE from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import UPPER_TABLE from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import sctypeDict from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import sctypeNA from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import allTypes from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import bitname from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import sctypes from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import complex from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import object from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import str from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import flexible from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import number from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import datetime64 from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import void from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import character from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import integer from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import inexact from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import str_ from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import bytes_ from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import signedinteger from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import unsignedinteger from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import complexfloating from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import floating from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import float64 from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import uint64 from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import complex64 from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import int16 from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import float96 from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import int8 from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import uint32 from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import uint8 from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import complex192 from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import timedelta64 from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import int32 from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import uint16 from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import float32 from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import complex128 from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import float16 from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import int64 from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import buffer_type from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import bool8 from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import byte from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import bytes0 from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import cdouble from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import cfloat from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import clongdouble from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import clongfloat from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import csingle from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import double from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import half from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import int0 from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import intp from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import longcomplex from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import longdouble from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import longfloat from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import object0 from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import object_ from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import short from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import single from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import singlecomplex from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import str0 from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import string_ from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import ubyte from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import uint from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import uint0 from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import uintc from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import uintp from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import ulonglong from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import unicode_ from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import ushort from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import void0 from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import fromnumeric from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import types from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import take from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import reshape from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import choose from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import repeat from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import put from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import swapaxes from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import transpose from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import partition from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import argpartition from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import sort from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import argsort from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import argmax from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import argmin from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import searchsorted from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import resize from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import squeeze from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import diagonal from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import trace from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import ravel from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import nonzero from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import shape from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import compress from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import clip from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import all from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import cumsum from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import ptp from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import amax from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import amin from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import alen from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import prod from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import cumprod from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import ndim from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import size from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import around from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import std from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import var from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import round_ from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import product from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import cumproduct from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import sometrue from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import alltrue from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import rank from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import mu from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import um from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import arrayprint from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import contextlib from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import set_printoptions from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import get_printoptions from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import printoptions from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import repr_format from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import str_format from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import array2string from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import FloatingFormat from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import FloatFormat from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import LongFloatFormat from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import format_float_scientific from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import format_float_positional from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import IntegerFormat from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import BoolFormat from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import ComplexFloatingFormat from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import ComplexFormat from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import LongComplexFormat from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import DatetimeFormat from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import TimedeltaFormat from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import SubArrayFormat from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import StructuredVoidFormat from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import StructureFormat from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import dtype_is_implied from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import dtype_short_repr from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import array_repr from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import array_str from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import set_string_function from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import get_ident from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import absolute from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import isnat from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import dragon4_positional from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import dragon4_scientific from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import set_legacy_print_mode from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import char from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import rec from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import numfmt from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import find_duplicate from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import format_parser from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import record from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import recarray from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import fromarrays from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import fromrecords from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import get_remaining_size from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import sb from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import isfileobj from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import os_fspath from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import dtypedescr from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import valid_filemodes from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import writeable_filemodes from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import mode_equivalents from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import memmap from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import contextlib_nullcontext from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import is_pathlib_path from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import chararray from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import function_base from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import linspace from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import logspace from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import geomspace from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import add_newdoc from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import add_docstring from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import machar from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import MachAr from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import getlimits from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import MachArLike from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import finfo from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import iinfo from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import ntypes from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import shape_base from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import atleast_1d from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import atleast_2d from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import atleast_3d from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import vstack from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import hstack from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import stack from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import block from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import einsumfunc from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import einsum_symbols from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import einsum_symbols_set from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import einsum_path from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import einsum from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import c_einsum from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import max from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import min from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import round from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import compat from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import lib from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import math from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import mintypecode from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import asfarray from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import real from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import imag from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import iscomplex from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import isreal from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import iscomplexobj from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import isrealobj from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import nan_to_num from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import real_if_close from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import asscalar from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import typename from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import array_type from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import array_precision from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import common_type from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import isneginf from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import isposinf from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import matrixlib from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import ix_ from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import nd_grid from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import MGridClass from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import mgrid from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import OGridClass from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import ogrid from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import AxisConcatenator from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import RClass from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import r_ from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import CClass from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import c_ from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import ndenumerate from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import ndindex from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import IndexExpression from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import index_exp from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import s_ from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import fill_diagonal from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import diag_indices from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import diag_indices_from from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import diff from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import ravel_multi_index from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import unravel_index from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import as_strided from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import re from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import range from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import rot90 from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import flip from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import iterable from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import average from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import asarray_chkfinite from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import piecewise from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import select from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import copy from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import gradient from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import interp from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import angle from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import unwrap from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import sort_complex from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import trim_zeros from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import extract from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import place from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import disp from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import vectorize from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import cov from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import corrcoef from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import blackman from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import bartlett from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import hanning from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import hamming from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import i0 from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import kaiser from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import sinc from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import msort from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import percentile from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import quantile from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import trapz from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import delete from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import insert from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import append from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import digitize from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import floor from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import add from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import arctan2 from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import frompyfunc from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import less_equal from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import mod from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import diag from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import deprecate from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import bincount from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import compiled_interp from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import compiled_interp_complex from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import add_newdoc_ufunc from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import histogram from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import histogramdd from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import NDArrayOperatorsMixin from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import nanmin from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import nanmax from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import nanargmin from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import nanargmax from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import nansum from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import nanprod from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import nancumsum from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import nancumprod from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import nanmean from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import nanmedian from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import nanpercentile from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import nanquantile from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import nanvar from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import nanstd from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import take_along_axis from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import put_along_axis from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import apply_along_axis from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import apply_over_axes from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import expand_dims from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import row_stack from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import column_stack from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import dstack from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import array_split from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import split from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import hsplit from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import vsplit from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import dsplit from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import get_array_prepare from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import get_array_wrap from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import kron from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import tile from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import matrix from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import DummyArray from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import broadcast_to from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import broadcast_arrays from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import i1 from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import i2 from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import i4 from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import fliplr from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import flipud from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import eye from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import diagflat from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import tri from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import tril from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import triu from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import vander from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import histogram2d from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import mask_indices from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import tril_indices from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import tril_indices_from from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import triu_indices from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import triu_indices_from from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import greater_equal from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import nx from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import fix from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import ENABLE_ARRAY_FUNCTION from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import histogram_bin_edges from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import emath from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import NX from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import RankWarning from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import poly from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import roots from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import polyint from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import polyder from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import polyfit from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import polyval from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import polyadd from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import polysub from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import polymul from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import polydiv from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import poly1d from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import eigvals from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import lstsq from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import inv from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import get_include from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import deprecate_with_doc from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import byte_bounds from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import who from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import info from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import source from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import lookfor from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import SafeEval from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import safe_eval from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import getargspec from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import formatargspec from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import ediff1d from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import unique from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import intersect1d from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import setxor1d from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import in1d from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import isin from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import union1d from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import setdiff1d from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import weakref from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import BagObj from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import zipfile_factory from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import NpzFile from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import save from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import savez from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import savez_compressed from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import loadtxt from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import savetxt from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import fromregex from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import genfromtxt from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import ndfromtxt from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import mafromtxt from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import recfromtxt from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import recfromcsv from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import itemgetter from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import opindex from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import format from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import DataSource from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import packbits from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import unpackbits from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import recursive from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import LineSplitter from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import NameValidator from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import StringConverter from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import ConverterError from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import ConverterLockError from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import ConversionWarning from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import has_nested_fields from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import flatten_dtype from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import easy_dtype from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import asbytes from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import asstr from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import asunicode from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import asbytes_nested from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import os_PathLike from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import Mapping from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import map from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import fv from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import pmt from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import nper from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import ipmt from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import ppmt from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import pv from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import rate from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import irr from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import npv from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import mirr from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import Decimal from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import Arrayterator from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import pad from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import NumpyVersion from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import tracemalloc_domain from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import linalg from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import fft from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import polynomial from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import ctypeslib from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import ast from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import N from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import asmatrix from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import bmat from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import mat from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import matrix_power from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:1:0: W0614: Unused import Tester from wildcard import (unused-wildcard-import)
+kaska/smoothn.py:3:0: W0611: Unused import numpy.linalg (unused-import)
+kaska/smoothn.py:3:0: C0412: Imports from package numpy are not grouped (ungrouped-imports)
+kaska/smoothn.py:5:0: C0412: Imports from package scipy are not grouped (ungrouped-imports)
+kaska/smoothn.py:6:0: C0412: Imports from package numpy are not grouped (ungrouped-imports)
+************* Module kaska.tests.test_kaska
+kaska/tests/test_kaska.py:22:17: W0621: Redefining name 'response' from outer scope (line 13) (redefined-outer-name)
+kaska/tests/test_kaska.py:22:17: W0613: Unused argument 'response' (unused-argument)
+kaska/tests/test_kaska.py:9:0: W0611: Unused import kaska (unused-import)
+************* Module kaska.tests.test_reproject
+kaska/tests/test_reproject.py:8:0: C0413: Import "import pytest" should be placed at the top of the module (wrong-import-position)
+kaska/tests/test_reproject.py:9:0: C0413: Import "import gdal" should be placed at the top of the module (wrong-import-position)
+kaska/tests/test_reproject.py:10:0: C0413: Import "import numpy as np" should be placed at the top of the module (wrong-import-position)
+kaska/tests/test_reproject.py:15:0: C0413: Import "from ..utils import reproject_data" should be placed at the top of the module (wrong-import-position)
+kaska/tests/test_reproject.py:23:4: C0103: Variable name "gg" doesn't conform to snake_case naming style (invalid-name)
+kaska/tests/test_reproject.py:24:4: C0103: Variable name "g" doesn't conform to snake_case naming style (invalid-name)
+kaska/tests/test_reproject.py:8:0: W0611: Unused import pytest (unused-import)
+************* Module kaska.tests.test_smoothn
+kaska/tests/test_smoothn.py:27:0: C0303: Trailing whitespace (trailing-whitespace)
+kaska/tests/test_smoothn.py:30:0: C0303: Trailing whitespace (trailing-whitespace)
+kaska/tests/test_smoothn.py:33:0: C0303: Trailing whitespace (trailing-whitespace)
+kaska/tests/test_smoothn.py:36:0: C0303: Trailing whitespace (trailing-whitespace)
+kaska/tests/test_smoothn.py:40:48: C0326: No space allowed around keyword argument assignment
+    (s, ess, flag, wtot) = smoothn.smoothn(d, W = w, axis=0, isrobust=True)
+                                                ^ (bad-whitespace)
+kaska/tests/test_smoothn.py:42:0: C0303: Trailing whitespace (trailing-whitespace)
+kaska/tests/test_smoothn.py:44:0: C0303: Trailing whitespace (trailing-whitespace)
+kaska/tests/test_smoothn.py:50:62: C0326: No space allowed before bracket
+                           [1.39932148, 1.00197386, 1.306045  ],
+                                                              ^ (bad-whitespace)
+kaska/tests/test_smoothn.py:52:0: C0303: Trailing whitespace (trailing-whitespace)
+kaska/tests/test_smoothn.py:58:0: C0303: Trailing whitespace (trailing-whitespace)
+kaska/tests/test_smoothn.py:59:0: C0325: Unnecessary parens after 'assert' keyword (superfluous-parens)
+kaska/tests/test_smoothn.py:60:0: C0325: Unnecessary parens after 'assert' keyword (superfluous-parens)
+kaska/tests/test_smoothn.py:63:0: C0303: Trailing whitespace (trailing-whitespace)
+kaska/tests/test_smoothn.py:65:0: C0303: Trailing whitespace (trailing-whitespace)
+kaska/tests/test_smoothn.py:68:84: C0303: Trailing whitespace (trailing-whitespace)
+kaska/tests/test_smoothn.py:71:0: C0303: Trailing whitespace (trailing-whitespace)
+kaska/tests/test_smoothn.py:76:0: C0303: Trailing whitespace (trailing-whitespace)
+kaska/tests/test_smoothn.py:80:0: C0303: Trailing whitespace (trailing-whitespace)
+kaska/tests/test_smoothn.py:85:21: C0303: Trailing whitespace (trailing-whitespace)
+kaska/tests/test_smoothn.py:97:0: C0303: Trailing whitespace (trailing-whitespace)
+kaska/tests/test_smoothn.py:17:0: C0111: Missing function docstring (missing-docstring)
+kaska/tests/test_smoothn.py:18:4: C0103: Variable name "x" doesn't conform to snake_case naming style (invalid-name)
+kaska/tests/test_smoothn.py:22:4: C0103: Variable name "y" doesn't conform to snake_case naming style (invalid-name)
+kaska/tests/test_smoothn.py:22:27: C0321: More than one statement on a single line (multiple-statements)
+kaska/tests/test_smoothn.py:23:5: C0103: Variable name "z" doesn't conform to snake_case naming style (invalid-name)
+kaska/tests/test_smoothn.py:23:8: C0103: Variable name "s" doesn't conform to snake_case naming style (invalid-name)
+kaska/tests/test_smoothn.py:24:5: C0103: Variable name "zr" doesn't conform to snake_case naming style (invalid-name)
+kaska/tests/test_smoothn.py:24:9: C0103: Variable name "sr" doesn't conform to snake_case naming style (invalid-name)
+kaska/tests/test_smoothn.py:23:8: W0612: Unused variable 's' (unused-variable)
+kaska/tests/test_smoothn.py:23:11: W0612: Unused variable 'flag' (unused-variable)
+kaska/tests/test_smoothn.py:23:17: W0612: Unused variable 'wtot' (unused-variable)
+kaska/tests/test_smoothn.py:24:9: W0612: Unused variable 'sr' (unused-variable)
+kaska/tests/test_smoothn.py:38:0: C0111: Missing function docstring (missing-docstring)
+kaska/tests/test_smoothn.py:39:5: C0103: Variable name "d" doesn't conform to snake_case naming style (invalid-name)
+kaska/tests/test_smoothn.py:39:8: C0103: Variable name "w" doesn't conform to snake_case naming style (invalid-name)
+kaska/tests/test_smoothn.py:40:5: C0103: Variable name "s" doesn't conform to snake_case naming style (invalid-name)
+kaska/tests/test_smoothn.py:40:8: W0612: Unused variable 'ess' (unused-variable)
+kaska/tests/test_smoothn.py:40:13: W0612: Unused variable 'flag' (unused-variable)
+kaska/tests/test_smoothn.py:40:19: W0612: Unused variable 'wtot' (unused-variable)
+kaska/tests/test_smoothn.py:62:0: C0111: Missing function docstring (missing-docstring)
+kaska/tests/test_smoothn.py:68:4: C0103: Variable name "nx" doesn't conform to snake_case naming style (invalid-name)
+kaska/tests/test_smoothn.py:69:4: C0103: Variable name "ny" doesn't conform to snake_case naming style (invalid-name)
+kaska/tests/test_smoothn.py:70:4: C0103: Variable name "nt" doesn't conform to snake_case naming style (invalid-name)
+kaska/tests/test_smoothn.py:77:4: C0103: Variable name "t" doesn't conform to snake_case naming style (invalid-name)
+kaska/tests/test_smoothn.py:96:0: C0103: Argument name "nt" doesn't conform to snake_case naming style (invalid-name)
+kaska/tests/test_smoothn.py:96:0: C0111: Missing function docstring (missing-docstring)
+kaska/tests/test_smoothn.py:100:26: E1130: bad operand type for unary -: tuple (invalid-unary-operand-type)
+kaska/tests/test_smoothn.py:105:0: C0103: Argument name "nt" doesn't conform to snake_case naming style (invalid-name)
+kaska/tests/test_smoothn.py:105:0: C0111: Missing function docstring (missing-docstring)
+kaska/tests/test_smoothn.py:9:0: W0611: Unused import pytest (unused-import)
+kaska/tests/test_smoothn.py:12:0: W0611: Unused import sys (unused-import)
+kaska/tests/test_smoothn.py:12:0: C0411: standard import "import sys" should be placed before "import pytest" (wrong-import-order)
+************* Module kaska.NNParameterInversion
+kaska/NNParameterInversion/__init__.py:1:0: C0103: Module name "NNParameterInversion" doesn't conform to snake_case naming style (invalid-name)
+kaska/NNParameterInversion/__init__.py:1:0: C0111: Missing module docstring (missing-docstring)
+************* Module kaska.NNParameterInversion.NNParameterInversion
+kaska/NNParameterInversion/NNParameterInversion.py:27:0: C0303: Trailing whitespace (trailing-whitespace)
+kaska/NNParameterInversion/NNParameterInversion.py:46:0: C0303: Trailing whitespace (trailing-whitespace)
+kaska/NNParameterInversion/NNParameterInversion.py:47:0: C0303: Trailing whitespace (trailing-whitespace)
+kaska/NNParameterInversion/NNParameterInversion.py:50:74: C0303: Trailing whitespace (trailing-whitespace)
+kaska/NNParameterInversion/NNParameterInversion.py:51:71: C0303: Trailing whitespace (trailing-whitespace)
+kaska/NNParameterInversion/NNParameterInversion.py:70:0: C0330: Wrong continued indentation (add 1 space).
+                np.ones(n_clr_pxls) * sza,
+                ^| (bad-continuation)
+kaska/NNParameterInversion/NNParameterInversion.py:71:0: C0330: Wrong continued indentation (add 1 space).
+                np.ones(n_clr_pxls) * vza,
+                ^| (bad-continuation)
+kaska/NNParameterInversion/NNParameterInversion.py:72:0: C0330: Wrong continued indentation (add 1 space).
+                np.ones(n_clr_pxls) * raa],
+                ^| (bad-continuation)
+kaska/NNParameterInversion/NNParameterInversion.py:85:0: C0304: Final newline missing (missing-final-newline)
+kaska/NNParameterInversion/NNParameterInversion.py:1:0: C0103: Module name "NNParameterInversion" doesn't conform to snake_case naming style (invalid-name)
+kaska/NNParameterInversion/NNParameterInversion.py:1:0: C0111: Missing module docstring (missing-docstring)
+kaska/NNParameterInversion/NNParameterInversion.py:15:0: R0205: Class 'NNParameterInversion' inherits from object, can be safely removed from bases in python3 (useless-object-inheritance)
+kaska/NNParameterInversion/NNParameterInversion.py:49:4: R0914: Too many local variables (20/15) (too-many-locals)
+kaska/NNParameterInversion/NNParameterInversion.py:55:8: W1203: Use % formatting in logging functions and pass the % parameters as arguments (logging-fstring-interpolation)
+kaska/NNParameterInversion/NNParameterInversion.py:59:8: W1203: Use % formatting in logging functions and pass the % parameters as arguments (logging-fstring-interpolation)
+kaska/NNParameterInversion/NNParameterInversion.py:60:8: R1705: Unnecessary "else" after "return" (no-else-return)
+kaska/NNParameterInversion/NNParameterInversion.py:64:20: C0103: Variable name "ny" doesn't conform to snake_case naming style (invalid-name)
+kaska/NNParameterInversion/NNParameterInversion.py:64:24: C0103: Variable name "nx" doesn't conform to snake_case naming style (invalid-name)
+kaska/NNParameterInversion/NNParameterInversion.py:65:12: C0103: Variable name "X" doesn't conform to snake_case naming style (invalid-name)
+kaska/NNParameterInversion/NNParameterInversion.py:68:12: C0103: Variable name "X" doesn't conform to snake_case naming style (invalid-name)
+kaska/NNParameterInversion/NNParameterInversion.py:57:34: W0612: Unused variable 'rho_unc' (unused-variable)
+kaska/NNParameterInversion/NNParameterInversion.py:64:12: W0612: Unused variable 'nbands' (unused-variable)
+kaska/NNParameterInversion/NNParameterInversion.py:79:12: W0612: Unused variable 'n_cells' (unused-variable)
+kaska/NNParameterInversion/NNParameterInversion.py:15:0: R0903: Too few public methods (1/2) (too-few-public-methods)
+kaska/NNParameterInversion/NNParameterInversion.py:5:0: W0611: Unused Path imported from pathlib (unused-import)
+************* Module kaska.TwoNN
+kaska/TwoNN/__init__.py:1:0: C0103: Module name "TwoNN" doesn't conform to snake_case naming style (invalid-name)
+kaska/TwoNN/__init__.py:1:0: C0111: Missing module docstring (missing-docstring)
+************* Module kaska.TwoNN.two_nn
+kaska/TwoNN/two_nn.py:15:0: C0301: Line too long (137/100) (line-too-long)
+kaska/TwoNN/two_nn.py:42:75: C0303: Trailing whitespace (trailing-whitespace)
+kaska/TwoNN/two_nn.py:65:71: C0303: Trailing whitespace (trailing-whitespace)
+kaska/TwoNN/two_nn.py:178:0: C0330: Wrong hanging indentation before block (add 4 spaces).
+        self,
+        ^   | (bad-continuation)
+kaska/TwoNN/two_nn.py:179:0: C0330: Wrong hanging indentation before block (add 4 spaces).
+        tf_model=None,
+        ^   | (bad-continuation)
+kaska/TwoNN/two_nn.py:180:0: C0330: Wrong hanging indentation before block (add 4 spaces).
+        tf_model_file=None,
+        ^   | (bad-continuation)
+kaska/TwoNN/two_nn.py:181:0: C0330: Wrong hanging indentation before block (add 4 spaces).
+        np_model_file=None,
+        ^   | (bad-continuation)
+kaska/TwoNN/two_nn.py:182:0: C0330: Wrong hanging indentation before block (add 4 spaces).
+        Hidden_Layers=None,
+        ^   | (bad-continuation)
+kaska/TwoNN/two_nn.py:183:0: C0330: Wrong hanging indentation before block (add 4 spaces).
+        Output_Layers=None,
+        ^   | (bad-continuation)
+kaska/TwoNN/two_nn.py:206:0: C0330: Wrong hanging indentation before block (add 4 spaces).
+        self,
+        ^   | (bad-continuation)
+kaska/TwoNN/two_nn.py:207:0: C0330: Wrong hanging indentation before block (add 4 spaces).
+        X,
+        ^   | (bad-continuation)
+kaska/TwoNN/two_nn.py:208:0: C0330: Wrong hanging indentation before block (add 4 spaces).
+        targs,
+        ^   | (bad-continuation)
+kaska/TwoNN/two_nn.py:209:0: C0330: Wrong hanging indentation before block (add 4 spaces).
+        iterations=2000,
+        ^   | (bad-continuation)
+kaska/TwoNN/two_nn.py:210:0: C0330: Wrong hanging indentation before block (add 4 spaces).
+        tf_fname=("model.json", "model.h5"),
+        ^   | (bad-continuation)
+kaska/TwoNN/two_nn.py:211:0: C0330: Wrong hanging indentation before block (add 4 spaces).
+        save_tf_model=False,
+        ^   | (bad-continuation)
+kaska/TwoNN/two_nn.py:11:0: E0401: Unable to import 'tensorflow.keras' (import-error)
+kaska/TwoNN/two_nn.py:20:0: C0103: Argument name "x" doesn't conform to snake_case naming style (invalid-name)
+kaska/TwoNN/two_nn.py:20:0: C0103: Argument name "w" doesn't conform to snake_case naming style (invalid-name)
+kaska/TwoNN/two_nn.py:20:0: C0103: Argument name "b" doesn't conform to snake_case naming style (invalid-name)
+kaska/TwoNN/two_nn.py:45:4: C0103: Variable name "x" doesn't conform to snake_case naming style (invalid-name)
+kaska/TwoNN/two_nn.py:45:7: C0103: Variable name "w" doesn't conform to snake_case naming style (invalid-name)
+kaska/TwoNN/two_nn.py:46:4: C0103: Variable name "dx" doesn't conform to snake_case naming style (invalid-name)
+kaska/TwoNN/two_nn.py:45:4: W0612: Unused variable 'x' (unused-variable)
+kaska/TwoNN/two_nn.py:51:0: C0103: Argument name "x" doesn't conform to snake_case naming style (invalid-name)
+kaska/TwoNN/two_nn.py:69:4: C0103: Variable name "x" doesn't conform to snake_case naming style (invalid-name)
+kaska/TwoNN/two_nn.py:70:4: C0103: Variable name "dx" doesn't conform to snake_case naming style (invalid-name)
+kaska/TwoNN/two_nn.py:78:0: C0103: Argument name "x" doesn't conform to snake_case naming style (invalid-name)
+kaska/TwoNN/two_nn.py:78:0: C0103: Argument name "Hidden_Layers" doesn't conform to snake_case naming style (invalid-name)
+kaska/TwoNN/two_nn.py:78:0: C0103: Argument name "Output_Layers" doesn't conform to snake_case naming style (invalid-name)
+kaska/TwoNN/two_nn.py:78:0: C0111: Missing function docstring (missing-docstring)
+kaska/TwoNN/two_nn.py:78:0: R0914: Too many local variables (26/15) (too-many-locals)
+kaska/TwoNN/two_nn.py:81:6: C0103: Variable name "w1" doesn't conform to snake_case naming style (invalid-name)
+kaska/TwoNN/two_nn.py:81:10: C0103: Variable name "b1" doesn't conform to snake_case naming style (invalid-name)
+kaska/TwoNN/two_nn.py:81:16: C0103: Variable name "w2" doesn't conform to snake_case naming style (invalid-name)
+kaska/TwoNN/two_nn.py:81:20: C0103: Variable name "b2" doesn't conform to snake_case naming style (invalid-name)
+kaska/TwoNN/two_nn.py:82:4: C0103: Variable name "a1" doesn't conform to snake_case naming style (invalid-name)
+kaska/TwoNN/two_nn.py:83:4: C0103: Variable name "r1" doesn't conform to snake_case naming style (invalid-name)
+kaska/TwoNN/two_nn.py:84:4: C0103: Variable name "a2" doesn't conform to snake_case naming style (invalid-name)
+kaska/TwoNN/two_nn.py:87:8: C0103: Variable name "w3" doesn't conform to snake_case naming style (invalid-name)
+kaska/TwoNN/two_nn.py:87:12: C0103: Variable name "b3" doesn't conform to snake_case naming style (invalid-name)
+kaska/TwoNN/two_nn.py:88:8: C0103: Variable name "r3" doesn't conform to snake_case naming style (invalid-name)
+kaska/TwoNN/two_nn.py:95:12: C0103: Variable name "dx" doesn't conform to snake_case naming style (invalid-name)
+kaska/TwoNN/two_nn.py:79:4: W0612: Unused variable 'layer_to_cache' (unused-variable)
+kaska/TwoNN/two_nn.py:109:8: W0621: Redefining name 'i' from outer scope (line 284) (redefined-outer-name)
+kaska/TwoNN/two_nn.py:104:0: C0103: Argument name "X" doesn't conform to snake_case naming style (invalid-name)
+kaska/TwoNN/two_nn.py:104:0: C0111: Missing function docstring (missing-docstring)
+kaska/TwoNN/two_nn.py:106:4: C0103: Variable name "x" doesn't conform to snake_case naming style (invalid-name)
+kaska/TwoNN/two_nn.py:107:4: C0103: Variable name "x" doesn't conform to snake_case naming style (invalid-name)
+kaska/TwoNN/two_nn.py:109:8: W0612: Unused variable 'i' (unused-variable)
+kaska/TwoNN/two_nn.py:134:0: C0103: Argument name "X" doesn't conform to snake_case naming style (invalid-name)
+kaska/TwoNN/two_nn.py:134:0: C0111: Missing function docstring (missing-docstring)
+kaska/TwoNN/two_nn.py:144:0: C0111: Missing function docstring (missing-docstring)
+kaska/TwoNN/two_nn.py:145:4: C0103: Variable name "l1" doesn't conform to snake_case naming style (invalid-name)
+kaska/TwoNN/two_nn.py:146:4: C0103: Variable name "l2" doesn't conform to snake_case naming style (invalid-name)
+kaska/TwoNN/two_nn.py:147:4: C0103: Variable name "Hidden_Layers" doesn't conform to snake_case naming style (invalid-name)
+kaska/TwoNN/two_nn.py:148:4: C0103: Variable name "Output_Layers" doesn't conform to snake_case naming style (invalid-name)
+kaska/TwoNN/two_nn.py:150:8: C0103: Variable name "l3" doesn't conform to snake_case naming style (invalid-name)
+kaska/TwoNN/two_nn.py:156:0: C0111: Missing function docstring (missing-docstring)
+kaska/TwoNN/two_nn.py:160:0: C0103: Function name "load_tf_Model" doesn't conform to snake_case naming style (invalid-name)
+kaska/TwoNN/two_nn.py:160:0: C0111: Missing function docstring (missing-docstring)
+kaska/TwoNN/two_nn.py:165:0: C0103: Argument name "Hidden_Layers" doesn't conform to snake_case naming style (invalid-name)
+kaska/TwoNN/two_nn.py:165:0: C0103: Argument name "Output_Layers" doesn't conform to snake_case naming style (invalid-name)
+kaska/TwoNN/two_nn.py:165:0: C0111: Missing function docstring (missing-docstring)
+kaska/TwoNN/two_nn.py:170:4: W0621: Redefining name 'f' from outer scope (line 270) (redefined-outer-name)
+kaska/TwoNN/two_nn.py:169:0: C0111: Missing function docstring (missing-docstring)
+kaska/TwoNN/two_nn.py:170:4: C0103: Variable name "f" doesn't conform to snake_case naming style (invalid-name)
+kaska/TwoNN/two_nn.py:171:4: C0103: Variable name "Hidden_Layers" doesn't conform to snake_case naming style (invalid-name)
+kaska/TwoNN/two_nn.py:172:4: C0103: Variable name "Output_Layers" doesn't conform to snake_case naming style (invalid-name)
+kaska/TwoNN/two_nn.py:176:0: C0103: Class name "Two_NN" doesn't conform to PascalCase naming style (invalid-name)
+kaska/TwoNN/two_nn.py:189:12: C0103: Attribute name "Hidden_Layers" doesn't conform to snake_case naming style (invalid-name)
+kaska/TwoNN/two_nn.py:189:32: C0103: Attribute name "Output_Layers" doesn't conform to snake_case naming style (invalid-name)
+kaska/TwoNN/two_nn.py:176:0: C0111: Missing class docstring (missing-docstring)
+kaska/TwoNN/two_nn.py:176:0: R0205: Class 'Two_NN' inherits from object, can be safely removed from bases in python3 (useless-object-inheritance)
+kaska/TwoNN/two_nn.py:177:4: R0913: Too many arguments (6/5) (too-many-arguments)
+kaska/TwoNN/two_nn.py:211:8: W0621: Redefining name 'save_tf_model' from outer scope (line 156) (redefined-outer-name)
+kaska/TwoNN/two_nn.py:205:4: C0103: Argument name "X" doesn't conform to snake_case naming style (invalid-name)
+kaska/TwoNN/two_nn.py:205:4: C0111: Missing method docstring (missing-docstring)
+kaska/TwoNN/two_nn.py:205:4: R0913: Too many arguments (6/5) (too-many-arguments)
+kaska/TwoNN/two_nn.py:223:4: C0103: Argument name "X" doesn't conform to snake_case naming style (invalid-name)
+kaska/TwoNN/two_nn.py:223:4: C0111: Missing method docstring (missing-docstring)
+kaska/TwoNN/two_nn.py:232:4: C0103: Argument name "x" doesn't conform to snake_case naming style (invalid-name)
+kaska/TwoNN/two_nn.py:232:4: C0111: Missing method docstring (missing-docstring)
+kaska/TwoNN/two_nn.py:245:4: C0111: Missing method docstring (missing-docstring)
+kaska/TwoNN/two_nn.py:253:4: C0111: Missing method docstring (missing-docstring)
+kaska/TwoNN/two_nn.py:216:27: W0201: Attribute 'history' defined outside __init__ (attribute-defined-outside-init)
+kaska/TwoNN/two_nn.py:225:27: W0201: Attribute 'history' defined outside __init__ (attribute-defined-outside-init)
+kaska/TwoNN/two_nn.py:270:4: C0103: Constant name "f" doesn't conform to UPPER_CASE naming style (invalid-name)
+kaska/TwoNN/two_nn.py:271:4: C0103: Constant name "v" doesn't conform to UPPER_CASE naming style (invalid-name)
+kaska/TwoNN/two_nn.py:272:4: C0103: Constant name "tnn" doesn't conform to UPPER_CASE naming style (invalid-name)
+kaska/TwoNN/two_nn.py:276:4: C0103: Constant name "refs" doesn't conform to UPPER_CASE naming style (invalid-name)
+kaska/TwoNN/two_nn.py:280:4: C0103: Constant name "fig" doesn't conform to UPPER_CASE naming style (invalid-name)
+kaska/TwoNN/two_nn.py:280:9: C0103: Constant name "axs" doesn't conform to UPPER_CASE naming style (invalid-name)
+kaska/TwoNN/two_nn.py:281:4: C0103: Constant name "axs" doesn't conform to UPPER_CASE naming style (invalid-name)
+kaska/TwoNN/two_nn.py:283:4: C0103: Constant name "vals" doesn't conform to UPPER_CASE naming style (invalid-name)
+kaska/TwoNN/two_nn.py:1:0: R0801: Similar lines in 2 files
+==kaska.kaska:21
+==kaska.s2_observations:23
+    formatter = logging.Formatter('%(asctime)s - %(name)s - ' +
+                                  '%(levelname)s - %(message)s')
+    ch.setFormatter(formatter)
+    LOG.addHandler(ch)
+LOG.propagate = False
+# A SIAC data storage type (duplicate-code)
+
+--------------------------------------------------------------------
+Your code has been rated at -8.85/10 (previous run: -8.85/10, +0.00)
+
