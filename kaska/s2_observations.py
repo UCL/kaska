@@ -38,7 +38,8 @@ class Sentinel2Observations(object):
         """
         Initialise the Sentinel2Observations object.
 
-        Class members initialised in __init__ :
+        Class members initialised in __init__
+        -------------------------------------
         parent : the path to the parent folder containing all the data.
         emulator :
         original_mask : the mask to be applied to the data (tif file)
@@ -49,7 +50,8 @@ class Sentinel2Observations(object):
         band_map : the list of available bands - hardcoded
         chunk : the size of the chunk/tile for parallel processing (optional)
 
-        Class members initialised in _find_granules :
+        Class members initialised in _find_granules
+        -------------------------------------------
         dates : list of dates to run the analysis on (data files available
                 for those dates)
         date_data : dictionary of date-folder pairs, ordered in date
@@ -100,10 +102,6 @@ class Sentinel2Observations(object):
         None
         Doesn't return anything, but changes `self.state_mask`
         """
-        self.ulx = ulx
-        self.uly = uly
-        self.lrx = lrx
-        self.lry = lry
         width = lrx - ulx
         height = uly - lry
 
@@ -136,14 +134,20 @@ class Sentinel2Observations(object):
             geoT = np.array(self.state_mask.GetGeoTransform())
             nx = self.state_mask.RasterXSize
             ny = self.state_mask.RasterYSize
-        # new_geoT = geoT*1.
-        # new_geoT[0] = new_geoT[0] + self.ulx*new_geoT[1]
-        # new_geoT[3] = new_geoT[3] + self.uly*new_geoT[5]
-        return proj, geoT.tolist(), nx, ny  # new_geoT.tolist()
+
+        return proj, geoT.tolist(), nx, ny
 
     def _find_granules(self, time_grid=None):
         """Finds granules within the given time grid if given.
-        Currently does so by checking for Feng's AOT file.
+
+        Parameters
+        ----------
+        time_grid : A list of dates (optional). If not given, all the timestamps
+                    will be checked.
+        Returns
+        -------
+        None
+        Doesn't return anything, but changes `self.dates` and `self.date_data`
         """
         folders = sorted([x for f in self.parent.iterdir()
                           for x in f.rglob("*.SAFE")
@@ -159,7 +163,7 @@ class Sentinel2Observations(object):
         self.dates = [x[0].replace(hour=0, minute=0, second=0, microsecond=0)
                       for x in dates]
         self.date_data = dict(zip(self.dates, folders))
-        #self.date_data = dict(dates)
+        # self.date_data = dict(dates)
 
         LOG.info(f"Found {len(dates):d} S2 granules")
         LOG.info(
@@ -177,6 +181,17 @@ class Sentinel2Observations(object):
             self.bands_per_observation[the_date] = len(self.band_map)
 
     def _process_xml(self, metadata_file):
+        """Processes the input xml file to fish out time series and file names.
+
+        Parameters
+        ----------
+        metadata_file : The xml file.
+        Returns
+        -------
+        tuple
+            The first element is the datetime, and the second element is a list
+            of the data files for this datetime.
+        """
         tree = ET.parse(metadata_file.as_posix())
         root = tree.getroot()
         acq_time = [time.text for time in root.iter("PRODUCT_START_TIME")]
@@ -192,10 +207,13 @@ class Sentinel2Observations(object):
 
     def read_time_series(self, time_grid):
         """Reads a time series of S2 data
-        Arguments:
-            time_grid  -- A list of dates
-        Returns:
-             A list of S2MSIdata objects
+
+        Parameters
+        ----------
+        time_grid : A list of dates
+        Returns
+        -------
+        A list of S2MSIdata objects
         """
         start_time = min(time_grid)
         end_time = max(time_grid)
@@ -218,8 +236,18 @@ class Sentinel2Observations(object):
         return s2_obs
 
     def read_granule(self, timestep):
-        """NOTE: Currently reads in sequentially. It's better to gather
-        all the filenames and read them in parallel using parmap.py"""
+        """Reads the data for the given timestamp.
+
+        Parameters
+        ----------
+        timestep : A date.
+        Returns
+        -------
+        tuple containing the rho_surface, mask, sza, vza, raa, rho_unc
+
+        NOTE: Currently reads in sequentially. It's better to gather
+        all the filenames and read them in parallel using parmap.py
+        """
         current_folder = self.date_data[timestep]
 
         fname_prefix = [
