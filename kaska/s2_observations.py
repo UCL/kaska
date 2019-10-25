@@ -162,7 +162,7 @@ class Sentinel2Observations(object):
 
         self.dates = [x[0].replace(hour=0, minute=0, second=0, microsecond=0)
                       for x in dates]
-        self.date_data = dict(zip(self.dates, folders))
+        self.date_data = dict(zip(self.dates, [x/'GRANULE'/'IMG_DATA' for x in folders]))
         # self.date_data = dict(dates)
 
         LOG.info(f"Found {len(dates):d} S2 granules")

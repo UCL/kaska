@@ -48,14 +48,17 @@ def test_s2_data():
         dt.datetime(2017, 1, 27, 0, 0)
     ]
     ref_files = [
-        Path(parent+"/data/s2_data/S2A_MSIL1C_20170104.SAFE"),
-        Path(parent+"/data/s2_data/S2A_MSIL1C_20170107.SAFE"),
-        Path(parent+"/data/s2_data/S2A_MSIL1C_20170114.SAFE"),
-        Path(parent+"/data/s2_data/S2A_MSIL1C_20170124.SAFE"),
-        Path(parent+"/data/s2_data/S2A_MSIL1C_20170127.SAFE")
+        Path(parent+"/data/s2_data/S2A_MSIL1C_20170104.SAFE/GRANULE/IMG_DATA"),
+        Path(parent+"/data/s2_data/S2A_MSIL1C_20170107.SAFE/GRANULE/IMG_DATA"),
+        Path(parent+"/data/s2_data/S2A_MSIL1C_20170114.SAFE/GRANULE/IMG_DATA"),
+        Path(parent+"/data/s2_data/S2A_MSIL1C_20170124.SAFE/GRANULE/IMG_DATA"),
+        Path(parent+"/data/s2_data/S2A_MSIL1C_20170127.SAFE/GRANULE/IMG_DATA")
     ]
     assert s2_obs.dates == ref_dates
     assert [s2_obs.date_data[d] for d in s2_obs.dates] == ref_files
+
+    #rho_surface, mask, sza, vza, raa, rho_unc = s2_obs.read_granule(ref_dates[0])
+    #print(rho_surface, mask, sza, vza, raa, rho_unc)
 
     # retval = s2_obs.read_time_series([dt.datetime(2017, 1, 1),
     #                                  dt.datetime(2017,12,31)])
