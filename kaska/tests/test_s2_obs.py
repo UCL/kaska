@@ -57,7 +57,7 @@ def test_s2_data():
     assert s2_obs.dates == ref_dates
     assert [s2_obs.date_data[d] for d in s2_obs.dates] == ref_files
 
-    #rho_surface, mask, sza, vza, raa, rho_unc = s2_obs.read_granule(ref_dates[0])
+    rho_surface, mask, sza, vza, raa, rho_unc = s2_obs.read_granule(ref_dates[1])
     #print(rho_surface, mask, sza, vza, raa, rho_unc)
 
     # retval = s2_obs.read_time_series([dt.datetime(2017, 1, 1),
