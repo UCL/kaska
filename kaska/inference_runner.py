@@ -123,8 +123,9 @@ def stitch_outputs(output_folder, parameter_list):
         )
         shutil.move(p / "temporary.tif", (p / f"{parameter:s}.tif").as_posix())
         # Remove unneeded leftover files
-        [f.unlink() for f in p.glob("*.vrt")]
-        [f.unlink() for f in p.glob("*.ovr")]
+        vrts = [f.unlink() for f in p.glob("*.vrt")]
+        ovr = [f.unlink() for f in p.glob("*.ovr")]
+
         LOG.info(f"Saved {parameter:s} file as {output_tiffs[parameter]:s}")
     return output_tiffs
 
@@ -161,11 +162,14 @@ def process_tile(the_chunk, config):
     s2_obs.apply_roi(ulx, uly, lrx, lry)
     chunk_mask = s2_obs.state_mask.ReadAsArray()
     n_unmasked_pxls = np.sum(chunk_mask)
+    
+    
     if n_unmasked_pxls == 0:
         LOG.info(f"No pixels in chunk {hex(chunk_no):s}")
         return None
     else:
         # Define KaSKA object with windowed observations.
+        
         LOG.info(f"Unmasked pixels in {hex(chunk_no):s}: {n_unmasked_pxls:d}")
         kaska = KaSKA(
             s2_obs,
@@ -248,8 +252,8 @@ def kaska_runner(
     ny, nx = g.RasterYSize, g.RasterXSize
 
     # Do the splitting
-    them_chunks = [the_chunk for the_chunk in get_chunks(nx, ny,
-                                                         block_size=block_size)]
+    them_chunks = [the_chunk for the_chunk in get_chunks(
+        nx, ny, block_size=block_size)]
 
     wrapper = partial(process_tile, config=config)
     if dask_client is None:
