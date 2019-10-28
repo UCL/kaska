@@ -3,12 +3,10 @@
 import os
 
 import sys
-# sys.path.append("../")
 
 import pytest
 import datetime as dt
 from pathlib import Path
-# import gdal
 import numpy as np
 
 from ..s2_observations import Sentinel2Observations
@@ -53,8 +51,9 @@ def test_s2_data():
 
     for i, d in enumerate(ref_dates):
         rho_surface, mask, sza, vza, raa, rho_unc = s2_obs.read_granule(d)
-        # np.savez_compressed(f"s2_obs_{i}_ref", rho_surface=rho_surface, mask=mask, sza=sza,
-        #         vza=vza, raa=raa, rho_unc=rho_unc)
+        # np.savez_compressed(f"s2_obs_{i}_ref", rho_surface=rho_surface,
+        #                    mask=mask, sza=sza, vza=vza, raa=raa,
+        #                    rho_unc=rho_unc)
         ref_data = np.load(Path(parent+f'/data/s2_obs_{i}_ref.npz'),
                            allow_pickle=True)
         np.testing.assert_equal(ref_data['rho_surface'], rho_surface)
@@ -63,7 +62,3 @@ def test_s2_data():
         np.testing.assert_equal(ref_data['vza'], vza)
         np.testing.assert_equal(ref_data['raa'], raa)
         np.testing.assert_equal(ref_data['rho_unc'], rho_unc)
-
-    # retval = s2_obs.read_time_series([dt.datetime(2017, 1, 1),
-    #                                  dt.datetime(2017,12,31)])
-    # pickle.dumps(retval)

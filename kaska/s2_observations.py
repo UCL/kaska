@@ -142,7 +142,7 @@ class Sentinel2Observations(object):
 
         Parameters
         ----------
-        time_grid : A list of dates (optional). If not given, all the timestamps
+        time_grid : A list of dates (optional).If not given, all the timestamps
                     will be checked.
         Returns
         -------
@@ -333,29 +333,3 @@ class Sentinel2Observations(object):
         raa = np.cos(np.deg2rad(vaa - saa))
 
         return rho_surface, mask, sza, vza, raa, rho_unc
-
-
-if __name__ == "__main__":
-    # import pickle
-
-    time_grid = []
-    today = dt.datetime(2017,1,1)
-    while (today <= dt.datetime(2017, 12, 31)):
-        time_grid.append(today)
-        today += dt.timedelta(days=5)
-
-    s2_obs = Sentinel2Observations(
-        #        "/home/ucfajlg/Data/python/KaFKA_Validation/LMU/s2_obs/",
-        #        "/home/ucfafyi/DATA/Prosail/prosail_2NN.npz",
-        #        "/home/ucfajlg/Data/python/KaFKA_Validation/LMU/carto/ESU.tif",
-        "/home/ilektra/kaska/kaska/tests/data/s2_data",
-        "/home/ilektra/kaska/kaska/inverters/prosail_2NN.npz",
-        "/home/ilektra/kaska/kaska/tests/data/ESU.tif",
-        band_prob_threshold=20,
-        chunk=None,
-        time_grid=time_grid
-    )
-    retval = s2_obs.read_time_series([dt.datetime(2017, 1, 1),
-                                      dt.datetime(2017,12,31)])
-
-    # pickle.dumps(retval)
