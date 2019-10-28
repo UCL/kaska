@@ -3,28 +3,60 @@
 """Main module."""
 import logging
 
+from pathlib import Path
+
 import datetime as dt
 import numpy as np
 
 from scipy.interpolate import interp1d
 
-from NNParameterInversion import NNParameterInversion
+from .s1_observations import Sentinel1Observations
 
-from s2_observations import Sentinel2Observations
+from .utils import define_temporal_grid
 
-from s1_observations import Sentinel1Observations
+from .watercloudmodel import cost, cost_jac, cost_hess
 
-from smoothn import smoothn
-
-from utils import define_temporal_grid
-
-from watercloudmodel import cost, cost_jac, cost_hess
+from .kaska import Sentinel2Data
 
 import scipy.optimize
 
 import time # Just for timekeeping
 
 LOG = logging.getLogger(__name__ )
+
+
+class KaSKASAR(object):
+    """A class to process Sentinel 1 SAR data using S2 data as 
+    an input"""
+    def __init__ (self,time_grid,
+                  state_mask, s1_observations, s2_data, chunk=None):
+        self.time_grid = time_grid
+        self.s1_observations = s1_observations
+        self.state_mask = state_mask
+        self.output_folder = Path(output_folder)/("S1_outputs")
+        self.chunk = chunk
+        self.s2_data = self._resampling_times(s2_data)
+
+
+    def _resampling_times(self, s2_data):
+        """Resample S2 smoothed output to match S1 observations
+        times"""
+        # Move everything to DoY to simplify interpolation
+        s2_doys = [int(dt.datetime.strftime(x, "%j"))
+               for x in s2_data.temporal_grid]
+        s1_doys = [int(dt.datetime.strftime(x, "%j"))
+               for x in s1_obs.dates.keys()]
+        n_sar_obs = len(s1_doys)
+        # Interpolate S2 retrievals to S1 time grid
+        f = interp1d(s2_doys, s2_data.slai, axis=0, bounds_error=False)
+        lai_s1 = f(s1_doys)
+        f = interp1d(s2_doys, s2_data.scab, axis=0, bounds_error=False)
+        cab_s1 = f(s1_doys)
+        f = interp1d(s2_doys, s2_data.scbrown, axis=0, bounds_error=False)
+        cbrown_s1 = f(s1_doys)
+        return Sentinel2Data(lai_s1, cab_s1, cbrown_s1)
+        
+
 
 if __name__ == "__main__":
     state_mask = "/home/ucfajlg/Data/python/KaFKA_Validation/LMU/carto/ESU.tif"

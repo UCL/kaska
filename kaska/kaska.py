@@ -3,6 +3,8 @@
 """Main module."""
 import logging
 
+from collections import namedtuple
+
 import datetime as dt
 import numpy as np
 
@@ -19,7 +21,11 @@ from .smoothn import smoothn
 from .utils import save_output_parameters
 
 LOG = logging.getLogger(__name__)
-            
+
+
+Sentinel2Data = namedtuple("Sentinel2Data",
+                           "temporal_grid slai scab scbrown")
+
 class KaSKA(object):
     """The main KaSKA object"""
 
