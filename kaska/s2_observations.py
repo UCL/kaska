@@ -29,17 +29,30 @@ class Sentinel2Observations(object):
         parent_folder,
         emulator,
         state_mask,
-        band_prob_threshold=20,
+        band_prob_threshold=5,
         chunk=None,
-        time_grid=None
+        time_grid=None,
     ):
         self.band_prob_threshold = band_prob_threshold
         parent_folder = Path(parent_folder)
         if not parent_folder.exists():
-            LOG.info(f"S2 data folder: {parent_folder}")
+            LOG.info(f"S2 data folder: {str(parent_folder):s}")
             raise IOError("S2 data folder doesn't exist")
-        self.band_map = ['B01', 'B02', 'B03', 'B04', 'B05', 'B06', 'B07',
-                        'B08', 'B8A', 'B09', 'B10','B11', 'B12']
+        self.band_map = [
+            "B01",
+            "B02",
+            "B03",
+            "B04",
+            "B05",
+            "B06",
+            "B07",
+            "B08",
+            "B8A",
+            "B09",
+            "B10",
+            "B11",
+            "B12",
+        ]
         # self.band_map = ['05', '08']
 
         self.parent = parent_folder
@@ -125,9 +138,9 @@ class Sentinel2Observations(object):
         ]
         try:
             dates = [
-                    dt.datetime(*(list(map(int, f.parts[-5:-2]))))
-                    for f in test_files
-                ]
+                dt.datetime(*(list(map(int, f.parts[-5:-2]))))
+                for f in test_files
+            ]
         except ValueError:
             dates = [
                 dt.datetime.strptime(
@@ -136,24 +149,30 @@ class Sentinel2Observations(object):
                 for f in test_files
             ]
         # Sort dates by time, as currently S2A/S2B will be part of ordering
-        
-        #test_files = sorted(test_files, key=lambda x:dates[test_files.index(x)])
-        #dates = sorted(dates)
+
+        # test_files = sorted(test_files, key=lambda x:dates[test_files.index(x)])
+        # dates = sorted(dates)
         if time_grid is not None:
             start_date = time_grid[0]
             end_date = time_grid[-1]
-            self.dates = [d.replace(hour=0, minute=0, second=0) for d in dates
-                            if (d >= start_date) and (d <= end_date)] 
-            test_files = [test_files[i] for i, d in enumerate(dates)
-                            if (d >= start_date) and (d <= end_date)]
+            self.dates = [
+                d.replace(hour=0, minute=0, second=0)
+                for d in dates
+                if (start_date <= d <= end_date)
+            ]
+            test_files = [
+                test_files[i]
+                for i, d in enumerate(dates)
+                if (start_date <= d <= end_date)
+            ]
         else:
-            self.dates = [x.replace(hour=0,minute=0, second=0) for x in dates]
+            self.dates = [x.replace(hour=0, minute=0, second=0) for x in dates]
         temp_dict = dict(zip(self.dates, [f.parent for f in test_files]))
         dates = sorted(self.dates)
-        self.date_data = {k:temp_dict[k] for k in dates}
+        self.date_data = {k: temp_dict[k] for k in dates}
         self.dates = dates
-        
-        #self.date_data = dict(zip(self.dates, [f.parent for f in test_files]))
+
+        # self.date_data = dict(zip(self.dates, [f.parent for f in test_files]))
         self.bands_per_observation = {}
         LOG.info(f"Found {len(test_files):d} S2 granules")
         LOG.info(
@@ -196,24 +215,44 @@ class Sentinel2Observations(object):
         return s2_obs
 
     def read_granule(self, timestep):
-        """NOTE: Currently reads in sequentially. It's better to gather
-        all the filenames and read them in parallel using parmap.py"""
-        current_folder = self.date_data[timestep]
+        """Reads data granule for a given `timestep`. Returns all relevant 
+        bits and bobs (surface reflectrance, angles, cloud mask, uncertainty).
+        The mask is true for OK pixels. If there are no suitable pixels, the
+        returned tuple is a collection of `None`
+        
+        
+        Parameters
+        ----------
+        timestep : datetime
+            The datetime object
+        
+        Returns
+        -------
+        tuple
+            rho_surface, mask, sza, vza, raa, rho_unc
+        """
 
+        assert timestep in self.date_data, f"{str(timestep):s} not available!"
+        # NOTE: Currently reads in sequentially. It's better to gather
+        # all the filenames and read them in parallel using parmap.py"""
+        current_folder = self.date_data[timestep]
         fname_prefix = [
             f.name.split("B02")[0] for f in current_folder.glob("*B02_sur.tif")
         ][0]
+        # Find cloud mask
         cloud_mask = current_folder.parent / f"cloud.tif"
-        
         cloud_mask = reproject_data(
             str(cloud_mask), target_img=self.state_mask
         ).ReadAsArray()
+        # cloud mask is probabilty of cloud
+        # OK pixels have a probability of cloud below `band_prob_threshold`
         mask = cloud_mask <= self.band_prob_threshold
+        # If we have no unmasked pixels, bail out.
         if mask.sum() == 0:
             # No pixels! Pointless to carry on reading!
             LOG.info("No clear observations")
             return None, None, None, None, None, None
-
+        # Read in surface reflectance and associated uncertainty
         rho_surface = []
         rho_unc = []
         for the_band in self.band_map:
@@ -224,36 +263,30 @@ class Sentinel2Observations(object):
             rho = reproject_data(
                 str(original_s2_file), target_img=self.state_mask
             ).ReadAsArray()
-            
+
             rho_surface.append(rho)
             original_s2_file = current_folder / (
                 f"{fname_prefix:s}" + f"{the_band:s}_sur_unc.tif"
             )
-            LOG.debug(f"Uncertainty file {str(original_s2_file):s}")
-            unc = reproject_data(
-                str(original_s2_file), target_img=self.state_mask
-            ).ReadAsArray()
-            rho_unc.append(unc)
+            # LOG.debug(f"Uncertainty file {str(original_s2_file):s}")
+            # unc = reproject_data(
+            #    str(original_s2_file), target_img=self.state_mask
+            # ).ReadAsArray()
+            rho_unc.append(np.ones_like(rho) * 0.005)
         # For reference...
-        #bands = ['B01', 'B02', 'B03', 'B04', 'B05', 'B06', 'B07', 'B08',
+        # bands = ['B01', 'B02', 'B03', 'B04', 'B05', 'B06', 'B07', 'B08',
         #         'B8A', 'B09', 'B10','B11', 'B12']
         # b_ind = np.array([1, 2, 3, 4, 5, 6, 7, 8])
-        
-        rho_surface = np.array(rho_surface)
-        
-        
-        mask1 = np.all(rho_surface[[1, 2, 3, 4, 5, 6, 7, 8, ]] > 0,
-                       axis=0) & (~mask)
-        mask = ~mask1
-        rho_surface = rho_surface / 10000.0
-        
-        #mask = np.all(rho_surface > 0, axis=0) & (~mask)
 
-        rho_unc = np.array(rho_unc) / 10000.0
-        rho_unc[:, mask] = np.nan
-        # Average uncertainty over the image
-        rho_unc = np.nanmean(rho_unc, axis=(1, 2))
-        rho_surface[:, mask1] = np.nan
+        rho_surface = np.array(rho_surface)
+        # Now, ensure all surface reflectance pixels have values above
+        # 0 & aren't cloudy.
+        # So valid pixels if all refl > 0 AND mask is True
+        sel_bands = np.array([1, 2, 3, 4, 5, 6, 7, 8])
+        mask1 = np.logical_and(
+            np.all(rho_surface[sel_bands] > 0, axis=0), mask
+        )
+        mask = mask1
         if mask.sum() == 0:
             LOG.info(f"{str(timestep):s} -> No clear observations")
             return None, None, None, None, None, None
@@ -261,6 +294,15 @@ class Sentinel2Observations(object):
             f"{str(timestep):s} -> Total of {mask.sum():d} clear pixels "
             + f"({100.*mask.sum()/np.prod(mask.shape):f}%)"
         )
+
+        rho_surface = rho_surface / 10000.0
+
+        rho_unc = np.array(rho_unc) / 10000.0
+        rho_unc[:, ~mask] = np.nan
+        # Average uncertainty over the image
+        rho_unc = np.nanmean(rho_unc, axis=(1, 2))
+        # Set missing pixels to NaN
+        rho_surface[:, ~mask] = np.nan
         # Now read angles
         sun_angles = reproject_data(
             str(current_folder.parent / "ANG_DATA/SAA_SZA.tif"),
@@ -281,14 +323,13 @@ class Sentinel2Observations(object):
         saa = sun_angles[0].mean() / 100.0
         vaa = view_angles[0].mean() / 100.0
         raa = np.cos(np.deg2rad(vaa - saa))
-
         return rho_surface, mask, sza, vza, raa, rho_unc
 
 
 if __name__ == "__main__":
     time_grid = []
-    today = dt.datetime(2017,1,1)
-    while (today <= dt.datetime(2017, 12, 31)):
+    today = dt.datetime(2017, 1, 1)
+    while today <= dt.datetime(2017, 12, 31):
         time_grid.append(today)
         today += dt.timedelta(days=5)
 
@@ -298,7 +339,8 @@ if __name__ == "__main__":
         "/home/ucfajlg/Data/python/KaFKA_Validation/LMU/carto/ESU.tif",
         band_prob_threshold=20,
         chunk=None,
-        time_grid=time_grid
+        time_grid=time_grid,
     )
-    retval = s2_obs.read_time_series([dt.datetime(2017, 1, 1),
-                                      dt.datetime(2017,12,31)])
+    retval = s2_obs.read_time_series(
+        [dt.datetime(2017, 1, 1), dt.datetime(2017, 12, 31)]
+    )
