@@ -7,7 +7,8 @@ from .inverters import get_emulator, get_inverter
 
 def run_process(start_date, end_date, temporal_grid_space, s2_folder,
                 state_mask, output_folder, debug=True, logfile=None,
-                dask_client=None, block_size=[256, 256]):
+                dask_client=None, block_size=[256, 256],
+                chunk=None):
     """This is the entry point function that should be called by any
     script wishing to run KaSKA. It runs a KaSKA problem for S2 producing
     parameter estimates between `start_date` and `end_date` with a temporal
@@ -38,6 +39,8 @@ def run_process(start_date, end_date, temporal_grid_space, s2_folder,
         sequentially.
     block_size : int list[2], optional
         The size of the tile to break the image into (in pixels).
+    chunk: int, optional
+        If a single chunk is expected to be processed, pass its number here.
 
     """
 
@@ -61,5 +64,6 @@ def run_process(start_date, end_date, temporal_grid_space, s2_folder,
 
     kaska_runner(start_date, end_date, temporal_grid_space, state_mask,
                  s2_folder, approx_inverter, s2_emulator, output_folder,
-                 dask_client=dask_client, block_size=block_size)
+                 dask_client=dask_client, block_size=block_size,
+                 chunk=chunk)
 
