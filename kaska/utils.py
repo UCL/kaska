@@ -159,7 +159,7 @@ def reproject_data(source_img,
 
 def save_output_parameters(time_grid, observations, output_folder, parameter_names,
                            output_data, output_format="GTiff",
-                           chunk=None,
+                           chunk=None, fname_pattern="s2",
                            options=['COMPRESS=DEFLATE',
                                     'BIGTIFF=YES',
                                     'PREDICTOR=1',
@@ -167,6 +167,8 @@ def save_output_parameters(time_grid, observations, output_folder, parameter_nam
     """Saving the output parameters as (probably all times) GeoTIFFs
     """
     output_folder = Path(output_folder)
+    if not output_folder.exists(): output_folder.mkdir(parents=True,
+                                                       exist_ok=True)
     assert len(parameter_names) == len(output_data)
     nt = output_data[0].shape[0]
     assert len(time_grid) == nt
@@ -176,9 +178,9 @@ def save_output_parameters(time_grid, observations, output_folder, parameter_nam
         for band, tstep in enumerate(time_grid):
             this_date = tstep.strftime("%Y%j")
             if chunk is None:
-                outfile = output_folder/f"s2_{param:s}_A{this_date:s}.tif"
+                outfile = output_folder/f"{fname_pattern:s}_{param:s}_A{this_date:s}.tif"
             else:
-                outfile = output_folder/f"s2_{param:s}_A{this_date:s}_{chunk:s}.tif"
+                outfile = output_folder/f"{fname_pattern:s}__{param:s}_A{this_date:s}_{chunk:s}.tif"
             if outfile.exists():
                 outfile.unlink()
             LOG.info(f"Saving file {str(outfile):s}...")
