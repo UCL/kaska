@@ -225,6 +225,9 @@ def kaska_runner(
         sequentially.
     block_size : int list[2], optional
         The size of the tile to break the image into (in pixels).
+    chunk: int, optional
+        The chunk number to run the processing for. Doesn't loop over all
+        chunks, just runs one chunk. By default, set to `None`.
 
     Returns
     -------
