@@ -8,6 +8,7 @@ from collections import namedtuple
 from pathlib import Path
 import xml.etree.ElementTree as ET
 from concurrent.futures import ThreadPoolExecutor
+import itertools
 
 import gdal
 import numpy as np
@@ -163,7 +164,7 @@ class Sentinel2Observations(object):
         self.dates = [x[0].replace(hour=0, minute=0, second=0, microsecond=0)
                       for x in dates]
         self.date_data = dict(zip(self.dates, [x/'GRANULE'/'IMG_DATA' for x in folders]))
-        # self.date_data = dict(dates)
+        self.date_files = dict(zip(self.dates, [x[1] for x in dates]))
 
         LOG.info(f"Found {len(dates):d} S2 granules")
         LOG.info(
@@ -196,9 +197,11 @@ class Sentinel2Observations(object):
         root = tree.getroot()
         acq_time = [time.text for time in root.iter("PRODUCT_START_TIME")]
         date = dt.datetime.strptime(acq_time[0], "%Y-%m-%dT%H:%M:%S.%fZ")
-        refl_files = [metadata_file.parent/f"{granule.text:s}_sur.tif"
+        refl_files = [[metadata_file.parent/f"{granule.text:s}_sur.tif",
+                       metadata_file.parent/f"{granule.text:s}_sur_unc.tif"]
                       for granule in root.iter('IMAGE_FILE')
                       if not granule.text.endswith("TCI")]
+        refl_files = list(itertools.chain.from_iterable(refl_files))
         # Can check that all refl_files exist
         # Can also figure out where the cloud mask is (e.g. 'mask.tif'
         # one folder up from the tif files)
@@ -250,11 +253,9 @@ class Sentinel2Observations(object):
         """
         current_folder = self.date_data[timestep]
 
-        fname_prefix = [
-            f.name.split("B02")[0] for f in current_folder.glob("*B02_sur.tif")
-        ][0]
+        # Read in cloud mask and apply it on state mask.
+        # Stop processing if no clear pixels.
         cloud_mask = current_folder.parent / f"cloud.tif"
-        
         cloud_mask = reproject_data(
             str(cloud_mask), target_img=self.state_mask
         ).ReadAsArray()
@@ -264,21 +265,21 @@ class Sentinel2Observations(object):
             LOG.info("No clear observations")
             return None, None, None, None, None, None
 
+        # Read in surface data and uncertainty per band
         rho_surface = []
         rho_unc = []
+        s2_files = self.date_files[timestep]
         for the_band in self.band_map:
-            original_s2_file = current_folder / (
-                f"{fname_prefix:s}" + f"{the_band:s}_sur.tif"
-            )
+            original_s2_file = next(f for f in s2_files
+                                    if str(f).endswith(f"{the_band}_sur.tif") )
             LOG.debug(f"Original file {str(original_s2_file):s}")
             rho = reproject_data(
                 str(original_s2_file), target_img=self.state_mask
             ).ReadAsArray()
-            
             rho_surface.append(rho)
-            original_s2_file = current_folder / (
-                f"{fname_prefix:s}" + f"{the_band:s}_sur_unc.tif"
-            )
+
+            original_s2_file = next(f for f in s2_files
+                                    if str(f).endswith(f"{the_band}_sur_unc.tif") )
             LOG.debug(f"Uncertainty file {str(original_s2_file):s}")
             unc = reproject_data(
                 str(original_s2_file), target_img=self.state_mask
@@ -288,30 +289,29 @@ class Sentinel2Observations(object):
         #bands = ['B01', 'B02', 'B03', 'B04', 'B05', 'B06', 'B07', 'B08',
         #         'B8A', 'B09', 'B10','B11', 'B12']
         # b_ind = np.array([1, 2, 3, 4, 5, 6, 7, 8])
-        
+
         rho_surface = np.array(rho_surface)
-        
-        
+        # Mask manipulations and rescaling:
+        # surface
         mask1 = np.all(rho_surface[[1, 2, 3, 4, 5, 6, 7, 8, ]] > 0,
                        axis=0) & (~mask)
         mask = ~mask1
+        if mask.sum() == 0:
+            LOG.info(f"{str(timestep):s} -> No clear observations")
+            return None, None, None, None, None, None
         rho_surface = rho_surface / 10000.0
-        
-        #mask = np.all(rho_surface > 0, axis=0) & (~mask)
-
+        rho_surface[:, mask1] = np.nan
+        # uncertainty
         rho_unc = np.array(rho_unc) / 10000.0
         rho_unc[:, mask] = np.nan
         # Average uncertainty over the image
         rho_unc = np.nanmean(rho_unc, axis=(1, 2))
-        rho_surface[:, mask1] = np.nan
-        if mask.sum() == 0:
-            LOG.info(f"{str(timestep):s} -> No clear observations")
-            return None, None, None, None, None, None
         LOG.info(
             f"{str(timestep):s} -> Total of {mask.sum():d} clear pixels "
             + f"({100.*mask.sum()/np.prod(mask.shape):f}%)"
         )
-        # Now read angles
+
+        # Read in angles
         sun_angles = reproject_data(
             str(current_folder.parent / "ANG_DATA/SAA_SZA.tif"),
             target_img=self.state_mask,
