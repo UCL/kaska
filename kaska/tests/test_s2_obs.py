@@ -9,7 +9,7 @@ import pytest
 import datetime as dt
 from pathlib import Path
 # import gdal
-# import numpy as np
+import numpy as np
 
 from ..s2_observations import Sentinel2Observations
 
@@ -43,22 +43,26 @@ def test_s2_data():
     ref_dates = [
         dt.datetime(2017, 1, 4, 0, 0),
         dt.datetime(2017, 1, 7, 0, 0),
-        dt.datetime(2017, 1, 14, 0, 0),
-        dt.datetime(2017, 1, 24, 0, 0),
-        dt.datetime(2017, 1, 27, 0, 0)
     ]
     ref_files = [
         Path(parent+"/data/s2_data/S2A_MSIL1C_20170104.SAFE/GRANULE/IMG_DATA"),
         Path(parent+"/data/s2_data/S2A_MSIL1C_20170107.SAFE/GRANULE/IMG_DATA"),
-        Path(parent+"/data/s2_data/S2A_MSIL1C_20170114.SAFE/GRANULE/IMG_DATA"),
-        Path(parent+"/data/s2_data/S2A_MSIL1C_20170124.SAFE/GRANULE/IMG_DATA"),
-        Path(parent+"/data/s2_data/S2A_MSIL1C_20170127.SAFE/GRANULE/IMG_DATA")
     ]
     assert s2_obs.dates == ref_dates
     assert [s2_obs.date_data[d] for d in s2_obs.dates] == ref_files
 
-    rho_surface, mask, sza, vza, raa, rho_unc = s2_obs.read_granule(ref_dates[1])
-    #print(rho_surface, mask, sza, vza, raa, rho_unc)
+    for i, d in enumerate(ref_dates):
+        rho_surface, mask, sza, vza, raa, rho_unc = s2_obs.read_granule(d)
+        # np.savez_compressed(f"s2_obs_{i}_ref", rho_surface=rho_surface, mask=mask, sza=sza,
+        #         vza=vza, raa=raa, rho_unc=rho_unc)
+        ref_data = np.load(Path(parent+f'/data/s2_obs_{i}_ref.npz'),
+                           allow_pickle=True)
+        np.testing.assert_equal(ref_data['rho_surface'], rho_surface)
+        np.testing.assert_equal(ref_data['mask'], mask)
+        np.testing.assert_equal(ref_data['sza'], sza)
+        np.testing.assert_equal(ref_data['vza'], vza)
+        np.testing.assert_equal(ref_data['raa'], raa)
+        np.testing.assert_equal(ref_data['rho_unc'], rho_unc)
 
     # retval = s2_obs.read_time_series([dt.datetime(2017, 1, 1),
     #                                  dt.datetime(2017,12,31)])
