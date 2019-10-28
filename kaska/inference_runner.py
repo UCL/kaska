@@ -20,9 +20,10 @@ from osgeo import gdal
 from .utils import get_chunks, define_temporal_grid
 from .s2_observations import Sentinel2Observations
 from .kaska import KaSKA
+from s1_observations import Sentinel1Observations
 
 Config = namedtuple(
-    "Config", "s2_obs temporal_grid state_mask inverter output_folder"
+    "Config", "s2_obs s1_obs temporal_grid state_mask inverter output_folder"
 )
 
 LOG = logging.getLogger(__name__)
@@ -192,6 +193,7 @@ def kaska_runner(
     s2_folder,
     approx_inverter,
     s2_emulator,
+    s1_ncfile,
     output_folder,
     dask_client=None,
     block_size= [256, 256],
@@ -217,6 +219,8 @@ def kaska_runner(
         The inverter filename
     s2_emulator : str
         The emulator filename
+    s1_ncfile: str
+        NetCDF file containing the Sentinel 1 data 
     output_folder : str
         A folder where the output files will be dumped.
     dask_client : dask, optional
@@ -244,12 +248,17 @@ def kaska_runner(
         band_prob_threshold=20,
         time_grid=temporal_grid,
     )
+    
+    s1_obs = Sentinel1Observations(s1_ncfile,
+                                   state_mask,
+                                   time_grid=temporal_grid
+        )
 
     output_folder = Path(output_folder)
     output_folder.mkdir(parents=True, exist_ok=True)
     # "s2_obs temporal_grid state_mask inverter output_folder"
     config = Config(
-        s2_obs, temporal_grid, state_mask, approx_inverter, output_folder
+        s2_obs, s1_obs, temporal_grid, state_mask, approx_inverter, output_folder
     )
     # Avoid reading mask in memory in case we fill it up
     g = gdal.Open(state_mask)
