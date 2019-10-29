@@ -52,6 +52,7 @@ class Sentinel1Observations(object):
                     "theta": "localIncidenceAngle"}
     ):
         self.time_grid = time_grid
+        self.original_mask = state_mask
         self.state_mask = state_mask
         self.nc_file = Path(netCDF_file)
         self.nc_layers = nc_layers
