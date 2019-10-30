@@ -20,7 +20,8 @@ from osgeo import gdal
 from .utils import get_chunks, define_temporal_grid
 from .s2_observations import Sentinel2Observations
 from .kaska import KaSKA
-from s1_observations import Sentinel1Observations
+from .s1_observations import Sentinel1Observations
+from .kaska_sar import sar_inversion, save_s1_output
 
 Config = namedtuple(
     "Config", "s2_obs s1_obs temporal_grid state_mask inverter output_folder"
@@ -181,7 +182,10 @@ def process_tile(the_chunk, config):
             chunk=hex(chunk_no),
         )
         parameter_names, parameter_data = kaska.run_retrieval()
+        sar_data = sar_inversion(config.s1_obs, parameter_data)
         kaska.save_s2_output(parameter_names, parameter_data)
+        save_s1_output(config.output_folder, config.s1_obs, sar_data,
+                       time_grid = config.temporal_grid, chunk = hex(chunk_no))
         return parameter_names
 
 
