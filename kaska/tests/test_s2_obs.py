@@ -47,7 +47,7 @@ def test_s2_data():
         Path(parent+"/data/s2_data/S2A_MSIL1C_20170107.SAFE/GRANULE/IMG_DATA"),
     ]
     assert sorted(s2_obs.date_data) == sorted(ref_dates)
-    assert [s2_obs.date_data[d][0] for d in sorted(s2_obs.date_data)] == ref_files
+    assert [s2_obs.date_data[d][0].parent for d in sorted(s2_obs.date_data)] == ref_files
 
     for i, d in enumerate(ref_dates):
         rho_surface, mask, sza, vza, raa, rho_unc = s2_obs.read_granule(d)

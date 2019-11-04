@@ -163,10 +163,7 @@ class Sentinel2Observations(object):
 
         dates = [x[0].replace(hour=0, minute=0, second=0, microsecond=0)
                  for x in date_files]
-        # self.date_data is a dictionary of {date : [folder, [datafiles]]}
-        self.date_data = dict(zip(dates,
-                                  [[x[0]/'GRANULE'/'IMG_DATA', x[1][1]]
-                                   for x in zip(folders, date_files)]))
+        self.date_data = dict(zip(dates, [x[1] for x in date_files]))
 
         LOG.info(f"Found {len(dates):d} S2 granules")
         LOG.info(
@@ -253,7 +250,7 @@ class Sentinel2Observations(object):
         NOTE: Currently reads in sequentially. It's better to gather
         all the filenames and read them in parallel using parmap.py
         """
-        current_folder = self.date_data[timestep][0]
+        current_folder = self.date_data[timestep][0].parent
 
         # Read in cloud mask and apply it on state mask.
         # Stop processing if no clear pixels.
@@ -270,7 +267,7 @@ class Sentinel2Observations(object):
         # Read in surface data and uncertainty per band
         rho_surface = []
         rho_unc = []
-        s2_files = self.date_data[timestep][1]
+        s2_files = self.date_data[timestep]
         for the_band in self.band_map:
             original_s2_file = next(f for f in s2_files
                                     if str(f).endswith(f"{the_band}_sur.tif") )
