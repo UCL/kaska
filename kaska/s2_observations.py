@@ -148,37 +148,39 @@ class Sentinel2Observations(object):
         Returns
         -------
         None
-        Doesn't return anything, but changes `self.dates` and `self.date_data`
+        Doesn't return anything, but changes `self.date_data`
         """
         folders = sorted([x for f in self.parent.iterdir()
                           for x in f.rglob("*.SAFE")
                           if x.name.find("MSIL1C") >= 0])
 
         # Apply multithreaded
-        dates = []
+        date_files = []
         with ThreadPoolExecutor(max_workers=10) as executor:
             for params in executor.map(
                     lambda x: self._process_xml(x/"MTD_MSIL1C.xml"), folders):
-                dates.append(params)
+                date_files.append(params)
 
-        self.dates = [x[0].replace(hour=0, minute=0, second=0, microsecond=0)
-                      for x in dates]
-        self.date_data = dict(zip(self.dates, [x/'GRANULE'/'IMG_DATA' for x in folders]))
-        self.date_files = dict(zip(self.dates, [x[1] for x in dates]))
+        dates = [x[0].replace(hour=0, minute=0, second=0, microsecond=0)
+                 for x in date_files]
+        # self.date_data is a dictionary of {date : [folder, [datafiles]]}
+        self.date_data = dict(zip(dates,
+                                  [[x[0]/'GRANULE'/'IMG_DATA', x[1][1]]
+                                   for x in zip(folders, date_files)]))
 
         LOG.info(f"Found {len(dates):d} S2 granules")
         LOG.info(
             f"First granule: "
-            + f"{sorted(self.dates)[0].strftime('%Y-%m-%d'):s}"
+            + f"{sorted(dates)[0].strftime('%Y-%m-%d'):s}"
         )
         LOG.info(
             f"Last granule: "
-            + f"{sorted(self.dates)[-1].strftime('%Y-%m-%d'):s}"
+            + f"{sorted(dates)[-1].strftime('%Y-%m-%d'):s}"
         )
 
         # Fill bands_per_observation dictionary with sorted dates-band_map data
         self.bands_per_observation = {}
-        for the_date in self.dates:
+        for the_date in dates:
             self.bands_per_observation[the_date] = len(self.band_map)
 
     def _process_xml(self, metadata_file):
@@ -222,7 +224,7 @@ class Sentinel2Observations(object):
         end_time = max(time_grid)
         obs_dates = [
             date
-            for date in self.dates
+            for date in list(self.date_data)
             if ((date >= start_time) & (date <= end_time))
         ]
         data = [self.read_granule(date) for date in obs_dates]
@@ -251,7 +253,7 @@ class Sentinel2Observations(object):
         NOTE: Currently reads in sequentially. It's better to gather
         all the filenames and read them in parallel using parmap.py
         """
-        current_folder = self.date_data[timestep]
+        current_folder = self.date_data[timestep][0]
 
         # Read in cloud mask and apply it on state mask.
         # Stop processing if no clear pixels.
@@ -268,7 +270,7 @@ class Sentinel2Observations(object):
         # Read in surface data and uncertainty per band
         rho_surface = []
         rho_unc = []
-        s2_files = self.date_files[timestep]
+        s2_files = self.date_data[timestep][1]
         for the_band in self.band_map:
             original_s2_file = next(f for f in s2_files
                                     if str(f).endswith(f"{the_band}_sur.tif") )
