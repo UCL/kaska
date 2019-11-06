@@ -32,10 +32,14 @@ def test_3d():
     oldx = np.array(sorted(np.random.choice(np.arange(200), 100, replace=False)))
     oldy = np.random.rand(100, 5, 10)
     numba_ret = interp_fix.interp1d(newx, oldx, oldy)
+    
+    close_so_far = True
     for i in range(5):
         for j in range(10):
             np_ret    = np.interp(newx, oldx, oldy[:,i, j])
-            assert np.allclose(np_ret, numba_ret[:,i, j])
+            close_so_far &= np.allclose(np_ret, numba_ret[:,i, j])
+            
+    assert close_so_far
 
 # def testgap():
 #     newx = np.arange(200)
