@@ -274,11 +274,11 @@ def kaska_runner(
             nx, ny, block_size=block_size)]
 
         wrapper = partial(process_tile, config=config)
-        if dask_client is None:
-            retval = list(map(wrapper, them_chunks))
-        else:
+        if dask_client is not None:
             A = dask_client.map(wrapper, them_chunks)
             retval = dask_client.gather(A)
+        else:
+            retval = list(map(wrapper, them_chunks))
 
         try:
             parameter_names = next(item for item in retval if item is not None)
