@@ -167,8 +167,8 @@ def save_output_parameters(time_grid, observations, output_folder, parameter_nam
     """Saving the output parameters as (probably all times) GeoTIFFs
     """
     output_folder = Path(output_folder)
-    if not output_folder.exists(): output_folder.mkdir(parents=True,
-                                                       exist_ok=True)
+    if not output_folder.exists():
+        output_folder.mkdir(parents=True, exist_ok=True)
     assert len(parameter_names) == len(output_data)
     nt = output_data[0].shape[0]
     assert len(time_grid) == nt
@@ -177,10 +177,15 @@ def save_output_parameters(time_grid, observations, output_folder, parameter_nam
     for (param, data) in zip(parameter_names, output_data):
         for band, tstep in enumerate(time_grid):
             this_date = tstep.strftime("%Y%j")
-            if chunk is None:
-                outfile = output_folder/f"{fname_pattern:s}_{param:s}_A{this_date:s}.tif"
-            else:
-                outfile = output_folder/f"{fname_pattern:s}__{param:s}_A{this_date:s}_{chunk:s}.tif"
+            
+            # Compose the output file name from pattern (satellite),
+            # parameters, dates and, optionally, chunk
+            extra = ""
+            if chunk is not None:
+                extra = f"_{chunk:s}"
+            
+            outfile = output_folder/f"{fname_pattern:s}_{param:s}_A{this_date:s}{extra}.tif"
+
             if outfile.exists():
                 outfile.unlink()
             LOG.info(f"Saving file {str(outfile):s}...")
