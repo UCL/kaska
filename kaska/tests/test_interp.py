@@ -10,27 +10,27 @@ import sys
 
 from .. import interp_fix
 
-def test1d():
+def test_1d():
     newx = np.arange(200)
     oldx = np.array(sorted(np.random.choice(np.arange(200), 100, replace=False)))
-    oldy = oldy = np.random.rand(100)
+    oldy = np.random.rand(100)
     np_ret    = np.interp(newx, oldx, oldy)
     numba_ret = interp_fix.interp1d(newx, oldx, oldy)
     assert np.allclose(np_ret, numba_ret)
 
-def test2d():
+def test_2d():
     newx = np.arange(200)
     oldx = np.array(sorted(np.random.choice(np.arange(200), 100, replace=False)))
-    oldy = oldy = np.random.rand(100,5)
+    oldy = np.random.rand(100,5)
     numba_ret = interp_fix.interp1d(newx, oldx, oldy)
     for i in range(5):
         np_ret    = np.interp(newx, oldx, oldy[:,i])
         assert np.allclose(np_ret, numba_ret[:,i])
 
-def test3d():
+def test_3d():
     newx = np.arange(200)
     oldx = np.array(sorted(np.random.choice(np.arange(200), 100, replace=False)))
-    oldy = oldy = np.random.rand(100, 5, 10)
+    oldy = np.random.rand(100, 5, 10)
     numba_ret = interp_fix.interp1d(newx, oldx, oldy)
     for i in range(5):
         for j in range(10):
