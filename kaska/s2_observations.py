@@ -250,11 +250,11 @@ class Sentinel2Observations(object):
         NOTE: Currently reads in sequentially. It's better to gather
         all the filenames and read them in parallel using parmap.py
         """
-        current_folder = self.date_data[timestep][0].parent
+        current_folder = self.date_data[timestep][0].parent.parent
 
         # Read in cloud mask and apply it on state mask.
         # Stop processing if no clear pixels.
-        cloud_mask = current_folder.parent / f"cloud.tif"
+        cloud_mask = current_folder / f"cloud.tif"
         cloud_mask = reproject_data(
             str(cloud_mask), target_img=self.state_mask
         ).ReadAsArray()
@@ -312,14 +312,14 @@ class Sentinel2Observations(object):
 
         # Read in angles
         sun_angles = reproject_data(
-            str(current_folder.parent / "ANG_DATA/SAA_SZA.tif"),
+            str(current_folder / "ANG_DATA/SAA_SZA.tif"),
             target_img=self.state_mask,
             xRes=20,
             yRes=20,
             resample=0,
         ).ReadAsArray()
         view_angles = reproject_data(
-            str(current_folder.parent / "ANG_DATA/VAA_VZA_B05.tif"),
+            str(current_folder / "ANG_DATA/VAA_VZA_B05.tif"),
             target_img=self.state_mask,
             xRes=20,
             yRes=20,
