@@ -183,7 +183,7 @@ def process_tile(the_chunk, config):
             config.output_folder,
             chunk=hex(chunk_no),
         )
-        s2_retrieval = kaska.run_retireval()
+        s2_retrieval = kaska.run_retrieval()
         s2_data = {"f": s2_retrieval}
         parameter_names, parameter_data = extract_parameters(s2_retrieval)
         sar_data = sar_inversion(config.s1_obs, s2_data)
