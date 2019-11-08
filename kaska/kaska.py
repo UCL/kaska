@@ -20,6 +20,7 @@ from .smoothn import smoothn
 from .utils import save_output_parameters
 
 from .interp_fix import interp1d
+from collections import namedtuple
 
 LOG = logging.getLogger(__name__)
             
@@ -160,7 +161,8 @@ class KaSKA(object):
         cabi = interp1d(doy_grid, doys, scab)
         cbrowni =  interp1d(doy_grid, doys, scbrown)
         #return (["lai", "cab", "cbrown"], [laii, cabi, cbrowni])
-        return {"temporal_grid": doy_grid, "slai": laii, "scab": cabi, "scbrown": cbrowni}
+        SmootherResults = namedtuple("SmootherResults", ["temporal_grid", "slai", "scab", "scbrown"])
+        return SmootherResults(doy_grid, laii, cabi, cbrowni)
 
     def save_s2_output(self, parameter_names, output_data,
                        time_grid=None, output_format="GTiff"):

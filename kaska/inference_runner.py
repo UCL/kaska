@@ -131,8 +131,8 @@ def stitch_outputs(output_folder, parameter_list):
         LOG.info(f"Saved {parameter:s} file as {output_tiffs[parameter]:s}")
     return output_tiffs
 
-def extract_parameters(s2_retieval):
-    return (["lai", "cab", "cbrown"], [s2_retieval.slai, s2_retieval.scab, s2_retieval.scbrown])
+def extract_parameters(s2_retrieval):
+    return (["lai", "cab", "cbrown"], [s2_retrieval.slai, s2_retrieval.scab, s2_retrieval.scbrown])
 
 def process_tile(the_chunk, config):
     """A function to process a single spatial tile. The function
@@ -184,7 +184,8 @@ def process_tile(the_chunk, config):
             chunk=hex(chunk_no),
         )
         s2_retrieval = kaska.run_retrieval()
-        s2_data = {"f": s2_retrieval}
+        S2Data = namedtuple("S2Data", ["f"])
+        s2_data = S2Data(s2_retrieval)
         parameter_names, parameter_data = extract_parameters(s2_retrieval)
         sar_data = sar_inversion(config.s1_obs, s2_data)
         kaska.save_s2_output(parameter_names, parameter_data)
