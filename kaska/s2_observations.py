@@ -53,7 +53,7 @@ class Sentinel2Observations(object):
 
         Class members initialised in _find_granules
         -------------------------------------------
-        date_data : dictionary of {date : [reflectivity files]}, ordered in date
+        date_data : dictionary of {date:[reflectivity files]}, ordered in date
         bands_per_observation : dictionary of date-band_map pairs, ordered
                                 in date
         """
@@ -276,7 +276,7 @@ class Sentinel2Observations(object):
                 return None, None, None, None, None, None
         else:
             LOG.info(f"Cloud file {cloud_mask} does not exist. No cloud mask" +
-            f" applied to granule {timestep.strftime('%Y-%m-%d')}")
+                     f" applied to granule {timestep.strftime('%Y-%m-%d')}")
 
         # Read in surface data and uncertainty per band
         rho_surface = []
@@ -284,22 +284,25 @@ class Sentinel2Observations(object):
         s2_files = self.date_data[timestep]
         for the_band in self.band_map:
             rho = np.zeros(shape, dtype=np.int)
+            unc = np.zeros(shape, dtype=np.int)
             try:
-                original_s2_file = next(f for f in s2_files
-                                        if str(f).endswith(f"{the_band}_sur.tif") )
+                original_s2_file = next(
+                    f for f in s2_files
+                    if str(f).endswith(f"{the_band}_sur.tif")
+                )
             except StopIteration:
-                LOG.info(f"Reflectivity file name for band {the_band} and granule" +
-                         f" {timestep.strftime('%Y-%m-%d')} does not exist in" +
-                         f" the granule xml file. Skipping band.")
+                LOG.info(f"Reflectivity file name for band {the_band}" +
+                         f" and granule {timestep.strftime('%Y-%m-%d')} does" +
+                         f" not exist in the granule xml file. Skipping band.")
                 rho_surface.append(rho)
-                rho_unc.append(rho)
+                rho_unc.append(unc)
                 continue
             if not original_s2_file.exists():
                 LOG.info(f"Reflectivity file for band {the_band} and granule" +
                          f" {timestep.strftime('%Y-%m-%d')} does not exist." +
                          f" Skipping band.")
                 rho_surface.append(rho)
-                rho_unc.append(rho)
+                rho_unc.append(unc)
                 continue
             LOG.debug(f"Original file {str(original_s2_file):s}")
             rho = reproject_data(
@@ -307,8 +310,24 @@ class Sentinel2Observations(object):
             ).ReadAsArray()
             rho_surface.append(rho)
 
-            original_s2_file = next(f for f in s2_files
-                                    if str(f).endswith(f"{the_band}_sur_unc.tif") )
+            try:
+                original_s2_file = next(
+                    f for f in s2_files
+                    if str(f).endswith(f"{the_band}_sur_unc.tif")
+                )
+            except StopIteration:
+                LOG.info(f"Reflectivity uncertainty file name for band {the_band}" +
+                         f" and granule {timestep.strftime('%Y-%m-%d')} does" +
+                         f" not exist in the granule xml file." +
+                         f" Setting uncertainty to zero.")
+                rho_unc.append(unc)
+                continue
+            if not original_s2_file.exists():
+                LOG.info(f"Reflectivity uncertainty file for band {the_band}" +
+                         f" and granule {timestep.strftime('%Y-%m-%d')} does" +
+                         f" not exist. Setting uncertainty to zero.")
+                rho_unc.append(unc)
+                continue
             LOG.debug(f"Uncertainty file {str(original_s2_file):s}")
             unc = reproject_data(
                 str(original_s2_file), target_img=self.state_mask
@@ -344,7 +363,8 @@ class Sentinel2Observations(object):
         sza = None
         vza = None
         raa = None
-        if False:#(current_folder/"ANG_DATA/SAA_SZA.tif").exists() and (current_folder/"ANG_DATA/VAA_VZA_B05.tif").exists():
+        if ((current_folder/"ANG_DATA/SAA_SZA.tif").exists() and
+            (current_folder/"ANG_DATA/VAA_VZA_B05.tif").exists()):
             sun_angles = reproject_data(
                 str(current_folder / "ANG_DATA/SAA_SZA.tif"),
                 target_img=self.state_mask,
