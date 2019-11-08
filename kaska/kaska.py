@@ -159,7 +159,8 @@ class KaSKA(object):
         laii = interp1d(doy_grid, doys, slai)
         cabi = interp1d(doy_grid, doys, scab)
         cbrowni =  interp1d(doy_grid, doys, scbrown)
-        return (["lai", "cab", "cbrown"], [laii, cabi, cbrowni])
+        #return (["lai", "cab", "cbrown"], [laii, cabi, cbrowni])
+        return {"temporal_grid": doy_grid, "slai": laii, "scab": cabi, "scbrown": cbrowni}
 
     def save_s2_output(self, parameter_names, output_data,
                        time_grid=None, output_format="GTiff"):
