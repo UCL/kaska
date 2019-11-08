@@ -53,9 +53,7 @@ class Sentinel2Observations(object):
 
         Class members initialised in _find_granules
         -------------------------------------------
-        dates : list of dates to run the analysis on (data files available
-                for those dates)
-        date_data : dictionary of date-folder pairs, ordered in date
+        date_data : dictionary of {date : [reflectivity files]}, ordered in date
         bands_per_observation : dictionary of date-band_map pairs, ordered
                                 in date
         """
@@ -164,6 +162,11 @@ class Sentinel2Observations(object):
         dates = [x[0].replace(hour=0, minute=0, second=0, microsecond=0)
                  for x in date_files]
         self.date_data = dict(zip(dates, [x[1] for x in date_files]))
+        # TODO: Could do here instead of in read_granule():
+        # - Check that all refl_files exist
+        # - Figure out where the cloud mask is (e.g. 'cloud.tif'
+        #   one folder up from the tif files)
+        # - Angles are also one folder up in folder ANG_DATA
 
         LOG.info(f"Found {len(dates):d} S2 granules")
         LOG.info(
@@ -201,10 +204,7 @@ class Sentinel2Observations(object):
                       for granule in root.iter('IMAGE_FILE')
                       if not granule.text.endswith("TCI")]
         refl_files = list(itertools.chain.from_iterable(refl_files))
-        # Can check that all refl_files exist
-        # Can also figure out where the cloud mask is (e.g. 'mask.tif'
-        # one folder up from the tif files)
-        # Angles are also one folder up in folder ANG_DATA
+
         return date, refl_files
 
     def read_time_series(self, time_grid):
@@ -252,25 +252,55 @@ class Sentinel2Observations(object):
         """
         current_folder = self.date_data[timestep][0].parent.parent
 
-        # Read in cloud mask and apply it on state mask.
-        # Stop processing if no clear pixels.
+        # Read in cloud mask.
         cloud_mask = current_folder / f"cloud.tif"
-        cloud_mask = reproject_data(
-            str(cloud_mask), target_img=self.state_mask
-        ).ReadAsArray()
-        mask = cloud_mask <= self.band_prob_threshold
-        if mask.sum() == 0:
-            # No pixels! Pointless to carry on reading!
-            LOG.info("No clear observations")
-            return None, None, None, None, None, None
+        # Fish out state_mask shape and make dummy (i.e. all True)
+        # cloud mask of the same shape.
+        shape_l = [i.split(" ")
+                   for i in gdal.Info(self.state_mask).split("\n")
+                   if "Size is " in i][0]
+        shape_l = [int(i.split(",")[0]) for i in shape_l[2:]]
+        shape_l.reverse()
+        shape = tuple(shape_l)
+        mask = np.ones(shape, dtype=np.bool)
+        # Reproject cloud mask on state mask.
+        # Stop processing if no clear pixels exist.
+        if cloud_mask.exists():
+            cloud_mask = reproject_data(
+                str(cloud_mask), target_img=self.state_mask
+            ).ReadAsArray()
+            mask = cloud_mask <= self.band_prob_threshold
+            if mask.sum() == 0:
+                # No pixels! Pointless to carry on reading!
+                LOG.info("No clear observations")
+                return None, None, None, None, None, None
+        else:
+            LOG.info(f"Cloud file {cloud_mask} does not exist. No cloud mask" +
+            f" applied to granule {timestep.strftime('%Y-%m-%d')}")
 
         # Read in surface data and uncertainty per band
         rho_surface = []
         rho_unc = []
         s2_files = self.date_data[timestep]
         for the_band in self.band_map:
-            original_s2_file = next(f for f in s2_files
-                                    if str(f).endswith(f"{the_band}_sur.tif") )
+            rho = np.zeros(shape, dtype=np.int)
+            try:
+                original_s2_file = next(f for f in s2_files
+                                        if str(f).endswith(f"{the_band}_sur.tif") )
+            except StopIteration:
+                LOG.info(f"Reflectivity file name for band {the_band} and granule" +
+                         f" {timestep.strftime('%Y-%m-%d')} does not exist in" +
+                         f" the granule xml file. Skipping band.")
+                rho_surface.append(rho)
+                rho_unc.append(rho)
+                continue
+            if not original_s2_file.exists():
+                LOG.info(f"Reflectivity file for band {the_band} and granule" +
+                         f" {timestep.strftime('%Y-%m-%d')} does not exist." +
+                         f" Skipping band.")
+                rho_surface.append(rho)
+                rho_unc.append(rho)
+                continue
             LOG.debug(f"Original file {str(original_s2_file):s}")
             rho = reproject_data(
                 str(original_s2_file), target_img=self.state_mask
@@ -311,24 +341,32 @@ class Sentinel2Observations(object):
         )
 
         # Read in angles
-        sun_angles = reproject_data(
-            str(current_folder / "ANG_DATA/SAA_SZA.tif"),
-            target_img=self.state_mask,
-            xRes=20,
-            yRes=20,
-            resample=0,
-        ).ReadAsArray()
-        view_angles = reproject_data(
-            str(current_folder / "ANG_DATA/VAA_VZA_B05.tif"),
-            target_img=self.state_mask,
-            xRes=20,
-            yRes=20,
-            resample=0,
-        ).ReadAsArray()
-        sza = np.cos(np.deg2rad(sun_angles[1].mean() / 100.0))
-        vza = np.cos(np.deg2rad(view_angles[1].mean() / 100.0))
-        saa = sun_angles[0].mean() / 100.0
-        vaa = view_angles[0].mean() / 100.0
-        raa = np.cos(np.deg2rad(vaa - saa))
+        sza = None
+        vza = None
+        raa = None
+        if False:#(current_folder/"ANG_DATA/SAA_SZA.tif").exists() and (current_folder/"ANG_DATA/VAA_VZA_B05.tif").exists():
+            sun_angles = reproject_data(
+                str(current_folder / "ANG_DATA/SAA_SZA.tif"),
+                target_img=self.state_mask,
+                xRes=20,
+                yRes=20,
+                resample=0,
+            ).ReadAsArray()
+            view_angles = reproject_data(
+                str(current_folder / "ANG_DATA/VAA_VZA_B05.tif"),
+                target_img=self.state_mask,
+                xRes=20,
+                yRes=20,
+                resample=0,
+            ).ReadAsArray()
+            sza = np.cos(np.deg2rad(sun_angles[1].mean() / 100.0))
+            vza = np.cos(np.deg2rad(view_angles[1].mean() / 100.0))
+            saa = sun_angles[0].mean() / 100.0
+            vaa = view_angles[0].mean() / 100.0
+            raa = np.cos(np.deg2rad(vaa - saa))
+        else:
+            LOG.info(f"At least one of the angle files for granule" +
+                     f" {timestep.strftime('%Y-%m-%d')} does not exist." +
+                     f" Skipping angular data.")
 
         return rho_surface, mask, sza, vza, raa, rho_unc
