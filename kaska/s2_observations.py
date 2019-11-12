@@ -150,7 +150,7 @@ class Sentinel2Observations(object):
         """
         folders = sorted([x for f in self.parent.iterdir()
                           for x in f.rglob("*.SAFE")
-                          if x.name.find("MSIL1C") >= 0])
+                          if "MSIL1C" in x.name])
 
         # Apply multithreaded
         date_files = []
@@ -170,12 +170,10 @@ class Sentinel2Observations(object):
 
         LOG.info(f"Found {len(dates):d} S2 granules")
         LOG.info(
-            f"First granule: "
-            + f"{sorted(dates)[0].strftime('%Y-%m-%d'):s}"
+            f"First granule: {min(dates):%Y-%m-%d}"
         )
         LOG.info(
-            f"Last granule: "
-            + f"{sorted(dates)[-1].strftime('%Y-%m-%d'):s}"
+            f"Last granule: {max(dates):%Y-%m-%d}"
         )
 
         # Fill bands_per_observation dictionary with sorted dates-band_map data
@@ -221,8 +219,8 @@ class Sentinel2Observations(object):
         end_time = max(time_grid)
         obs_dates = [
             date
-            for date in list(self.date_data)
-            if ((date >= start_time) & (date <= end_time))
+            for date in self.date_data
+            if (start_time <= date <= end_time)
         ]
         data = [self.read_granule(date) for date in obs_dates]
         observations = [x[0] for x in data if x[1] is not None]
@@ -238,11 +236,11 @@ class Sentinel2Observations(object):
         return s2_obs
 
     def read_granule(self, timestep):
-        """Reads the data for the given timestamp.
+        """Reads the data for the given timestep.
 
         Parameters
         ----------
-        timestep : A date.
+        timestep : A datetime object.
         Returns
         -------
         tuple containing the rho_surface, mask, sza, vza, raa, rho_unc
@@ -255,7 +253,7 @@ class Sentinel2Observations(object):
         # Read in cloud mask and reproject it on state mask.
         # Stop processing if cloud mask file doesn't exist,
         # or if no clear pixels exist.
-        cloud_mask = current_folder / f"cloud.tif"
+        cloud_mask = current_folder / "cloud.tif"
         if cloud_mask.exists():
             cloud_mask = reproject_data(
                 str(cloud_mask), target_img=self.state_mask
@@ -280,13 +278,13 @@ class Sentinel2Observations(object):
                     if str(f).endswith(f"{the_band}_sur.tif")
                 )
             except StopIteration:
-                LOG.info(f"Reflectivity file name for band {the_band}" +
-                         f" and granule {timestep.strftime('%Y-%m-%d')} does" +
-                         f" not exist in the granule xml file.")
+                LOG.info(f"""Reflectivity file name for band {the_band}
+                 and granule {timestep:%Y-%m-%d} does not exist
+                 in the granule xml file.""")
                 return None, None, None, None, None, None
             if not original_s2_file.exists():
-                LOG.info(f"Reflectivity file for band {the_band} and granule" +
-                         f" {timestep.strftime('%Y-%m-%d')} does not exist.")
+                LOG.info(f"""Reflectivity file for band {the_band} and granule
+                 {timestep:%Y-%m-%d} does not exist.""")
                 return None, None, None, None, None, None
             LOG.debug(f"Original file {str(original_s2_file):s}")
             rho = reproject_data(
@@ -300,14 +298,13 @@ class Sentinel2Observations(object):
                     if str(f).endswith(f"{the_band}_sur_unc.tif")
                 )
             except StopIteration:
-                LOG.info(f"Reflectivity uncertainty file name for band {the_band}" +
-                         f" and granule {timestep.strftime('%Y-%m-%d')} does" +
-                         f" not exist in the granule xml file.")
+                LOG.info(f"""Reflectivity uncertainty file name for band
+                 {the_band} and granule {timestep:%Y-%m-%d} does not exist
+                 in the granule xml file.""")
                 return None, None, None, None, None, None
             if not original_s2_file.exists():
-                LOG.info(f"Reflectivity uncertainty file for band {the_band}" +
-                         f" and granule {timestep.strftime('%Y-%m-%d')} does" +
-                         f" not exist.")
+                LOG.info("""Reflectivity uncertainty file for band {the_band}
+                 and granule {timestep:%Y-%m-%d} does not exist.""")
                 return None, None, None, None, None, None
             LOG.debug(f"Uncertainty file {str(original_s2_file):s}")
             unc = reproject_data(
@@ -326,7 +323,7 @@ class Sentinel2Observations(object):
                        axis=0) & (~mask)
         mask = ~mask1
         if mask.sum() == 0:
-            LOG.info(f"{str(timestep):s} -> No clear observations")
+            LOG.info(f"{timestep} -> No clear observations")
             return None, None, None, None, None, None
         rho_surface = rho_surface / 10000.0
         rho_surface[:, mask1] = np.nan
@@ -336,29 +333,29 @@ class Sentinel2Observations(object):
         # Average uncertainty over the image
         rho_unc = np.nanmean(rho_unc, axis=(1, 2))
         LOG.info(
-            f"{str(timestep):s} -> Total of {mask.sum():d} clear pixels "
+            f"{timestep} -> Total of {mask.sum():d} clear pixels "
             + f"({100.*mask.sum()/np.prod(mask.shape):f}%)"
         )
 
         # Read in angles
-        angle_file = current_folder/"ANG_DATA/SAA_SZA.tif"
+        angle_file = current_folder / "ANG_DATA" / "SAA_SZA.tif"
         if not angle_file.exists():
             LOG.info(f"Sun angle file {angle_file} does not exist.")
             return None, None, None, None, None, None
-        angle_file = current_folder/"ANG_DATA/VAA_VZA_B05.tif"
+        angle_file = current_folder / "ANG_DATA" / "VAA_VZA_B05.tif"
         if not angle_file.exists():
             LOG.info(f"View angle file {angle_file} does not exist.")
             return None, None, None, None, None, None
 
         sun_angles = reproject_data(
-            str(current_folder / "ANG_DATA/SAA_SZA.tif"),
+            str(current_folder / "ANG_DATA" / "SAA_SZA.tif"),
             target_img=self.state_mask,
             xRes=20,
             yRes=20,
             resample=0,
         ).ReadAsArray()
         view_angles = reproject_data(
-            str(current_folder / "ANG_DATA/VAA_VZA_B05.tif"),
+            str(current_folder / "ANG_DATA" / "VAA_VZA_B05.tif"),
             target_img=self.state_mask,
             xRes=20,
             yRes=20,
