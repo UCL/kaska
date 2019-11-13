@@ -134,9 +134,9 @@ class Sentinel1Observations(object):
         late = time_grid[-1]
         
         sel_dates = [k for k,v in self.dates.items()
-                           if ((k >= early) and (k < late))]
+                           if ((k >= early) and (k <= late))]
         sel_bands = [v for k,v in self.dates.items()
-                           if ((k >= early) and (k < late))]
+                           if ((k >= early) and (k <= late))]
         obs = {}
         for ii, layer in enumerate(self.s1_data_ptr.keys()):
                 obs[layer] = np.array([self.s1_data_ptr[
