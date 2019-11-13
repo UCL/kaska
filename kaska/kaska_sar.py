@@ -33,6 +33,8 @@ def sar_inversion(s1_obs, s2_data):
     s1_doys = [int(dt.datetime.strftime(x, "%j"))
                for x in s1_obs.dates.keys()]
     n_sar_obs = len(s1_doys)
+    s1_temporal_grid = sorted(s1_obs.dates.keys())
+    
     # Interpolate S2 retrievals to S1 time grid
     f = interp1d(s2_doys, s2_data.f.slai, axis=0, bounds_error=False)
     lai_s1 = f(s1_doys)
@@ -41,7 +43,7 @@ def sar_inversion(s1_obs, s2_data):
     f = interp1d(s2_doys, s2_data.f.scbrown, axis=0, bounds_error=False)
     cbrown_s1 = f(s1_doys)
     # Read in S1 data
-    S1_backscatter=s1_obs.read_time_series(temporal_grid)  
+    S1_backscatter=s1_obs.read_time_series(s1_temporal_grid)  
 
 
     # Wrap cost functions
@@ -122,9 +124,10 @@ def sar_inversion(s1_obs, s2_data):
             n_pxls = 0
             LOG.info(f"Done 100 pixels in {(time.time()-tic):g}")
             tic = time.time()
+    return s1_temporal_grid, sigma_soil_out
 
 def save_s1_output(output_folder, obs, sar_data, time_grid, chunk):
-    save_output_parameters(time_grid, obs, output_folder, sar_data,
+    save_output_parameters(time_grid, obs, output_folder, ["sigma"], [sar_data],
                            output_format = "GTiff", chunk = chunk,
                            fname_pattern = "s1")
 

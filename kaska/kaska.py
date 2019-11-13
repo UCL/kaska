@@ -162,7 +162,7 @@ class KaSKA(object):
         cbrowni =  interp1d(doy_grid, doys, scbrown)
         #return (["lai", "cab", "cbrown"], [laii, cabi, cbrowni])
         SmootherResults = namedtuple("SmootherResults", ["temporal_grid", "slai", "scab", "scbrown"])
-        return SmootherResults(doy_grid, laii, cabi, cbrowni)
+        return SmootherResults(self.time_grid, laii, cabi, cbrowni)
 
     def save_s2_output(self, parameter_names, output_data,
                        time_grid=None, output_format="GTiff"):

@@ -187,10 +187,10 @@ def process_tile(the_chunk, config):
         S2Data = namedtuple("S2Data", ["f"])
         s2_data = S2Data(s2_retrieval)
         parameter_names, parameter_data = extract_parameters(s2_retrieval)
-        sar_data = sar_inversion(config.s1_obs, s2_data)
+        sar_time_grid, sar_data = sar_inversion(config.s1_obs, s2_data)
         kaska.save_s2_output(parameter_names, parameter_data)
         save_s1_output(config.output_folder, config.s1_obs, sar_data,
-                       time_grid = config.temporal_grid, chunk = hex(chunk_no))
+                       time_grid = sar_time_grid, chunk = hex(chunk_no))
         return parameter_names
 
 
