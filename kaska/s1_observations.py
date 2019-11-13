@@ -97,7 +97,9 @@ class Sentinel1Observations(object):
         # new_geoT = geoT*1.
         # new_geoT[0] = new_geoT[0] + self.ulx*new_geoT[1]
         # new_geoT[3] = new_geoT[3] + self.uly*new_geoT[5]
-        return proj, geoT.tolist()  # new_geoT.tolist()
+        width = self.lrx - self.ulx
+        height = self.uly - self.lry
+        return proj, geoT.tolist(), width, height  # new_geoT.tolist()
         
     def _match_to_mask(self):
         """Matches the observations to the state mask.
