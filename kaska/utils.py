@@ -171,7 +171,8 @@ def save_output_parameters(time_grid, observations, output_folder, parameter_nam
         output_folder.mkdir(parents=True, exist_ok=True)
     assert len(parameter_names) == len(output_data)
     nt = output_data[0].shape[0]
-    assert len(time_grid) == nt
+    assert len(time_grid) == nt, f"time_grid length = {len(time_grid)}, " + \
+         f"data length = {nt}. output_data[0].shape = {output_data[0].shape}"
     projection, geo_transform, nx, ny = observations.define_output()
     drv = gdal.GetDriverByName(output_format)
     for (param, data) in zip(parameter_names, output_data):
