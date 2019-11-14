@@ -20,7 +20,7 @@ def interp1d(newx, oldx, oldy):
     new_shape  = newx.shape[0]
     oldy_t = oldy.reshape(oldx.shape[0], -1).T
     pix_num = oldy_t.shape[0]
-    newy = np.zeros((pix_num, new_shape))*np.nan
+    newy = np.full((pix_num, new_shape), np.nan)
     for i in range(pix_num):
         y    = oldy_t[i]
         mask = ~np.isnan(y)
