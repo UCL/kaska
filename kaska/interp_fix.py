@@ -20,10 +20,11 @@ def interp1d(newx, oldx, oldy):
     new_shape  = newx.shape[0]
     oldy_t = oldy.reshape(oldx.shape[0], -1).T
     pix_num = oldy_t.shape[0]
-    newy = np.full((pix_num, new_shape), np.nan)
-    for i, y in enumerate(oldy_t):
+    newy = np.zeros((pix_num, new_shape))*np.nan
+    for i in range(pix_num):
+        y    = oldy_t[i]
         mask = ~np.isnan(y)
-        if mask.any():
+        if mask.sum()>0:
             newy[i] = np.interp(newx, oldx[mask], y[mask])
     newy_T = newy.transpose(1,0).reshape((new_shape,) + oldy_shape)
     return newy_T
