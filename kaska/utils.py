@@ -182,10 +182,10 @@ def save_output_parameters(time_grid, observations, output_folder, parameter_nam
             # Compose the output file name from pattern (satellite),
             # parameters, dates and, optionally, chunk
             extra = ""
-            if chunk is not None:
+            if chunk:
                 extra = f"_{chunk:s}"
             
-            outfile = output_folder/f"{fname_pattern:s}_{param:s}_A{this_date:s}{extra}.tif"
+            outfile = output_folder/f"{fname_pattern}_{param}_A{this_date}{extra}.tif"
 
             if outfile.exists():
                 outfile.unlink()

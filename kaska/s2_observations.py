@@ -36,7 +36,7 @@ class Sentinel2Observations(object):
         self.band_prob_threshold = band_prob_threshold
         parent_folder = Path(parent_folder)
         if not parent_folder.exists():
-            LOG.info(f"S2 data folder: {str(parent_folder):s}")
+            LOG.info(f"S2 data folder: {parent_folder}")
             raise IOError("S2 data folder doesn't exist")
         self.band_map = [
             "B01",
