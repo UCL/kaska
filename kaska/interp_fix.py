@@ -24,7 +24,7 @@ def interp1d(newx, oldx, oldy):
     for i in range(pix_num):
         y    = oldy_t[i]
         mask = ~np.isnan(y)
-        if mask.sum()>0:
+        if mask.any():
             newy[i] = np.interp(newx, oldx[mask], y[mask])
     newy_T = newy.transpose(1,0).reshape((new_shape,) + oldy_shape)
     return newy_T
