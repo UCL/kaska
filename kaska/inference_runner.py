@@ -185,7 +185,8 @@ def process_tile(the_chunk, config):
         S2Data = namedtuple("S2Data", ["f"])
         s2_data = S2Data(s2_retrieval)
         s2_parameter_names = ["lai", "cab", "cbrown"]
-        s2_parameter_data = [getattr(s2_retrieval, i) for i in s2_parameter_names]
+        smoother_results_names = {"lai": "slai", "cab": "scab", "cbrown": "scbrown"}
+        s2_parameter_data = [getattr(s2_retrieval, smoother_results_names[i]) for i in s2_parameter_names]
         sar_time_grid, sar_data = sar_inversion(config.s1_obs, s2_data)
         kaska.save_s2_output(s2_parameter_names, s2_parameter_data)
         save_s1_output(config.output_folder, config.s1_obs, sar_data,
