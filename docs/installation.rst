@@ -16,7 +16,7 @@ Using `conda` you can create an isolated environment for KaSKA.
 .. code-block:: console
 
    $ conda config --add channels conda-forge
-   $ conda create -n kaska python=3.7 tensorflow numba gdal
+   $ conda create -n kaska python=3.7 tensorflow numba gdal=2.5.2
    $ conda activate kaska
 
 Then you can follow the instructions below. You can also install other
