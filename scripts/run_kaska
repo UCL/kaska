@@ -9,9 +9,6 @@ from kaska.entry import run_process
 default_block_size = 256
 default_disable_debug_log = False
 
-# Declare dictionary of values extracted from config file, if present.
-#config = {}
-
 # List of missing required values
 missing = []
 
@@ -20,8 +17,8 @@ def str2date(string):
 
 
 def check_value(param, dict):
-    print("DEBUGGING: " + param)
-    print(dict.values())
+    #print("DEBUGGING: " + param)
+    #print(dict.values())
     #key = "'" + param + "'"
     if param in dict:
         value = dict[param]
@@ -41,30 +38,25 @@ def parse_file(filename):
         try:
             config = yaml.safe_load(stream)
             print(config)
-            #for k, v in config.iteritems():
-            #        if "disable_debug_log" in k:
             if "disable_debug_log" in config:
-                print("YES")
+                print("Debug log output disabled.")
             else:
-                print("NO")
+                print("Debug log output enabled.")
             
-            #start_date = config["start_date"]
             start_date = check_value("start_date", config)
-            #end_date = config["end_date"]
-            #end_date = check_value("end_date")
-            #temporal_grid_space = config["temporal_grid_space"]
+            end_date = check_value("end_date", config)
             temporal_grid_space = check_value("temporal_grid_space", config)
-            #parent_folder = config["parent_folder"]
-            #parent_folder = check_value("parent_folder")
-            #state_mask = config["state_mask"]
-            #state_mask = check_value("state_mask")
-            #output_folder = config["output_folder"]
-            #output_folder = check_value("output_value") 
+            parent_folder = check_value("parent_folder", config)
+            state_mask = check_value("state_mask", config)
+            output_folder = check_value("output_folder", config) 
+
+            # NB we also need to deal with optional args which MIGHT be in the config file.
+            # debug, block_size
 
             if len(missing) > 0:
                 print("ERROR: The following required parameter(s) need to be set in the config file:")
                 print(missing)
-                #exit()
+                exit()
 
             if (debug):
                 print("Debug output is ON")
@@ -75,6 +67,9 @@ def parse_file(filename):
                 #print("parent_folder=" + str(parent_folder))
                 #print("state_mask=" + str(state_mask))
                 #print("output_folder=" + str(output_folder))
+
+            return config
+
         except yaml.YAMLError as exc:
             print(exc)
 
@@ -83,7 +78,7 @@ def parse_file(filename):
 arg_parser = argparse.ArgumentParser(description='Run the KaSKA analysis '
                                      'for given time grid, data, and state mask.')
 
-arg_parser.add_argument('--config_file', #dest='cfile',
+arg_parser.add_argument('--config_file',
                         help="The YAML-format config file you are using (instead of command-line args)"
                         + " ** NB ** Values in the file will override any command-line values.")
 arg_parser.add_argument('start_date', type=str2date,
@@ -113,9 +108,16 @@ args = arg_parser.parse_args()
 
 # Call function that runs the KaSKA process
 debug = not args.disable_debug_log
+
 if (args.config_file):
-    parse_file(args.config_file)
-    # run_process(...)
+    mydict = parse_file(args.config_file)
+
+    # The block size can be specified on the command line, ----or in the config file.
+    # If neither are present, use the default.
+    blocksize = args.blocksize
+
+    run_process(mydict["start_date"], mydict["end_date"], mydict["temporal_grid_space"],
+        mydict["parent_folder"], mydict["state_mask"], mydict["output_folder"], debug=debug, block_size=[,])
 else:
     # print("DEBUG:")
     # print("args.start_date=" + str(args.start_date))
