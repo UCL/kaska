@@ -1,7 +1,6 @@
 #!/bin/env python
 import argparse
 import datetime as dt
-import sys
 import yaml
 
 from kaska.entry import run_process
@@ -12,25 +11,43 @@ def str2date(string):
 
 
 
-#DEBUG:
-#args.start_date=2017-11-01 00:00:00
-#args.end_date=2017-11-02 00:00:00
-#args.temporal_grid_space=1
-#args.parent_folder=..
-#args.state_mask=./test.tif
-#args.output_folder=.
-#debug=True
-#args.block_size=100
 
+# Default values
+default_block_size = 256
+default_disable_debug_log = False
 
 def parse_file(filename):
     #pass
     with open(filename) as stream:
         try:
-            config = yaml.safe_load(stream) # Loader=yaml.FullLoader) # better: yaml.safe_load()
+            config = yaml.safe_load(stream)
             print(config)
+            #for k, v in config.iteritems():
+            #        if "disable_debug_log" in k:
+            if "disable_debug_log" in config:
+                print("YES")
+            else:
+                print("NO")
+            
+            start_date = config["start_date"]
+            end_date = config["end_date"]
+            temporal_grid_space = config["temporal_grid_space"]
+            parent_folder = config["parent_folder"]
             state_mask = config["state_mask"]
-            print("state_mask=" + state_mask)
+            output_folder = config["output_folder"]
+            #if (config["disable_debug_log"]):
+            #    debug = config["disable_debug_log"]
+                
+            
+            if (debug):
+                print("Debug output is ON")
+                print("Using config file: " + filename)
+                print("start_date=" + str(start_date))
+                print("end_date=" + str(end_date))
+                print("temporal_grid_space=" + str(temporal_grid_space))
+                print("parent_folder=" + parent_folder)
+                print("state_mask=" + state_mask)
+                print("output_folder=" + output_folder)
         except yaml.YAMLError as exc:
             print(exc)
 
@@ -38,41 +55,25 @@ def parse_file(filename):
 arg_parser = argparse.ArgumentParser(description='Run the KaSKA analysis '
                                      'for given time grid, data, and state mask.')
 
-#total_num_args = len(sys.argv)
-#print ("I got " + str(num_args) + " args (including this script's name)")
-
 arg_parser.add_argument('--config_file', #dest='cfile',
-                        help="The YAML-format config file you are using (instead of command-line args)")
-
-
-#args = arg_parser.parse_args()
-#if (config_file and num_args > 2):
-
-#if (args.config_file):
-#	print ("config file is " + args.config_file)
-
-##if (args.config_file and (len(args) > 1)):
-##	print("ERROR: use EITHER a config file OR command-line arguments")
-##	exit() 
-
+                        help="The YAML-format config file you are using (instead of command-line args)"
+                        + " ** NB ** Values in the file will override any command-line values.")
 arg_parser.add_argument('start_date', type=str2date,
                         help='The start date in the format YYYYMMDD , eg. 20170501 for 1st May 2017.')
 arg_parser.add_argument('end_date', type=str2date,
                         help='The end date in the format YYYYMMDD , eg. 20170501 for 1st May 2017.')
 arg_parser.add_argument('temporal_grid_space', type=int,
                         help='The spacing of the time grid, in days.')
-
 arg_parser.add_argument('parent_folder',
                         help='The full path to the folder containing the data. See README for the expected folder tree structure.')
 arg_parser.add_argument('state_mask',
                         help='The full path of the tif file containing the state mask.')
 arg_parser.add_argument('output_folder',
-                        help="The full path of the output folder")
-
-arg_parser.add_argument('--disable_debug_log', action='store_true', default=False,
+                        help="The full path of the output folder.")
+arg_parser.add_argument('--disable_debug_log', action='store_true', default=default_disable_debug_log,
                         help='Disable the debug-level logging, leaving only info-level logging on. By default, logging reports debug messages as well.')
-arg_parser.add_argument('--block_size', default=256, type=int,
-                        help='The size of the side of the square tile to break the image into. Default is 256.')
+arg_parser.add_argument('--block_size', default=default_block_size, type=int,
+                        help='The size of the side of the square tile to break the image into. Default is ' + str(default_block_size) + '.')
 args = arg_parser.parse_args()
 
 #if (args.config_file and (len(args) > 1)):
@@ -88,17 +89,16 @@ if (args.config_file):
     parse_file(args.config_file)
     # run_process(...)
 else:
-    print("DEBUG:")
-    print("args.start_date=" + str(args.start_date))
-    print("args.end_date=" + str(args.end_date))
-    print("args.temporal_grid_space=" + str(args.temporal_grid_space))
-    print("args.parent_folder=" + str(args.parent_folder))
-    print("args.state_mask=" + str(args.state_mask))
-    print("args.output_folder=" + str(args.output_folder))
-    print("debug=" + str(debug))
-    print("args.block_size=" + str(args.block_size))
-
-    exit()    
+    # print("DEBUG:")
+    # print("args.start_date=" + str(args.start_date))
+    # print("args.end_date=" + str(args.end_date))
+    # print("args.temporal_grid_space=" + str(args.temporal_grid_space))
+    # print("args.parent_folder=" + str(args.parent_folder))
+    # print("args.state_mask=" + str(args.state_mask))
+    # print("args.output_folder=" + str(args.output_folder))
+    # print("debug=" + str(debug))
+    # print("args.block_size=" + str(args.block_size))
+    # exit()    
 
     run_process(args.start_date, args.end_date, args.temporal_grid_space,
             args.parent_folder, args.state_mask, args.output_folder,
