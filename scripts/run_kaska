@@ -5,19 +5,38 @@ import yaml
 
 from kaska.entry import run_process
 
+# Default values of optional parameters
+default_block_size = 256
+default_disable_debug_log = False
+
+# Declare dictionary of values extracted from config file, if present.
+#config = {}
+
+# List of missing required values
+missing = []
 
 def str2date(string):
     return dt.datetime.strptime(string, '%Y%m%d')
 
 
+def check_value(param, dict):
+    print("DEBUGGING: " + param)
+    print(dict.values())
+    #key = "'" + param + "'"
+    if param in dict:
+        value = dict[param]
+        #print("value = " + str(value))
+        if (value != None) and (value != ""):
+            #print("DEBUG: " + param + "=" + str(value))
+            return value
+        else:
+            missing.append(param)    
+    else:
+        missing.append(param)
 
 
-# Default values
-default_block_size = 256
-default_disable_debug_log = False
 
 def parse_file(filename):
-    #pass
     with open(filename) as stream:
         try:
             config = yaml.safe_load(stream)
@@ -29,27 +48,36 @@ def parse_file(filename):
             else:
                 print("NO")
             
-            start_date = config["start_date"]
-            end_date = config["end_date"]
-            temporal_grid_space = config["temporal_grid_space"]
-            parent_folder = config["parent_folder"]
-            state_mask = config["state_mask"]
-            output_folder = config["output_folder"]
-            #if (config["disable_debug_log"]):
-            #    debug = config["disable_debug_log"]
-                
-            
+            #start_date = config["start_date"]
+            start_date = check_value("start_date", config)
+            #end_date = config["end_date"]
+            #end_date = check_value("end_date")
+            #temporal_grid_space = config["temporal_grid_space"]
+            temporal_grid_space = check_value("temporal_grid_space", config)
+            #parent_folder = config["parent_folder"]
+            #parent_folder = check_value("parent_folder")
+            #state_mask = config["state_mask"]
+            #state_mask = check_value("state_mask")
+            #output_folder = config["output_folder"]
+            #output_folder = check_value("output_value") 
+
+            if len(missing) > 0:
+                print("ERROR: The following required parameter(s) need to be set in the config file:")
+                print(missing)
+                #exit()
+
             if (debug):
                 print("Debug output is ON")
-                print("Using config file: " + filename)
-                print("start_date=" + str(start_date))
-                print("end_date=" + str(end_date))
-                print("temporal_grid_space=" + str(temporal_grid_space))
-                print("parent_folder=" + parent_folder)
-                print("state_mask=" + state_mask)
-                print("output_folder=" + output_folder)
+                #print("Using config file: " + str(filename))
+                #print("start_date=" + str(start_date))
+                #print("end_date=" + str(end_date))
+                #print("temporal_grid_space=" + str(temporal_grid_space))
+                #print("parent_folder=" + str(parent_folder))
+                #print("state_mask=" + str(state_mask))
+                #print("output_folder=" + str(output_folder))
         except yaml.YAMLError as exc:
             print(exc)
+
 
 # Define and parse user arguments
 arg_parser = argparse.ArgumentParser(description='Run the KaSKA analysis '
