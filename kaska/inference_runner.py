@@ -125,8 +125,9 @@ def stitch_outputs(output_folder, parameter_list):
         )
         shutil.move(p / "temporary.tif", (p / f"{parameter:s}.tif").as_posix())
         # Remove unneeded leftover files
-        vrts = [f.unlink() for f in p.glob("*.vrt")]
-        ovr = [f.unlink() for f in p.glob("*.ovr")]
+        for ext in ("vrt", "ovr"):
+            for f in p.glob("*." + ext):
+                f.unlink()
 
         LOG.info(f"Saved {parameter:s} file as {output_tiffs[parameter]:s}")
     return output_tiffs
@@ -279,7 +280,7 @@ def kaska_runner(
             nx, ny, block_size=block_size)]
 
         wrapper = partial(process_tile, config=config)
-        if dask_client is not None:
+        if dask_client:
             A = dask_client.map(wrapper, them_chunks)
             retval = dask_client.gather(A)
         else:
