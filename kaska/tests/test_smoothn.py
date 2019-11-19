@@ -17,27 +17,30 @@ from .. import smoothn
 def test_robust1d():
     unrobust_target = 0.7503929639274534
     robust_target = 0.18943656067148762
-    
+
     prec = 1e-5
 
-    general_robustness_test(isrobust = None, target = unrobust_target, s=None, prec = prec)
-    general_robustness_test(isrobust = True, target = robust_target, s=None, prec = prec)
-    
+    general_robustness_test(isrobust=None,
+                            target=unrobust_target,
+                            s=None, prec=prec)
+    general_robustness_test(isrobust=True,
+                            target=robust_target,
+                            s=None, prec=prec)
 
-def general_robustness_test(isrobust = None, target = 0.0, s = None, prec = 1e-12):
+def general_robustness_test(isrobust=None, target=0.0, s=None, prec=1e-12):
     x = np.linspace(0, 100, 256)
     y_base = np.cos(x/10) + (x/50.)**2
     np.random.seed(3141592653)
     y_noise = y_base + np.random.randn(len(x))/10
     y = np.copy(y_noise) ; y[70:85:5] = (5.5, 5, 6)
     if (isrobust is None):
-        (z, s, flag, wtot) = smoothn.smoothn(y, s = s)
+        (z, s, flag, wtot) = smoothn.smoothn(y, s=s)
     else:
-        (z, s, flag, wtot) = smoothn.smoothn(y, s = s, isrobust = isrobust)
+        (z, s, flag, wtot) = smoothn.smoothn(y, s=s, isrobust=isrobust)
 
     res = z - y_base
 
-    assert np.abs(np.max(np.abs(res)) -  target) < prec
+    assert np.abs(np.max(np.abs(res)) - target) < prec
     
     
 def test_fixed_order():
@@ -47,14 +50,17 @@ def test_fixed_order():
     robust_order = 27.61712142163073
     prec = 1e-5
 
-    general_robustness_test(isrobust = None, target = unrobust_target, s=unrobust_order, prec = prec)
-    general_robustness_test(isrobust = True, target = robust_target, s=robust_order, prec = prec)
+    general_robustness_test(isrobust=None, 
+                            target=unrobust_target,
+                            s=unrobust_order, prec=prec)
+    general_robustness_test(isrobust=True,
+                            target=robust_target,
+                            s=robust_order, prec=prec)
 
-    
 # A test emulating the way smoothn is used in KaSKA
 def test_time_txy():
     (d, w) = txy_data()
-    (s, ess, flag, wtot) = smoothn.smoothn(d, W = w, axis=0, isrobust=True)
+    (s, ess, flag, wtot) = smoothn.smoothn(d, W=w, axis=0, isrobust=True)
     res = s - np.expand_dims(d[:, 0, :], axis=1)
     
     delta = 1e-8 # Difference between the calculated values and the copy-pasted values
