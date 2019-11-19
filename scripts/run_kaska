@@ -1,6 +1,8 @@
 #!/bin/env python
 import argparse
 import datetime as dt
+import sys
+import yaml
 
 from kaska.entry import run_process
 
@@ -9,9 +11,49 @@ def str2date(string):
     return dt.datetime.strptime(string, '%Y%m%d')
 
 
+
+#DEBUG:
+#args.start_date=2017-11-01 00:00:00
+#args.end_date=2017-11-02 00:00:00
+#args.temporal_grid_space=1
+#args.parent_folder=..
+#args.state_mask=./test.tif
+#args.output_folder=.
+#debug=True
+#args.block_size=100
+
+
+def parse_file(filename):
+    #pass
+    with open(filename) as stream:
+        try:
+            config = yaml.safe_load(stream) # Loader=yaml.FullLoader) # better: yaml.safe_load()
+            print(config)
+            state_mask = config["state_mask"]
+            print("state_mask=" + state_mask)
+        except yaml.YAMLError as exc:
+            print(exc)
+
 # Define and parse user arguments
 arg_parser = argparse.ArgumentParser(description='Run the KaSKA analysis '
                                      'for given time grid, data, and state mask.')
+
+#total_num_args = len(sys.argv)
+#print ("I got " + str(num_args) + " args (including this script's name)")
+
+arg_parser.add_argument('--config_file', #dest='cfile',
+                        help="The YAML-format config file you are using (instead of command-line args)")
+
+
+#args = arg_parser.parse_args()
+#if (config_file and num_args > 2):
+
+#if (args.config_file):
+#	print ("config file is " + args.config_file)
+
+##if (args.config_file and (len(args) > 1)):
+##	print("ERROR: use EITHER a config file OR command-line arguments")
+##	exit() 
 
 arg_parser.add_argument('start_date', type=str2date,
                         help='The start date in the format YYYYMMDD , eg. 20170501 for 1st May 2017.')
@@ -32,10 +74,32 @@ arg_parser.add_argument('--disable_debug_log', action='store_true', default=Fals
 arg_parser.add_argument('--block_size', default=256, type=int,
                         help='The size of the side of the square tile to break the image into. Default is 256.')
 args = arg_parser.parse_args()
+
+#if (args.config_file and (len(args) > 1)):
+#      print("ERROR: use EITHER a config file OR command-line arguments")
+#      exit()
+
+
 #print(args.start_date, args.end_date, args.temporal_grid_space, args.parent_folder, args.state_mask, args.output_folder, args.disable_debug_log, args.block_size)
 
 # Call function that runs the KaSKA process
 debug = not args.disable_debug_log
-run_process(args.start_date, args.end_date, args.temporal_grid_space,
+if (args.config_file):
+    parse_file(args.config_file)
+    # run_process(...)
+else:
+    print("DEBUG:")
+    print("args.start_date=" + str(args.start_date))
+    print("args.end_date=" + str(args.end_date))
+    print("args.temporal_grid_space=" + str(args.temporal_grid_space))
+    print("args.parent_folder=" + str(args.parent_folder))
+    print("args.state_mask=" + str(args.state_mask))
+    print("args.output_folder=" + str(args.output_folder))
+    print("debug=" + str(debug))
+    print("args.block_size=" + str(args.block_size))
+
+    exit()    
+
+    run_process(args.start_date, args.end_date, args.temporal_grid_space,
             args.parent_folder, args.state_mask, args.output_folder,
             debug=debug, block_size=[args.block_size, args.block_size])

@@ -1,0 +1,9 @@
+start_date: 20171101
+end_date: 20171102
+temporal_grid_space: 1
+parent_folder: ..
+state_mask: ./test.tif
+output_folder: .
+debug: True
+block_size: 100
+
