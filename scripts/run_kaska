@@ -7,7 +7,11 @@ from kaska.entry import run_process
 
 # Default values of optional parameters
 default_block_size = 256
-default_disable_debug_log = False
+default_disable_debug_log = False # We output debug log by default
+
+# Set optional parameters to default values in case not set later
+# block_size = default_block_size
+debug = not default_disable_debug_log
 
 # List of missing required values
 missing = []
@@ -27,9 +31,15 @@ def check_value(param, dict):
             #print("DEBUG: " + param + "=" + str(value))
             return value
         else:
-            missing.append(param)    
+            if (param == "block_size"):
+                return default_block_size
+            else:    
+                missing.append(param)
     else:
-        missing.append(param)
+        if (param == "block_size"):
+            return default_block_size
+        else:    
+            missing.append(param)
 
 
 
@@ -43,12 +53,17 @@ def parse_file(filename):
             else:
                 print("Debug log output enabled.")
             
-            start_date = check_value("start_date", config)
-            end_date = check_value("end_date", config)
+            # The following parameters are all required:
+            start_date = str2date(str(check_value("start_date", config)))
+            end_date = str2date(str(check_value("end_date", config)))
             temporal_grid_space = check_value("temporal_grid_space", config)
             parent_folder = check_value("parent_folder", config)
             state_mask = check_value("state_mask", config)
             output_folder = check_value("output_folder", config) 
+
+            # Special case - optional parameters
+            block_size = check_value("block_size", config)
+            config["block_size"] = block_size
 
             # NB we also need to deal with optional args which MIGHT be in the config file.
             # debug, block_size
@@ -59,16 +74,17 @@ def parse_file(filename):
                 exit()
 
             if (debug):
-                print("Debug output is ON")
-                #print("Using config file: " + str(filename))
-                #print("start_date=" + str(start_date))
-                #print("end_date=" + str(end_date))
-                #print("temporal_grid_space=" + str(temporal_grid_space))
-                #print("parent_folder=" + str(parent_folder))
-                #print("state_mask=" + str(state_mask))
-                #print("output_folder=" + str(output_folder))
+                print("Debug log output is ON")
+                print("Using config file: " + str(filename))
+                print("start_date=" + str(start_date))
+                print("end_date=" + str(end_date))
+                print("temporal_grid_space=" + str(temporal_grid_space))
+                print("parent_folder=" + str(parent_folder))
+                print("state_mask=" + str(state_mask))
+                print("output_folder=" + str(output_folder))
+                print("block_size=" + str(block_size))
 
-            return config
+            return config 
 
         except yaml.YAMLError as exc:
             print(exc)
@@ -111,13 +127,12 @@ debug = not args.disable_debug_log
 
 if (args.config_file):
     mydict = parse_file(args.config_file)
-
-    # The block size can be specified on the command line, ----or in the config file.
-    # If neither are present, use the default.
-    blocksize = args.blocksize
+    #parse_file_and_run(args.config_file)
 
     run_process(mydict["start_date"], mydict["end_date"], mydict["temporal_grid_space"],
-        mydict["parent_folder"], mydict["state_mask"], mydict["output_folder"], debug=debug, block_size=[,])
+        mydict["parent_folder"], mydict["state_mask"], mydict["output_folder"], debug=debug, 
+        #block_size=[int(mydict["block_size"]), int(mydict["block_size"])])
+        block_size=[999,999])
 else:
     # print("DEBUG:")
     # print("args.start_date=" + str(args.start_date))
