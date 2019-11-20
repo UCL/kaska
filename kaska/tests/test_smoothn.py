@@ -15,6 +15,7 @@ from .. import smoothn
 
 # Make a test from the first example of the smoothn code
 def test_robust1d():
+    # The target resdiuals for this test
     unrobust_target = 0.7503929639274534
     robust_target = 0.18943656067148762
 
@@ -44,9 +45,11 @@ def general_robustness_test(isrobust=None, target=0.0, s=None, prec=1e-12):
     
     
 def test_fixed_order():
+    # The target resdiuals for this test
     unrobust_target = 0.7503929639274534
-    unrobust_order = 56.93236088601813
     robust_target = 0.17266123460914873
+    # The fixed smoothing order that should achieve those residuals
+    unrobust_order = 56.93236088601813
     robust_order = 27.61712142163073
     prec = 1e-5
 
