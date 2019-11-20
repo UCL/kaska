@@ -91,60 +91,31 @@ def parse_file(filename):
 
 
 # Define and parse user arguments
-arg_parser = argparse.ArgumentParser(description='Run the KaSKA analysis '
+parser = argparse.ArgumentParser(description='Run the KaSKA analysis '
                                      'for given time grid, data, and state mask.')
 
-arg_parser.add_argument('--config_file',
-                        help="The YAML-format config file you are using (instead of command-line args)"
-                        + " ** NB ** Values in the file will override any command-line values.")
-arg_parser.add_argument('start_date', type=str2date,
-                        help='The start date in the format YYYYMMDD , eg. 20170501 for 1st May 2017.')
-arg_parser.add_argument('end_date', type=str2date,
-                        help='The end date in the format YYYYMMDD , eg. 20170501 for 1st May 2017.')
-arg_parser.add_argument('temporal_grid_space', type=int,
-                        help='The spacing of the time grid, in days.')
-arg_parser.add_argument('parent_folder',
-                        help='The full path to the folder containing the data. See README for the expected folder tree structure.')
-arg_parser.add_argument('state_mask',
-                        help='The full path of the tif file containing the state mask.')
-arg_parser.add_argument('output_folder',
-                        help="The full path of the output folder.")
-arg_parser.add_argument('--disable_debug_log', action='store_true', default=default_disable_debug_log,
-                        help='Disable the debug-level logging, leaving only info-level logging on. By default, logging reports debug messages as well.')
-arg_parser.add_argument('--block_size', default=default_block_size, type=int,
-                        help='The size of the side of the square tile to break the image into. Default is ' + str(default_block_size) + '.')
-args = arg_parser.parse_args()
+parser.add_argument('--config_file',
+                    help="The YAML-format config file you are using (instead of command-line args)"
+                    + " ** NB ** Values in the file will override any command-line values.")
+parser.add_argument('--disable_debug_log', action='store_true', default=default_disable_debug_log,
+                    help='Disable the debug-level logging, leaving only info-level logging on. By default, logging reports debug messages as well.')
+     
+args = parser.parse_args()
 
-#if (args.config_file and (len(args) > 1)):
-#      print("ERROR: use EITHER a config file OR command-line arguments")
-#      exit()
+if (args.disable_debug_log):
+    debug = False
 
-
-#print(args.start_date, args.end_date, args.temporal_grid_space, args.parent_folder, args.state_mask, args.output_folder, args.disable_debug_log, args.block_size)
-
-# Call function that runs the KaSKA process
-debug = not args.disable_debug_log
-
+# Config file present, with or without --disable_debug_log option
 if (args.config_file):
     mydict = parse_file(args.config_file)
-    #parse_file_and_run(args.config_file)
-
+    
     run_process(mydict["start_date"], mydict["end_date"], mydict["temporal_grid_space"],
         mydict["parent_folder"], mydict["state_mask"], mydict["output_folder"], debug=debug, 
         #block_size=[int(mydict["block_size"]), int(mydict["block_size"])])
         block_size=[999,999])
-else:
-    # print("DEBUG:")
-    # print("args.start_date=" + str(args.start_date))
-    # print("args.end_date=" + str(args.end_date))
-    # print("args.temporal_grid_space=" + str(args.temporal_grid_space))
-    # print("args.parent_folder=" + str(args.parent_folder))
-    # print("args.state_mask=" + str(args.state_mask))
-    # print("args.output_folder=" + str(args.output_folder))
-    # print("debug=" + str(debug))
-    # print("args.block_size=" + str(args.block_size))
-    # exit()    
 
-    run_process(args.start_date, args.end_date, args.temporal_grid_space,
-            args.parent_folder, args.state_mask, args.output_folder,
-            debug=debug, block_size=[args.block_size, args.block_size])
+   
+# No config file present
+#else: complain      
+    
+
