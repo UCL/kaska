@@ -1,6 +1,6 @@
 #!/bin/env python
 
-""" Script to run Kaska. 
+""" Script to run Kaska.
 
 A "config file" of values is required. This helps reproducibility.
 
@@ -26,7 +26,7 @@ missing = []
 
 def str2date(string):
     """ Create and return a dattime object from a string.
-    
+
     Keyword arguments:
     string -- The string to convert, e.g. "20191121" for 21st Nov 2019.
     """
@@ -48,30 +48,27 @@ def check_value(param, dict):
 
     Keyword arguments:
     param -- Name of the parameter, e.g. "start_date"
-    dict -- The dictionary which contains the parameter names and values. 
+    dict -- The dictionary which contains the parameter names and values.
 
     """
     if param in dict:
         value = dict[param]
-        #print("value = " + str(value))
-        if (value != None) and (value != ""):
-            #print("DEBUG: " + param + "=" + str(value))
+        if (value is not None) and (value != ""):
             return value
         else:
             if (param == "block_size"):
                 return default_block_size
-            else:    
+            else:
                 missing.append(param)
     else:
         if (param == "block_size"):
             return default_block_size
-        else:    
+        else:
             missing.append(param)
 
 
-
 def parse_file(filename):
-    """ Open a file in YAML format and obtain a dictionary 
+    """ Open a file in YAML format and obtain a dictionary
     with the values from it. Check each value, then return
     the dictionary.
 
@@ -79,7 +76,6 @@ def parse_file(filename):
 
     Keyword arguments:
     filename -- Path to the YAML file.
-
     """
     with open(filename) as stream:
         try:
@@ -92,21 +88,22 @@ def parse_file(filename):
             else:
                 print("Debug log output enabled.")
                 debug = True
-            
+
             # The following parameters are all required:
             start_date = check_value("start_date", config)
             end_date = check_value("end_date", config)
             temporal_grid_space = check_value("temporal_grid_space", config)
             parent_folder = check_value("parent_folder", config)
             state_mask = check_value("state_mask", config)
-            output_folder = check_value("output_folder", config) 
+            output_folder = check_value("output_folder", config)
 
             # Special case - optional parameter
             block_size = check_value("block_size", config)
             config["block_size"] = block_size
 
             if len(missing) > 0:
-                print("ERROR: The following required parameter(s) need to be set in the config file:")
+                print("ERROR: The following required parameter(s) need to " +
+                      "be set in the config file:")
                 print(missing)
                 exit()
 
@@ -121,7 +118,7 @@ def parse_file(filename):
                 print("output_folder=" + str(output_folder))
                 print("block_size=" + str(block_size))
 
-            return config 
+            return config
 
         except yaml.YAMLError as exc:
             print(exc)
@@ -129,14 +126,17 @@ def parse_file(filename):
 
 # Define and parse user arguments
 parser = argparse.ArgumentParser(description='Run the KaSKA analysis '
-                                     'for given time grid, data, and state mask.')
+                                 'for given time grid, data, and state mask.')
 
 parser.add_argument('--config_file',
-                    help="The YAML-format config file you are using (instead of command-line args)")
-                    #+ " ** NB ** Values in the file will override any command-line values.")
+                    help="The YAML-format config file you are using " +
+                    "(instead of command-line args)")
+
 parser.add_argument('--disable_debug_log', action='store_true', default=False,
-                    help='Disable the debug-level logging, leaving only info-level logging on. By default, logging reports debug messages as well.')
-     
+                    help='Disable the debug-level logging, leaving only ' +
+                    'info-level logging on. By default, logging reports ' +
+                    'debug messages as well.')
+
 args = parser.parse_args()
 
 if (args.disable_debug_log):
@@ -145,12 +145,14 @@ if (args.disable_debug_log):
 # Config file present, with or without --disable_debug_log option
 if (args.config_file):
     mydict = parse_file(args.config_file)
-    
-    run_process(str2date(str(mydict["start_date"])), str2date(str(mydict["end_date"])), mydict["temporal_grid_space"],
-        mydict["parent_folder"], mydict["state_mask"], mydict["output_folder"], debug=debug, 
-        block_size=[mydict["block_size"], mydict["block_size"]])
-   
+
+    run_process(str2date(str(mydict["start_date"])),
+                str2date(str(mydict["end_date"])),
+                mydict["temporal_grid_space"],
+                mydict["parent_folder"], mydict["state_mask"],
+                mydict["output_folder"], debug=debug,
+                block_size=[mydict["block_size"], mydict["block_size"]])
+
 # No config file present
 else:
-    print ("\nPlease specify a config file with --config_file option.\n")
-
+    print("\nPlease specify a config file with --config_file option.\n")
