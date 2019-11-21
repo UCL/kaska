@@ -3,8 +3,8 @@
 # The start date in the format YYYYMMDD , eg. 20170501 for 1st May 2017
 start_date: 20171101
 
-# The end date in the format YYYYMMDD , eg. 20170501 for 1st May 2017.
-end_date: 20171102
+# The end date in the format YYYYMMDD , eg. 20190501 for 1st May 2019.
+end_date: 20191102
 
 # The spacing of the time grid, in days.
 temporal_grid_space: 1
@@ -21,4 +21,4 @@ output_folder: .
 # The size of the side of the square tile to break the image into. 
 # Default value (i.e. value if this is not set below) is defined
 # in run_kaska as default_block_size
-block_size: 100
+block_size: 1

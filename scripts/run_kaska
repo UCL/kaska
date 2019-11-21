@@ -52,7 +52,6 @@ def parse_file(filename):
         try:
             config = yaml.safe_load(stream)
             print(config)
-            #if "disable_debug_log" in config:
             global debug
             if not debug:
                 print("Debug log output disabled.")
@@ -62,8 +61,8 @@ def parse_file(filename):
                 debug = True
             
             # The following parameters are all required:
-            start_date = str2date(str(check_value("start_date", config)))
-            end_date = str2date(str(check_value("end_date", config)))
+            start_date = check_value("start_date", config)
+            end_date = check_value("end_date", config)
             temporal_grid_space = check_value("temporal_grid_space", config)
             parent_folder = check_value("parent_folder", config)
             state_mask = check_value("state_mask", config)
@@ -114,13 +113,11 @@ if (args.disable_debug_log):
 if (args.config_file):
     mydict = parse_file(args.config_file)
     
-    run_process(mydict["start_date"], mydict["end_date"], mydict["temporal_grid_space"],
+    run_process(str2date(str(mydict["start_date"])), str2date(str(mydict["end_date"])), mydict["temporal_grid_space"],
         mydict["parent_folder"], mydict["state_mask"], mydict["output_folder"], debug=debug, 
-        #block_size=[int(mydict["block_size"]), int(mydict["block_size"])])
-        block_size=[999,999])
-
+        block_size=[mydict["block_size"], mydict["block_size"]])
    
 # No config file present
 else:
-    print ("Please specify a config file with --config_file option.")
+    print ("\nPlease specify a config file with --config_file option.\n")
 
