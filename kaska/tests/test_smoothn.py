@@ -147,9 +147,11 @@ def residual_rms_assessment(s, d, target_max_resid, target_rms):
     rms = np.sqrt(np.mean(np.square(res), axis=0))
 
     fudge = 1e-6
+    resid_avec_fudge = target_max_resid + fudge
+    rms_avec_fudge = target_rms + fudge
     
-    assert(np.all(maximum_residuals <= target_max_resid + fudge))
-    assert(np.all(rms <= target_rms + fudge))
+    assert(np.all(maximum_residuals <= resid_avec_fudge))
+    assert(np.all(rms <= rms_avec_fudge))
 
 def txy_data():
     
