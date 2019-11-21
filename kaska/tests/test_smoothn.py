@@ -79,7 +79,8 @@ def test_sd_weights():
 
     # should be identical
     prec = 1e-15
-    assert(np.sqrt(np.mean((z_sd - z_w)**2)) < prec)
+    rms = np.sqrt(np.mean((z_sd - z_w)**2))
+    assert(rms < prec)
 
 def test_masked_array():
     (d, w) = txy_data()
@@ -147,11 +148,11 @@ def residual_rms_assessment(s, d, target_max_resid, target_rms):
     rms = np.sqrt(np.mean(np.square(res), axis=0))
 
     fudge = 1e-6
-    resid_avec_fudge = target_max_resid + fudge
-    rms_avec_fudge = target_rms + fudge
+    resid_diff = np.abs(maximum_residuals - target_max_resid)
+    rms_diff = np.abs(rms - target_rms)
     
-    assert(np.all(maximum_residuals <= resid_avec_fudge))
-    assert(np.all(rms <= rms_avec_fudge))
+    assert(np.all(resid_diff <= fudge))
+    assert(np.all(rms_diff <= fudge))
 
 def txy_data():
     
