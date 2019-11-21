@@ -1,149 +1,127 @@
 # -*- coding: utf-8 -*-
 
-"""Main module."""
+"""Sentinel 1 inversion class"""
 import logging
+
+from pathlib import Path
 
 import datetime as dt
 import numpy as np
 
 from scipy.interpolate import interp1d
 
-from .NNParameterInversion import NNParameterInversion
-
-from .s2_observations import Sentinel2Observations
-
 from .s1_observations import Sentinel1Observations
 
-from .smoothn import smoothn
+from .utils import define_temporal_grid
 
-from .utils import define_temporal_grid, save_output_parameters
+from .watercloudmodel import cost_function
 
-from .watercloudmodel import cost, cost_jac, cost_hess
+from .kaska import Sentinel2Data
 
 import scipy.optimize
 
-import time # Just for timekeeping
+from skimage.filters import sobel
 
-LOG = logging.getLogger(__name__ )
+from skimage.segmentation import watershed
 
-def sar_inversion(s1_obs, s2_data):
-        # Move everything to DoY to simplify interpolation
-    s2_doys = [int(dt.datetime.strftime(x, "%j"))
-               for x in s2_data.f.temporal_grid]
-    s1_doys = [int(dt.datetime.strftime(x, "%j"))
-               for x in s1_obs.dates.keys()]
-    n_sar_obs = len(s1_doys)
-    s1_temporal_grid = sorted(s1_obs.dates.keys())
-    
-    # Interpolate S2 retrievals to S1 time grid
-    f = interp1d(s2_doys, s2_data.f.slai, axis=0, bounds_error=False)
-    lai_s1 = f(s1_doys)
-    f = interp1d(s2_doys, s2_data.f.scab, axis=0, bounds_error=False)
-    cab_s1 = f(s1_doys)
-    f = interp1d(s2_doys, s2_data.f.scbrown, axis=0, bounds_error=False)
-    cbrown_s1 = f(s1_doys)
-    # Read in S1 data
-    S1_backscatter=s1_obs.read_time_series(s1_temporal_grid)  
+LOG = logging.getLogger(__name__)
 
 
-    # Wrap cost functions
-    def cost_nolai(xx, svh, svv, lai, cab, theta):
-        n_obs = len(svh)
-        return cost(np.concatenate([xx[:6], lai,lai, xx[-n_obs:]]), svh,svv,theta)
+class KaSKASAR(object):
+    """A class to process Sentinel 1 SAR data using S2 data as 
+    an input"""
 
-    def cost_nolai_jac(xx, svh, svv, lai, cab, theta):
-        n_obs = len(svh)
-        return cost_jac(np.concatenate([xx[:6], lai,lai, xx[-n_obs:]]), svh,svv,theta)
-
-    def cost_nolai_hess(xx, svh, svv, lai, cab, theta):
-        n_obs = len(svh)
-        return cost_hess(np.concatenate([xx[:6], lai, lai, xx[-n_obs:]]), svh,svv,theta)
-
-    Avv, Bvv, Cvv = -12,  0.05, 0.1
-    Avh, Bvh, Cvh = -14, 0.01, 0.1
-    sigma_soil0 = np.zeros(n_sar_obs)*0.2 # Say
-    x0_all = np.r_[Avv, Bvv, Cvv, Avh, Bvh, Cvh, sigma_soil0]#, V1, V2, sigma_soil]
-    nt, ny, nx = lai_s1.shape
-    Avv_out = np.zeros((ny, nx))
-    Bvv_out = np.zeros((ny, nx))
-    Cvv_out = np.zeros((ny, nx))
-    Avh_out = np.zeros((ny, nx))
-    Bvh_out = np.zeros((ny, nx))
-    Cvh_out = np.zeros((ny, nx))
-    cost_f = np.zeros((ny, nx))
-    sigma_soil_out = np.zeros((nt, ny, nx))
-    tic = time.time()
-    n_pxls = 0
-    bounds = [
-            [-40, -5],
-            [1e-4, 1],
-            [-40, -1],
-            [-40, -5],
-            [1e-4, 1],
-            [-40, -1],
-            *([[0.01, 1]]*n_sar_obs) ]
-    x0 = x0_all
-    for (row, col) in np.ndindex(*lai_s1[0].shape):
-        lai = lai_s1[:, row, col]
-        if lai.max() < 2.5:
-            cost_f[row, col] = -900. # No dynamics
-            continue
-        # Select one pixel
-        svv = 10*np.log10(S1_backscatter.VV[:, row, col])
-        svh = 10*np.log10(S1_backscatter.VH[:, row, col])
-        theta = S1_backscatter.theta[:, row, col]
-        sigma_soil0 = np.ones_like(svv)*0.2 # 
+    def __init__(
+        self, time_grid, state_mask, s1_observations, s2_data, prior, chunk=None
+    ):
+        """Set up processing paths and options for s1 observations
         
-        cab = cab_s1[:, row, col]
-        # Might be worth defining Cxx from LAI=0 average and
-        #  Axx when LAI=LAI.max()
-        x0[2] = svv[lai<0.3].mean()
-        x0[5] = svh[lai<0.3].mean()
-        x0[0] = svv[lai>(0.9*lai.max())].mean()
-        x0[3] = svh[lai>(0.9*lai.max())].mean()
-        retval = scipy.optimize.minimize(cost_nolai, x0, args=(svh, svh, lai, cab, theta), 
-                                 jac=cost_nolai_jac, hess=cost_nolai_hess,
-                                method="Newton-CG")
-        Avv_out[row, col] = retval.x[0]
-        Bvv_out[row, col] = retval.x[1]
-        Cvv_out[row, col] = retval.x[2]
-        Avh_out[row, col] = retval.x[3]
-        Bvh_out[row, col] = retval.x[4]
-        Cvh_out[row, col] = retval.x[5]
-        cost_f[row, col] = retval.fun
-        sigma_soil_out[:, row, col] = retval.x[6:]
-        if retval.fun < 1e5:
-            print(f"Good good...{row:d}, {col:d}")
-            x0 = retval.x
-        else:
-            # Rubbish inversion, do not use parameters!
-            x0 = x0_all
+        Parameters
+        ----------
+        time_grid : iter
+            A temporal grid. E.g. a list of datetimes
+        state_mask : str
+            The state mask file. Must be readable by GDAL and be georeferenced
+        s1_observations : s1_observations
+            S1 observations type
+        s2_data : s2_observations
+            S2 observations type
+        prior : dict
+            The prior distribution
+        chunk : inteter, optional
+            The chunk if processing by chunks. Used for file outputs, by default None
+        """
+        self.time_grid = time_grid
+        self.s1_observations = s1_observations
+        self.state_mask = state_mask
+        self.output_folder = Path(output_folder) / ("S1_outputs")
+        self.chunk = chunk
+        self.s2_data = self._resampling_times(s2_data)
 
-        n_pxls += 1
-        if n_pxls % 1000 == 0:
-            n_pxls = 0
-            LOG.info(f"Done 100 pixels in {(time.time()-tic):g}")
-            tic = time.time()
-    return s1_temporal_grid, sigma_soil_out
+    def _resampling_times(self, s2_data):
+        """Resample S2 smoothed output to match S1 observations
+        times"""
+        # Move everything to DoY to simplify interpolation
+        s2_doys = [
+            int(dt.datetime.strftime(x, "%j")) for x in s2_data.temporal_grid
+        ]
+        s1_doys = [
+            int(dt.datetime.strftime(x, "%j"))
+            for x in self.s1_observations.dates.keys()
+        ]
+        n_sar_obs = len(s1_doys)
+        # Interpolate S2 retrievals to S1 time grid
+        f = interp1d(s2_doys, s2_data.slai, axis=0, bounds_error=False)
+        lai_s1 = f(s1_doys)
+        f = interp1d(s2_doys, s2_data.scab, axis=0, bounds_error=False)
+        cab_s1 = f(s1_doys)
+        f = interp1d(s2_doys, s2_data.scbrown, axis=0, bounds_error=False)
+        cbrown_s1 = f(s1_doys)
+        return Sentinel2Data(lai_s1, cab_s1, cbrown_s1)
 
-def save_s1_output(output_folder, obs, sar_data, time_grid, chunk):
-    save_output_parameters(time_grid, obs, output_folder, ["sigma"], [sar_data],
-                           output_format = "GTiff", chunk = chunk,
-                           fname_pattern = "s1")
 
-if __name__ == "__main__":
-    state_mask = "/home/ucfajlg/Data/python/KaFKA_Validation/LMU/carto/ESU.tif"
-    nc_file = "/data/selene/ucfajlg/ELBARA_LMU/mirror_ftp/141.84.52.201/S1/S1_LMU_site_2017_new.nc"
-    start_date = dt.datetime(2017, 5, 1)
-    end_date = dt.datetime(2017, 9, 1)
-    temporal_grid_space = 5
-    temporal_grid = define_temporal_grid(start_date, end_date,
-                                        temporal_grid_space)
-    # Define S1 observations
-    s1_obs = Sentinel1Observations(nc_file,
-                state_mask,
-                time_grid=temporal_grid)
-    
-    # Read in smoothed S2 retrievals
-    s2_data = np.load("temporary_dump.npz")
-    sar_inversion(s1_obs, s2_data)
+    def _segment(self, lai):
+        L = lai.max(axis=0)  # I think
+        gradient = sobel(L)
+        patches = watershed(gradient, markers=250, compactness=0.001)
+
+    def sentinel1_inversion(self):
+        nt, ny, nx = self.s2_data.slai.shape
+        outputs = {
+            param: np.zeros((nt, ny, nx))
+            for param in ["Avv", "Bvv", "Cvv" "Avh", "Bvh", "Cvh"]
+        }
+        bounds = [
+            [-40, -5],
+            [1e-4, 1],
+            [-40, -1],
+            [-40, -5],
+            [1e-4, 1],
+            [-40, -1],
+            *([[0.01, 1]] * nt),
+        ]
+        # Or segment and process patch by patch
+        # see self._segment
+        for (row, col) in np.ndindex(*self.s2_data.slai[0].shape):
+            lai = self.s2_data.slai[:, row, col]
+            svv = 10 * np.log10(self.s1_observations.VV[:, row, col])
+            svh = 10 * np.log10(self.s1_observations.VH[:, row, col])
+            theta = self.s1_observations.theta[:, row, col]
+            ## Need to extract prior distribution from prior object
+            prior_mean = 1.0
+            prior_unc = 1.0 # placeholder
+            ### GDAL doesn't get the netCDF metadata with the orbits
+            ### But basically, one would need a loop over individual orbits here
+            # orbits = get_orbit_no()
+            # for orbit in orbits:
+            # Now minimise for this pixel:
+            # set x0 to prior value
+            # set gamma to a constant
+            x0 = prior_mean
+            retval = scipy.optimize.minimize(
+                cost_function, x0, args=(svh, svv, theta, gamma, prior_mean, prior_unc)
+            )
+            for i, raster in enumerate(outputs):
+                raster[row, col] = retval.x[i]
+    # Resample to time grid
+    # Return and save there, or add method in class to dump to disk

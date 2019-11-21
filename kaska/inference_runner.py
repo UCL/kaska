@@ -24,7 +24,8 @@ from .s1_observations import Sentinel1Observations
 from .kaska_sar import sar_inversion, save_s1_output
 
 Config = namedtuple(
-    "Config", "s2_obs s1_obs temporal_grid state_mask inverter output_folder"
+    "Config", "s2_obs s1_obs temporal_grid state_mask" + \
+                    " inverter prior_dist output_folder"
 )
 
 LOG = logging.getLogger(__name__)
@@ -187,9 +188,16 @@ def process_tile(the_chunk, config):
         s2_data = S2Data(s2_retrieval)
         s2_parameter_names = ["lai", "cab", "cbrown"]
         smoother_results_names = {"lai": "slai", "cab": "scab", "cbrown": "scbrown"}
-        s2_parameter_data = [getattr(s2_retrieval, smoother_results_names[i]) for i in s2_parameter_names]
-        sar_time_grid, sar_data = sar_inversion(config.s1_obs, s2_data)
+        s2_parameter_data = [getattr(s2_retrieval, smoother_results_names[i])
+                             for i in s2_parameter_names]
         kaska.save_s2_output(s2_parameter_names, s2_parameter_data)
+
+        s1_obs = copy.copy(config.s1_obs)
+        s1_obs.apply_roi(ulx, uly, lrx, lry)
+
+        s1_inversion = KasKASAR(config.temporal_grid, config.state_mask,
+                                s2_parameter_data, config.prior,
+                                chunk=hex(chunk))
         save_s1_output(config.output_folder, config.s1_obs, sar_data,
                        time_grid = sar_time_grid, chunk = hex(chunk_no))
         return s2_parameter_names
@@ -204,6 +212,7 @@ def kaska_runner(
     approx_inverter,
     s2_emulator,
     s1_ncfile,
+    prior_dist,
     output_folder,
     dask_client=None,
     block_size= [256, 256],
@@ -231,6 +240,8 @@ def kaska_runner(
         The emulator filename
     s1_ncfile: str
         NetCDF file containing the Sentinel 1 data
+    prior_dist: dict
+        A dictionary with prior parameters
     output_folder : str
         A folder where the output files will be dumped.
     dask_client : dask, optional
@@ -269,7 +280,7 @@ def kaska_runner(
     # "s2_obs temporal_grid state_mask inverter output_folder"
     config = Config(
         s2_obs, s1_obs, temporal_grid, state_mask,
-        approx_inverter, output_folder
+        approx_inverter, prior_dist, output_folder
         )
     # Avoid reading mask in memory in case we fill it up
     g = gdal.Open(state_mask)

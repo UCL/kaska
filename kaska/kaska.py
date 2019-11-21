@@ -28,8 +28,7 @@ class KaSKA(object):
     """The main KaSKA object"""
 
     def __init__(self, observations, time_grid, state_mask, approx_inverter,
-                output_folder,
-                chunk = None):
+                output_folder, chunk = None):
         self.time_grid = time_grid
         self.observations = observations
         self.state_mask = state_mask
