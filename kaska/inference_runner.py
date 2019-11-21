@@ -198,6 +198,7 @@ def process_tile(the_chunk, config):
         s1_inversion = KasKASAR(config.temporal_grid, config.state_mask,
                                 s2_parameter_data, config.prior,
                                 chunk=hex(chunk))
+        s1_inversion.sentinel1_inversion()
         save_s1_output(config.output_folder, config.s1_obs, sar_data,
                        time_grid = sar_time_grid, chunk = hex(chunk_no))
         return s2_parameter_names

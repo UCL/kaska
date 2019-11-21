@@ -80,13 +80,17 @@ class KaSKASAR(object):
         return Sentinel2Data(lai_s1, cab_s1, cbrown_s1)
 
 
-    def _segment(self, lai):
+    def _segment(self, lai, markers=250, compactness=0.001):
         L = lai.max(axis=0)  # I think
         gradient = sobel(L)
-        patches = watershed(gradient, markers=250, compactness=0.001)
+        patches = watershed(gradient, markers=markers,
+                            compactness=compactness)
 
-    def sentinel1_inversion(self):
+    def sentinel1_inversion(self, segment=False):
         nt, ny, nx = self.s2_data.slai.shape
+
+        # FY Model is slightly different, boundaries & parameter names need to
+        # be different
         outputs = {
             param: np.zeros((nt, ny, nx))
             for param in ["Avv", "Bvv", "Cvv" "Avh", "Bvh", "Cvh"]
@@ -100,28 +104,49 @@ class KaSKASAR(object):
             [-40, -1],
             *([[0.01, 1]] * nt),
         ]
+        # FY Now process pixel by pixel
         # Or segment and process patch by patch
         # see self._segment
         for (row, col) in np.ndindex(*self.s2_data.slai[0].shape):
+
             lai = self.s2_data.slai[:, row, col]
             svv = 10 * np.log10(self.s1_observations.VV[:, row, col])
             svh = 10 * np.log10(self.s1_observations.VH[:, row, col])
             theta = self.s1_observations.theta[:, row, col]
-            ## Need to extract prior distribution from prior object
+            ## FY Need to extract prior distribution from prior object
             prior_mean = 1.0
             prior_unc = 1.0 # placeholder
-            ### GDAL doesn't get the netCDF metadata with the orbits
+            ### FY GDAL doesn't get the netCDF metadata with the orbits
             ### But basically, one would need a loop over individual orbits here
             # orbits = get_orbit_no()
             # for orbit in orbits:
             # Now minimise for this pixel:
             # set x0 to prior value
-            # set gamma to a constant
-            x0 = prior_mean
+            # FY set gamma to a constant? -> check sar_homework repo for 
+            # value we used in notebooks
+            gamma = (123, 456)  # FY Placeholder
+            x0 = prior_mean  # FY Placeholder
+            # FY, the next commented block is copied from the notebook.
+            # retval is the result of the minimisation, the residuals are not
+            # used, we can probably fix the soil parameters here, or
+            # (1.99, 38.9 etc) or fish them out from the prior object
+            ###############################################################
+            # # # #    alpha_mean = fresnel(mv2eps(1.99, 38.9, 11.5, sm_mean), theta.mean())
+            # # # # alpha_std = np.ones_like(alpha_mean)*0.2
+            # # # # prior_mean = np.concatenate([[0,]*6, alpha_mean, np.zeros_like(sm_mean), s2_lai])
+            # # # # prior_sd = np.concatenate([[10., ]*6, alpha_std, [0.1,]*n_obs, [0.05, ]*n_obs])
+            # # # # gamma = (10000, 500)
+            # # # # retval, residuals = invert_field_(svv, svh, theta, prior_mean, prior_sd, gamma, s2_lai)
+            # # # # alpha = retval.x[6:(6+len(svv))]
+            # # # # sols = quad_approx_solver(1.99, 38.9, 11.5,theta, alpha)
+            ###############################################################
+
             retval = scipy.optimize.minimize(
                 cost_function, x0, args=(svh, svv, theta, gamma, prior_mean, prior_unc)
             )
+            # FY store retrieved parameters
             for i, raster in enumerate(outputs):
                 raster[row, col] = retval.x[i]
     # Resample to time grid
     # Return and save there, or add method in class to dump to disk
+    # 
