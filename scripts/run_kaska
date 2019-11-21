@@ -1,4 +1,9 @@
 #!/bin/env python
+
+# Usage:
+# python run_kaska --config_file=<file> [--disable_debug_log] | --help
+# <file> must be a YAML file, similar to config.yaml
+
 import argparse
 import datetime as dt
 import yaml
@@ -7,11 +12,11 @@ from kaska.entry import run_process
 
 # Default values of optional parameters
 default_block_size = 256
-default_disable_debug_log = False # We output debug log by default
+#default_disable_debug_log = False # We output debug log by default
 
 # Set optional parameters to default values in case not set later
 # block_size = default_block_size
-debug = not default_disable_debug_log
+debug = True
 
 # List of missing required values
 missing = []
@@ -23,7 +28,6 @@ def str2date(string):
 def check_value(param, dict):
     #print("DEBUGGING: " + param)
     #print(dict.values())
-    #key = "'" + param + "'"
     if param in dict:
         value = dict[param]
         #print("value = " + str(value))
@@ -48,10 +52,14 @@ def parse_file(filename):
         try:
             config = yaml.safe_load(stream)
             print(config)
-            if "disable_debug_log" in config:
+            #if "disable_debug_log" in config:
+            global debug
+            if not debug:
                 print("Debug log output disabled.")
+                debug = False
             else:
                 print("Debug log output enabled.")
+                debug = True
             
             # The following parameters are all required:
             start_date = str2date(str(check_value("start_date", config)))
@@ -61,12 +69,9 @@ def parse_file(filename):
             state_mask = check_value("state_mask", config)
             output_folder = check_value("output_folder", config) 
 
-            # Special case - optional parameters
+            # Special case - optional parameter
             block_size = check_value("block_size", config)
             config["block_size"] = block_size
-
-            # NB we also need to deal with optional args which MIGHT be in the config file.
-            # debug, block_size
 
             if len(missing) > 0:
                 print("ERROR: The following required parameter(s) need to be set in the config file:")
@@ -95,9 +100,9 @@ parser = argparse.ArgumentParser(description='Run the KaSKA analysis '
                                      'for given time grid, data, and state mask.')
 
 parser.add_argument('--config_file',
-                    help="The YAML-format config file you are using (instead of command-line args)"
-                    + " ** NB ** Values in the file will override any command-line values.")
-parser.add_argument('--disable_debug_log', action='store_true', default=default_disable_debug_log,
+                    help="The YAML-format config file you are using (instead of command-line args)")
+                    #+ " ** NB ** Values in the file will override any command-line values.")
+parser.add_argument('--disable_debug_log', action='store_true', default=False,
                     help='Disable the debug-level logging, leaving only info-level logging on. By default, logging reports debug messages as well.')
      
 args = parser.parse_args()
@@ -116,6 +121,6 @@ if (args.config_file):
 
    
 # No config file present
-#else: complain      
-    
+else:
+    print ("Please specify a config file with --config_file option.")
 

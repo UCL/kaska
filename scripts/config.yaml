@@ -19,7 +19,6 @@ state_mask: ./test.tif
 output_folder: .
 
 # The size of the side of the square tile to break the image into. 
-# Default value (i.e. value if this is not set below) is 256
+# Default value (i.e. value if this is not set below) is defined
+# in run_kaska as default_block_size
 block_size: 100
-
-#debug: True
