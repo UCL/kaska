@@ -1,8 +1,14 @@
 #!/bin/env python
 
-# Usage:
-# python run_kaska --config_file=<file> [--disable_debug_log] | --help
-# <file> must be a YAML file, similar to config.yaml
+""" Script to run Kaska. 
+
+A "config file" of values is required. This helps reproducibility.
+
+Usage:
+python run_kaska --config_file=<file> [--disable_debug_log] | --help
+
+<file> must be a YAML file, similar in format to the config.yaml example.
+"""
 
 import argparse
 import datetime as dt
@@ -12,22 +18,39 @@ from kaska.entry import run_process
 
 # Default values of optional parameters
 default_block_size = 256
-#default_disable_debug_log = False # We output debug log by default
-
-# Set optional parameters to default values in case not set later
-# block_size = default_block_size
 debug = True
 
 # List of missing required values
 missing = []
 
+
 def str2date(string):
+    """ Create and return a dattime object from a string.
+    
+    Keyword arguments:
+    string -- The string to convert, e.g. "20191121" for 21st Nov 2019.
+    """
     return dt.datetime.strptime(string, '%Y%m%d')
 
 
 def check_value(param, dict):
-    #print("DEBUGGING: " + param)
-    #print(dict.values())
+    """ Check that a parameter in a dictionary has a sensible
+    value, e.g. it isn't None or an empty string.
+
+    If the parameter is an optional one, and no value is supplied,
+    it takes the default value for that parameter.
+
+    For other parameters - i.e. the required ones - if any are missing
+    they are added to the global missing list, used later to alert
+    the user and terminate the program (if missing is not empty).
+
+    If the parameter value appears to be valid, that value is returned.
+
+    Keyword arguments:
+    param -- Name of the parameter, e.g. "start_date"
+    dict -- The dictionary which contains the parameter names and values. 
+
+    """
     if param in dict:
         value = dict[param]
         #print("value = " + str(value))
@@ -48,6 +71,16 @@ def check_value(param, dict):
 
 
 def parse_file(filename):
+    """ Open a file in YAML format and obtain a dictionary 
+    with the values from it. Check each value, then return
+    the dictionary.
+
+    An example file in the required format is config.yaml.
+
+    Keyword arguments:
+    filename -- Path to the YAML file.
+
+    """
     with open(filename) as stream:
         try:
             config = yaml.safe_load(stream)
