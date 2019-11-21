@@ -78,7 +78,7 @@ def test_sd_weights():
     (z_w, s, flag, wtot) = smoothn.smoothn(y_noise, W=w)
 
     # should be identical
-    prec = 2e-15
+    prec = 1e-15
     rms = np.sqrt(np.mean((z_sd - z_w)**2))
     assert(rms < prec)
 
@@ -147,7 +147,7 @@ def residual_rms_assessment(s, d, target_max_resid, target_rms):
     maximum_residuals = np.max(np.abs(res), axis=0)
     rms = np.sqrt(np.mean(np.square(res), axis=0))
 
-    fudge = 4e-6
+    fudge = 1e-6
     resid_diff = np.abs(maximum_residuals - target_max_resid)
     rms_diff = np.abs(rms - target_rms)
     
