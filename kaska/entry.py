@@ -6,7 +6,7 @@ from .inverters import get_emulator, get_inverter
 
 
 def run_process(start_date, end_date, temporal_grid_space, s2_folder,
-                s1_ncfile, state_mask, output_folder, debug=True,
+                s1_ncfile, state_mask, prior_dist, output_folder, debug=True,
                 logfile=None, dask_client=None, block_size=[256, 256],
                 chunk=None):
     """This is the entry point function that should be called by any
@@ -67,6 +67,7 @@ def run_process(start_date, end_date, temporal_grid_space, s2_folder,
     kaska_runner(start_date, end_date, temporal_grid_space, state_mask,
                  s2_folder, approx_inverter, s2_emulator,
                  s1_ncfile,
+                 prior_dist,
                  output_folder,
                  dask_client=dask_client, block_size=block_size,
                  chunk=chunk)
