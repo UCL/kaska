@@ -14,325 +14,325 @@ EXIT_LIB_NOT_FOUND = -1
 W_TOT_DEFAULT = 0
 
 def H(y,t0=0):
-  '''
-  Step fn with step at t0
-  '''
-  h = np.zeros_like(y)
-  args = tuple([slice(0,y.shape[i]) for i in y.ndim])   
+    '''
+    Step fn with step at t0
+    '''
+    h = np.zeros_like(y)
+    args = tuple([slice(0,y.shape[i]) for i in y.ndim])   
 
 def smoothn(y,nS0=10,axis=None,smoothOrder=2.0,sd=None,verbose=False,\
 	s0=None,z0=None,isrobust=False,w=None,s=None,max_iter=100,tol_z=1e-3,weightstr='bisquare'):
-  '''
-   function [z,s,exitflag,w_tot] = smoothn(varargin)
+    '''
+    function [z,s,exitflag,w_tot] = smoothn(varargin)
+    
+    SMOOTHN Robust spline smoothing for 1-D to n-D data.
+    SMOOTHN provides a fast, automatized and robust discretized smoothing
+    spline for data of any dimension.
+    
+    Z = SMOOTHN(Y) automatically smoothes the uniformly-sampled array Y. Y
+    can be any n-D noisy array (time series, images, 3D data,...). Non
+    finite data (NaN or Inf) are treated as missing values.
+    
+    Z = SMOOTHN(Y,S) smoothes the array Y using the smoothing parameter S.
+    S must be a real positive scalar. The larger S is, the smoother the
+    output will be. If the smoothing parameter S is omitted (see previous
+    option) or empty (i.e. S = []), it is automatically determined using
+    the generalized cross-validation (GCV) method.
+    
+    Z = SMOOTHN(Y,w) or Z = SMOOTHN(Y,w,S) specifies a weighting array w of
+    real positive values, that must have the same size as Y. Note that a
+    nil weight corresponds to a missing value.
+    
+    Robust smoothing
+    ----------------
+    Z = SMOOTHN(...,'robust') carries out a robust smoothing that minimizes
+    the influence of outlying data.
+    
+    [Z,S] = SMOOTHN(...) also returns the calculated value for S so that
+    you can fine-tune the smoothing subsequently if needed.
+    
+    An iteration process is used in the presence of weighted and/or missing
+    values. Z = SMOOTHN(...,OPTION_NAME,OPTION_VALUE) smoothes with the
+    termination parameters specified by OPTION_NAME and OPTION_VALUE. They
+    can contain the following criteria:
+        -----------------
+        tol_z:       Termination tolerance on Z (default = 1e-3)
+                    tol_z must be in ]0,1[
+        max_iter:    Maximum number of iterations allowed (default = 100)
+        Initial:    Initial value for the iterative process (default =
+                    original data)
+        -----------------
+    Syntax: [Z,...] = SMOOTHN(...,'max_iter',500,'tol_z',1e-4,'Initial',Z0);
+    
+    [Z,S,EXITFLAG] = SMOOTHN(...) returns a boolean value EXITFLAG that
+    describes the exit condition of SMOOTHN:
+        1       SMOOTHN converged.
+        0       Maximum number of iterations was reached.
+    
+    Class Support
+    -------------
+    Input array can be numeric or logical. The returned array is of class
+    double.
+    
+    Notes
+    -----
+    The n-D (inverse) discrete cosine transform functions <a
+    href="matlab:web('http://www.biomecardio.com/matlab/dctn.html')"
+    >DCTN</a> and <a
+    href="matlab:web('http://www.biomecardio.com/matlab/idctn.html')"
+    >IDCTN</a> are required.
+    
+    To be made
+    ----------
+    Estimate the confidence bands (see Wahba 1983, Nychka 1988).
+    
+    Reference
+    --------- 
+    Garcia D, Robust smoothing of gridded data in one and higher dimensions
+    with missing values. Computational Statistics & Data Analysis, 2010. 
+    <a
+    href="matlab:web('http://www.biomecardio.com/pageshtm/publi/csda10.pdf')">PDF download</a>
+    
+    Examples:
+    --------
+    # 1-D example
+    x = linspace(0,100,2**8);
+    y = cos(x/10)+(x/50)**2 + randn(size(x))/10;
+    y[[70, 75, 80]] = [5.5, 5, 6];
+    z = smoothn(y); # Regular smoothing
+    zr = smoothn(y,'robust'); # Robust smoothing
+    subplot(121), plot(x,y,'r.',x,z,'k','LineWidth',2)
+    axis square, title('Regular smoothing')
+    subplot(122), plot(x,y,'r.',x,zr,'k','LineWidth',2)
+    axis square, title('Robust smoothing')
+    
+    # 2-D example
+    xp = 0:.02:1;
+    [x,y] = meshgrid(xp);
+    f = exp(x+y) + sin((x-2*y)*3);
+    fn = f + randn(size(f))*0.5;
+    fs = smoothn(fn);
+    subplot(121), surf(xp,xp,fn), zlim([0 8]), axis square
+    subplot(122), surf(xp,xp,fs), zlim([0 8]), axis square
+    
+    # 2-D example with missing data
+    n = 256;
+    y0 = peaks(n);
+    y = y0 + rand(size(y0))*2;
+    I = randperm(n^2);
+    y(I(1:n^2*0.5)) = NaN; # lose 1/2 of data
+    y(40:90,140:190) = NaN; # create a hole
+    z = smoothn(y); # smooth data
+    subplot(2,2,1:2), imagesc(y), axis equal off
+    title('Noisy corrupt data')
+    subplot(223), imagesc(z), axis equal off
+    title('Recovered data ...')
+    subplot(224), imagesc(y0), axis equal off
+    title('... compared with original data')
+    
+    # 3-D example
+    [x,y,z] = meshgrid(-2:.2:2);
+    xslice = [-0.8,1]; yslice = 2; zslice = [-2,0];
+    vn = x.*exp(-x.^2-y.^2-z.^2) + randn(size(x))*0.06;
+    subplot(121), slice(x,y,z,vn,xslice,yslice,zslice,'cubic')
+    title('Noisy data')
+    v = smoothn(vn);
+    subplot(122), slice(x,y,z,v,xslice,yslice,zslice,'cubic')
+    title('Smoothed data')
+    
+    # Cardioid
+    t = linspace(0,2*pi,1000);
+    x = 2*cos(t).*(1-cos(t)) + randn(size(t))*0.1;
+    y = 2*sin(t).*(1-cos(t)) + randn(size(t))*0.1;
+    z = smoothn(complex(x,y));
+    plot(x,y,'r.',real(z),imag(z),'k','linewidth',2)
+    axis equal tight
+    
+    # Cellular vortical flow
+    [x,y] = meshgrid(linspace(0,1,24));
+    Vx = cos(2*pi*x+pi/2).*cos(2*pi*y);
+    Vy = sin(2*pi*x+pi/2).*sin(2*pi*y);
+    Vx = Vx + sqrt(0.05)*randn(24,24); # adding Gaussian noise
+    Vy = Vy + sqrt(0.05)*randn(24,24); # adding Gaussian noise
+    I = randperm(numel(Vx));
+    Vx(I(1:30)) = (rand(30,1)-0.5)*5; # adding outliers
+    Vy(I(1:30)) = (rand(30,1)-0.5)*5; # adding outliers
+    Vx(I(31:60)) = NaN; # missing values
+    Vy(I(31:60)) = NaN; # missing values
+    Vs = smoothn(complex(Vx,Vy),'robust'); # automatic smoothing
+    subplot(121), quiver(x,y,Vx,Vy,2.5), axis square
+    title('Noisy velocity field')
+    subplot(122), quiver(x,y,real(Vs),imag(Vs)), axis square
+    title('Smoothed velocity field')
+    
+    See also SMOOTH, SMOOTH3, DCTN, IDCTN.
+    
+    -- Damien Garcia -- 2009/03, revised 2010/11
+    Visit my <a
+    href="matlab:web('http://www.biomecardio.com/matlab/smoothn.html')">website</a> for more details about SMOOTHN 
 
-   SMOOTHN Robust spline smoothing for 1-D to n-D data.
-   SMOOTHN provides a fast, automatized and robust discretized smoothing
-   spline for data of any dimension.
+    # Check input arguments
+    error(nargchk(1,12,nargin));
 
-   Z = SMOOTHN(Y) automatically smoothes the uniformly-sampled array Y. Y
-   can be any n-D noisy array (time series, images, 3D data,...). Non
-   finite data (NaN or Inf) are treated as missing values.
+    z0=None,w=None,s=None,max_iter=100,tol_z=1e-3
+    '''
 
-   Z = SMOOTHN(Y,S) smoothes the array Y using the smoothing parameter S.
-   S must be a real positive scalar. The larger S is, the smoother the
-   output will be. If the smoothing parameter S is omitted (see previous
-   option) or empty (i.e. S = []), it is automatically determined using
-   the generalized cross-validation (GCV) method.
+    (y, w) = preprocessing(y, w, sd)  
 
-   Z = SMOOTHN(Y,w) or Z = SMOOTHN(Y,w,S) specifies a weighting array w of
-   real positive values, that must have the same size as Y. Note that a
-   nil weight corresponds to a missing value.
+    sizy = y.shape
 
-   Robust smoothing
-   ----------------
-   Z = SMOOTHN(...,'robust') carries out a robust smoothing that minimizes
-   the influence of outlying data.
+    # sort axis
+    if axis == None:
+        axis = tuple(np.arange(y.ndim))
 
-   [Z,S] = SMOOTHN(...) also returns the calculated value for S so that
-   you can fine-tune the smoothing subsequently if needed.
+    noe = y.size # number of elements
+    if noe<2:
+        return y, s, EXIT_SUCCESS, W_TOT_DEFAULT
 
-   An iteration process is used in the presence of weighted and/or missing
-   values. Z = SMOOTHN(...,OPTION_NAME,OPTION_VALUE) smoothes with the
-   termination parameters specified by OPTION_NAME and OPTION_VALUE. They
-   can contain the following criteria:
-       -----------------
-       tol_z:       Termination tolerance on Z (default = 1e-3)
-                   tol_z must be in ]0,1[
-       max_iter:    Maximum number of iterations allowed (default = 100)
-       Initial:    Initial value for the iterative process (default =
-                   original data)
-       -----------------
-   Syntax: [Z,...] = SMOOTHN(...,'max_iter',500,'tol_z',1e-4,'Initial',Z0);
-
-   [Z,S,EXITFLAG] = SMOOTHN(...) returns a boolean value EXITFLAG that
-   describes the exit condition of SMOOTHN:
-       1       SMOOTHN converged.
-       0       Maximum number of iterations was reached.
-
-   Class Support
-   -------------
-   Input array can be numeric or logical. The returned array is of class
-   double.
-
-   Notes
-   -----
-   The n-D (inverse) discrete cosine transform functions <a
-   href="matlab:web('http://www.biomecardio.com/matlab/dctn.html')"
-   >DCTN</a> and <a
-   href="matlab:web('http://www.biomecardio.com/matlab/idctn.html')"
-   >IDCTN</a> are required.
-
-   To be made
-   ----------
-   Estimate the confidence bands (see Wahba 1983, Nychka 1988).
-
-   Reference
-   --------- 
-   Garcia D, Robust smoothing of gridded data in one and higher dimensions
-   with missing values. Computational Statistics & Data Analysis, 2010. 
-   <a
-   href="matlab:web('http://www.biomecardio.com/pageshtm/publi/csda10.pdf')">PDF download</a>
-
-   Examples:
-   --------
-   # 1-D example
-   x = linspace(0,100,2**8);
-   y = cos(x/10)+(x/50)**2 + randn(size(x))/10;
-   y[[70, 75, 80]] = [5.5, 5, 6];
-   z = smoothn(y); # Regular smoothing
-   zr = smoothn(y,'robust'); # Robust smoothing
-   subplot(121), plot(x,y,'r.',x,z,'k','LineWidth',2)
-   axis square, title('Regular smoothing')
-   subplot(122), plot(x,y,'r.',x,zr,'k','LineWidth',2)
-   axis square, title('Robust smoothing')
-
-   # 2-D example
-   xp = 0:.02:1;
-   [x,y] = meshgrid(xp);
-   f = exp(x+y) + sin((x-2*y)*3);
-   fn = f + randn(size(f))*0.5;
-   fs = smoothn(fn);
-   subplot(121), surf(xp,xp,fn), zlim([0 8]), axis square
-   subplot(122), surf(xp,xp,fs), zlim([0 8]), axis square
-
-   # 2-D example with missing data
-   n = 256;
-   y0 = peaks(n);
-   y = y0 + rand(size(y0))*2;
-   I = randperm(n^2);
-   y(I(1:n^2*0.5)) = NaN; # lose 1/2 of data
-   y(40:90,140:190) = NaN; # create a hole
-   z = smoothn(y); # smooth data
-   subplot(2,2,1:2), imagesc(y), axis equal off
-   title('Noisy corrupt data')
-   subplot(223), imagesc(z), axis equal off
-   title('Recovered data ...')
-   subplot(224), imagesc(y0), axis equal off
-   title('... compared with original data')
-
-   # 3-D example
-   [x,y,z] = meshgrid(-2:.2:2);
-   xslice = [-0.8,1]; yslice = 2; zslice = [-2,0];
-   vn = x.*exp(-x.^2-y.^2-z.^2) + randn(size(x))*0.06;
-   subplot(121), slice(x,y,z,vn,xslice,yslice,zslice,'cubic')
-   title('Noisy data')
-   v = smoothn(vn);
-   subplot(122), slice(x,y,z,v,xslice,yslice,zslice,'cubic')
-   title('Smoothed data')
-
-   # Cardioid
-   t = linspace(0,2*pi,1000);
-   x = 2*cos(t).*(1-cos(t)) + randn(size(t))*0.1;
-   y = 2*sin(t).*(1-cos(t)) + randn(size(t))*0.1;
-   z = smoothn(complex(x,y));
-   plot(x,y,'r.',real(z),imag(z),'k','linewidth',2)
-   axis equal tight
-
-   # Cellular vortical flow
-   [x,y] = meshgrid(linspace(0,1,24));
-   Vx = cos(2*pi*x+pi/2).*cos(2*pi*y);
-   Vy = sin(2*pi*x+pi/2).*sin(2*pi*y);
-   Vx = Vx + sqrt(0.05)*randn(24,24); # adding Gaussian noise
-   Vy = Vy + sqrt(0.05)*randn(24,24); # adding Gaussian noise
-   I = randperm(numel(Vx));
-   Vx(I(1:30)) = (rand(30,1)-0.5)*5; # adding outliers
-   Vy(I(1:30)) = (rand(30,1)-0.5)*5; # adding outliers
-   Vx(I(31:60)) = NaN; # missing values
-   Vy(I(31:60)) = NaN; # missing values
-   Vs = smoothn(complex(Vx,Vy),'robust'); # automatic smoothing
-   subplot(121), quiver(x,y,Vx,Vy,2.5), axis square
-   title('Noisy velocity field')
-   subplot(122), quiver(x,y,real(Vs),imag(Vs)), axis square
-   title('Smoothed velocity field')
-
-   See also SMOOTH, SMOOTH3, DCTN, IDCTN.
-
-   -- Damien Garcia -- 2009/03, revised 2010/11
-   Visit my <a
-   href="matlab:web('http://www.biomecardio.com/matlab/smoothn.html')">website</a> for more details about SMOOTHN 
-
-  # Check input arguments
-  error(nargchk(1,12,nargin));
-
-  z0=None,w=None,s=None,max_iter=100,tol_z=1e-3
-  '''
-
-  (y, w) = preprocessing(y, w, sd)  
-
-  sizy = y.shape
-
-  # sort axis
-  if axis == None:
-    axis = tuple(np.arange(y.ndim))
-
-  noe = y.size # number of elements
-  if noe<2:
-    return y, s, EXIT_SUCCESS, W_TOT_DEFAULT
-
-  #---
-  # "Weighting function" criterion
-  weightstr = weightstr.lower()
-  #---
-  # Weights. Zero weights are assigned to not finite values (Inf or NaN),
-  # (Inf/NaN values = missing data).
-  is_finite = np.isfinite(y)
-  nof = np.sum(is_finite) # number of finite elements
-  #---
-  # Weighted or missing data?
-  isweighted = any(w != 1)
-  #---
-  # Robust smoothing?
-  #isrobust
-  #---
-  # Automatic smoothing?
-  isauto = not s
-  #---
-  # DCTN and IDCTN are required
-  try:
-    from scipy.fftpack.realtransforms import dct,idct
-  except:
-    return y, s, EXIT_LIB_NOT_FOUND, W_TOT_DEFAULT
+    #---
+    # "Weighting function" criterion
+    weightstr = weightstr.lower()
+    #---
+    # Weights. Zero weights are assigned to not finite values (Inf or NaN),
+    # (Inf/NaN values = missing data).
+    is_finite = np.isfinite(y)
+    nof = np.sum(is_finite) # number of finite elements
+    #---
+    # Weighted or missing data?
+    isweighted = any(w != 1)
+    #---
+    # Robust smoothing?
+    #isrobust
+    #---
+    # Automatic smoothing?
+    isauto = not s
+    #---
+    # DCTN and IDCTN are required
+    try:
+        from scipy.fftpack.realtransforms import dct,idct
+    except:
+        return y, s, EXIT_LIB_NOT_FOUND, W_TOT_DEFAULT
 
 ## Creation of the Lambda tensor
-  lambda_ = define_lambda(y, axis)
+    lambda_ = define_lambda(y, axis)
 
-  ## Upper and lower bound for the smoothness parameter
-  (s_min_bnd, s_max_bnd) = smoothness_bounds(y)
+    ## Upper and lower bound for the smoothness parameter
+    (s_min_bnd, s_max_bnd) = smoothness_bounds(y)
 
-  ## Initialize before iterating
-  y_tensor_rank = sum(array(sizy) != 1) # tensor rank of the y-array
-  #---
-  w_tot = w
-  #--- Initial conditions for z
-  z = initial_z(y, z0, isweighted)
-  #---
-  z0 = z
-  y[~is_finite] = 0 # arbitrary values for missing y-data
-  #---
-  tol = 1.
-  robust_iterative_process = True
-  robust_step = 1
-  nit = 0
-  #--- Error on p. Smoothness parameter s = 10^p
-  errp = 0.1
-  #opt = optimset('TolX',errp);
-  #--- Relaxation factor relaxation_factor: to speedup convergence
-  relaxation_factor = 1 + 0.75*isweighted
-  # ??
-  ## Main iterative process
-  #---
-  xpost = init_xpost(s, s_min_bnd, s_max_bnd, isauto)
-
-  while robust_iterative_process:
-    #--- "amount" of weights (see the function GCVscore)
-    aow = sum(w_tot)/noe # 0 < aow <= 1
+    ## Initialize before iterating
+    y_tensor_rank = sum(array(sizy) != 1) # tensor rank of the y-array
     #---
-    while tol>tol_z and nit<max_iter:
-        if verbose:
-          print('tol',tol,'nit',nit)
-        nit = nit+1
-        dct_y = dctND(w_tot*(y-z)+z,f=dct)
-        if isauto and not remainder(log2(nit),1):
-            #---
-            # The generalized cross-validation (GCV) method is used.
-            # We seek the smoothing parameter s that minimizes the GCV
-            # score i.e. s = Argmin(GCVscore).
-            # Because this process is time-consuming, it is performed from
-            # time to time (when nit is a power of 2)
-            #---
-            # errp in here somewhere
-            
-            #xpost,f,d = lbfgsb.fmin_l_bfgs_b(gcv,xpost,fprime=None,factr=10.,\
-            #   approx_grad=True,bounds=[(log10(s_min_bnd),log10(s_max_bnd))],\
-            #   args=(lambda_,aow,dct_y,IsFinite,w_tot,y,nof,noe))
+    w_tot = w
+    #--- Initial conditions for z
+    z = initial_z(y, z0, isweighted)
+    #---
+    z0 = z
+    y[~is_finite] = 0 # arbitrary values for missing y-data
+    #---
+    tol = 1.
+    robust_iterative_process = True
+    robust_step = 1
+    nit = 0
+    #--- Error on p. Smoothness parameter s = 10^p
+    errp = 0.1
+    #opt = optimset('TolX',errp);
+    #--- Relaxation factor relaxation_factor: to speedup convergence
+    relaxation_factor = 1 + 0.75*isweighted
+    # ??
+    ## Main iterative process
+    #---
+    xpost = init_xpost(s, s_min_bnd, s_max_bnd, isauto)
 
-            # if we have no clue what value of s to use, better span the
-            # possible range to get a reasonable starting point ...
-            # only need to do it once though. nS0 is teh number of samples used
-            if not s0:
-              ss = np.arange(nS0)*(1./(nS0-1.))*(log10(s_max_bnd)-log10(s_min_bnd))+ log10(s_min_bnd)
-              g = np.zeros_like(ss)
-              for i,p in enumerate(ss):
-                g[i] = gcv(p,lambda_,aow,dct_y,is_finite,w_tot,y,nof,noe,smoothOrder)
-                #print 10**p,g[i]
-              xpost = [ss[g==g.min()]]
-              #print '==============='
-              #print nit,tol,g.min(),xpost[0],s
-              #print '==============='
-            else:
-              xpost = [s0]
-            xpost,f,d = lbfgsb.fmin_l_bfgs_b(gcv,xpost,fprime=None,factr=1e7,\
-               approx_grad=True,bounds=[(log10(s_min_bnd),log10(s_max_bnd))],\
-               args=(lambda_,aow,dct_y,is_finite,w_tot,y,nof,noe,smoothOrder))
-        s = 10**xpost[0]
-        # update the value we use for the initial s estimate
-        s0 = xpost[0]
-
-        gamma = 1./(1+(s*abs(lambda_))**smoothOrder)
-
-        z = relaxation_factor*dctND(gamma*dct_y,f=idct) + (1-relaxation_factor)*z
-        # if no weighted/missing data => tol=0 (no iteration)
-        tol = isweighted*norm(z0-z)/norm(z)
-       
-        z0 = z # re-initialization
-    exitflag = nit<max_iter
-
-    if isrobust: #-- Robust Smoothing: iteratively re-weighted process
-        #--- average leverage
-        h = sqrt(1+16.*s)
-        h = sqrt(1+h)/sqrt(2)/h
-        h = h**y_tensor_rank
-        #--- take robust weights into account
-        w_tot = w*robust_weights(y-z,is_finite,h,weightstr)
-        #--- re-initialize for another iterative weighted process
-        isweighted = True
-        tol = 1
-        nit = 0
+    while robust_iterative_process:
+        #--- "amount" of weights (see the function GCVscore)
+        aow = sum(w_tot)/noe # 0 < aow <= 1
         #---
-        robust_step = robust_step+1
-        robust_iterative_process = robust_step<3 # 3 robust steps are enough.
-    else:
-        robust_iterative_process = False # stop the whole process
+        while tol>tol_z and nit<max_iter:
+            if verbose:
+                print('tol',tol,'nit',nit)
+            nit = nit+1
+            dct_y = dctND(w_tot*(y-z)+z,f=dct)
+            if isauto and not remainder(log2(nit),1):
+                #---
+                # The generalized cross-validation (GCV) method is used.
+                # We seek the smoothing parameter s that minimizes the GCV
+                # score i.e. s = Argmin(GCVscore).
+                # Because this process is time-consuming, it is performed from
+                # time to time (when nit is a power of 2)
+                #---
+                # errp in here somewhere
+                
+                #xpost,f,d = lbfgsb.fmin_l_bfgs_b(gcv,xpost,fprime=None,factr=10.,\
+                #   approx_grad=True,bounds=[(log10(s_min_bnd),log10(s_max_bnd))],\
+                #   args=(lambda_,aow,dct_y,IsFinite,w_tot,y,nof,noe))
+    
+                # if we have no clue what value of s to use, better span the
+                # possible range to get a reasonable starting point ...
+                # only need to do it once though. nS0 is teh number of samples used
+                if not s0:
+                    ss = np.arange(nS0)*(1./(nS0-1.))*(log10(s_max_bnd)-log10(s_min_bnd))+ log10(s_min_bnd)
+                    g = np.zeros_like(ss)
+                    for i,p in enumerate(ss):
+                        g[i] = gcv(p,lambda_,aow,dct_y,is_finite,w_tot,y,nof,noe,smoothOrder)
+                        #print 10**p,g[i]
+                    xpost = [ss[g==g.min()]]
+                    #print '==============='
+                    #print nit,tol,g.min(),xpost[0],s
+                    #print '==============='
+                else:
+                    xpost = [s0]
+                xpost,f,d = lbfgsb.fmin_l_bfgs_b(gcv,xpost,fprime=None,factr=1e7,\
+                                                 approx_grad=True,bounds=[(log10(s_min_bnd),log10(s_max_bnd))],\
+                                                 args=(lambda_,aow,dct_y,is_finite,w_tot,y,nof,noe,smoothOrder))
+            s = 10**xpost[0]
+            # update the value we use for the initial s estimate
+            s0 = xpost[0]
 
-  ## Warning messages
-  #---
-  if isauto:
-    if abs(log10(s)-log10(s_min_bnd))<errp:
-        warning('smoothn:SLowerBound',\
-            ['s = %.3f '%(s) + ': the lower bound for s '\
-            + 'has been reached. Put s as an input variable if required.'])
-    elif abs(log10(s)-log10(s_max_bnd))<errp:
-        warning('smoothn:SUpperBound',\
-            ['s = %.3f '%(s) + ': the upper bound for s '\
-            + 'has been reached. Put s as an input variable if required.'])
+            gamma = 1./(1+(s*abs(lambda_))**smoothOrder)
+
+            z = relaxation_factor*dctND(gamma*dct_y,f=idct) + (1-relaxation_factor)*z
+            # if no weighted/missing data => tol=0 (no iteration)
+            tol = isweighted*norm(z0-z)/norm(z)
+       
+            z0 = z # re-initialization
+        exitflag = nit<max_iter
+
+        if isrobust: #-- Robust Smoothing: iteratively re-weighted process
+            #--- average leverage
+            h = sqrt(1+16.*s)
+            h = sqrt(1+h)/sqrt(2)/h
+            h = h**y_tensor_rank
+            #--- take robust weights into account
+            w_tot = w*robust_weights(y-z,is_finite,h,weightstr)
+            #--- re-initialize for another iterative weighted process
+            isweighted = True
+            tol = 1
+            nit = 0
+            #---
+            robust_step = robust_step+1
+            robust_iterative_process = robust_step<3 # 3 robust steps are enough.
+        else:
+            robust_iterative_process = False # stop the whole process
+
+    ## Warning messages
+    #---
+    if isauto:
+        if abs(log10(s)-log10(s_min_bnd))<errp:
+            warning('smoothn:SLowerBound',\
+                    ['s = %.3f '%(s) + ': the lower bound for s '\
+                     + 'has been reached. Put s as an input variable if required.'])
+        elif abs(log10(s)-log10(s_max_bnd))<errp:
+            warning('smoothn:SUpperBound',\
+                    ['s = %.3f '%(s) + ': the upper bound for s '\
+                     + 'has been reached. Put s as an input variable if required.'])
     #warning('MATLAB:smoothn:max_iter',\
     #    ['Maximum number of iterations (%d'%(max_iter) + ') has '\
     #    + 'been exceeded. Increase max_iter option or decrease tol_z value.'])
-  return z, s, exitflag, w_tot
+    return z, s, exitflag, w_tot
 
 def warning(s1,s2):
-  print(s1)
-  print(s2[0])
+    print(s1)
+    print(s2[0])
 
 def weights_from_sd(sd):
     """Take the standard deviation values and produce a set of weights."""
@@ -385,8 +385,8 @@ def preprocessing(y, w, sd):
 
 ## Creation of the Lambda tensor
 def define_lambda(y, axis):
-  # Lambda contains the eingenvalues of the difference matrix used in this
-  # penalized least squares process.
+    # Lambda contains the eingenvalues of the difference matrix used in this
+    # penalized least squares process.
     axis_tuple = tuple(np.array(axis).flatten())
     
     lam = zeros(y.shape)
@@ -401,19 +401,19 @@ def define_lambda(y, axis):
 
 ## Upper and lower bound for the smoothness parameter
 def smoothness_bounds(y):
-  # The average leverage (h) is by definition in [0 1]. Weak smoothing occurs
-  # if h is close to 1, while over-smoothing appears when h is near 0. Upper
-  # and lower bounds for h are given to avoid under- or over-smoothing. See
-  # equation relating h to the smoothness parameter (Equation #12 in the
-  # referenced CSDA paper).
+    # The average leverage (h) is by definition in [0 1]. Weak smoothing occurs
+    # if h is close to 1, while over-smoothing appears when h is near 0. Upper
+    # and lower bounds for h are given to avoid under- or over-smoothing. See
+    # equation relating h to the smoothness parameter (Equation #12 in the
+    # referenced CSDA paper).
     rnk = sum(array(y.shape) != 1)
     H_MIN = 1e-6
     H_MAX = 0.99
     
-  # (h/rnk)**2 = (1 + a)/( 2 a)
-  # a = 1/(2 (h/rnk)**2 -1) 
-  # where a = sqrt(1 + 16 s)
-  # (a**2 -1)/16
+    # (h/rnk)**2 = (1 + a)/( 2 a)
+    # a = 1/(2 (h/rnk)**2 -1) 
+    # where a = sqrt(1 + 16 s)
+    # (a**2 -1)/16
     try:
         s_min_bnd = np.sqrt((((1+sqrt(1+8*H_MAX**(2./rnk)))/4./H_MAX**(2./rnk))**2-1)/16.)
         s_max_bnd = np.sqrt((((1+sqrt(1+8*H_MIN**(2./rnk)))/4./H_MIN**(2./rnk))**2-1)/16.)
@@ -496,18 +496,18 @@ def initial_guess(y,i):
     #-- nearest neighbor interpolation (in case of missing values)
     if any(~i):
         try:
-          from scipy.ndimage.morphology import distance_transform_edt
-          #if license('test','image_toolbox')
-          #[z,ell] = bwdist(i);
-          ell = distance_transform_edt(1-i)
-          z = y
-          z[~i] = y[ell[~i]]
+            from scipy.ndimage.morphology import distance_transform_edt
+            #if license('test','image_toolbox')
+            #[z,ell] = bwdist(i);
+            ell = distance_transform_edt(1-i)
+            z = y
+            z[~i] = y[ell[~i]]
         except:
-          # If BWDIST does not exist, NaN values are all replaced with the
-          # same scalar. The initial guess is not optimal and a warning
-          # message thus appears.
-          z = y
-          z[~i] = mean(y[i])
+            # If BWDIST does not exist, NaN values are all replaced with the
+            # same scalar. The initial guess is not optimal and a warning
+            # message thus appears.
+            z = y
+            z[~i] = mean(y[i])
     else:
         z = y
     # coarse fast smoothing
@@ -516,7 +516,7 @@ def initial_guess(y,i):
     m = ceil(k/10)+1
     d = []
     for i in xrange(len(k)):
-      d.append(arange(m[i],k[i]))
+        d.append(arange(m[i],k[i]))
     d = np.array(d).astype(int)
     z[d] = 0.
     z = dctND(z,f=idct)
@@ -537,38 +537,38 @@ def initial_guess(y,i):
 
 
 def dctND(data,f=dct):
-  nd = len(data.shape)
-  if nd == 1:
-    return f(data,norm='ortho',type=2)
-  elif nd == 2:
-    return f(f(data,norm='ortho',type=2).T,norm='ortho',type=2).T
-  elif nd ==3:
-    return f(f(f(data,norm='ortho',type=2,axis=0)\
-                     ,norm='ortho',type=2,axis=1)\
-                     ,norm='ortho',type=2,axis=2)
-  elif nd ==4:
-    return f(f(f(f(data,norm='ortho',type=2,axis=0)\
-                       ,norm='ortho',type=2,axis=1)\
-                       ,norm='ortho',type=2,axis=2)\
-                       ,norm='ortho',type=2,axis=3) 
+    nd = len(data.shape)
+    if nd == 1:
+        return f(data,norm='ortho',type=2)
+    elif nd == 2:
+        return f(f(data,norm='ortho',type=2).T,norm='ortho',type=2).T
+    elif nd ==3:
+        return f(f(f(data,norm='ortho',type=2,axis=0)\
+                         ,norm='ortho',type=2,axis=1)\
+                         ,norm='ortho',type=2,axis=2)
+    elif nd ==4:
+        return f(f(f(f(data,norm='ortho',type=2,axis=0)\
+                           ,norm='ortho',type=2,axis=1)\
+                           ,norm='ortho',type=2,axis=2)\
+                           ,norm='ortho',type=2,axis=3) 
 def peaks(n):   
-  '''
-  Mimic basic of matlab peaks fn
-  '''
-  xp = arange(n)
-  [x,y] = meshgrid(xp,xp)
-  z = np.zeros_like(x).astype(float)
-  for i in xrange(n/5):
-    x0 = random()*n
-    y0 = random()*n
-    sdx = random()*n/4.
-    sdy = sdx
-    c = random()*2 - 1.
-    f = exp(-((x-x0)/sdx)**2-((y-y0)/sdy)**2 - (((x-x0)/sdx))*((y-y0)/sdy)*c)
-    #f /= f.sum()
-    f *= random()
-    z += f
-  return z 
+    '''
+      Mimic basic of matlab peaks fn
+    '''
+    xp = arange(n)
+    [x,y] = meshgrid(xp,xp)
+    z = np.zeros_like(x).astype(float)
+    for i in xrange(n/5):
+        x0 = random()*n
+        y0 = random()*n
+        sdx = random()*n/4.
+        sdy = sdx
+        c = random()*2 - 1.
+        f = exp(-((x-x0)/sdx)**2-((y-y0)/sdy)**2 - (((x-x0)/sdx))*((y-y0)/sdy)*c)
+        #f /= f.sum()
+        f *= random()
+        z += f
+    return z 
 
 '''
 def test1():
