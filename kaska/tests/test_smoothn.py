@@ -147,7 +147,7 @@ def residual_rms_assessment(s, d, target_max_resid, target_rms):
     maximum_residuals = np.max(np.abs(res), axis=0)
     rms = np.sqrt(np.mean(np.square(res), axis=0))
 
-    fudge = 5e-6
+    fudge = 1e-5
     resid_diff = np.abs(maximum_residuals - target_max_resid)
     rms_diff = np.abs(rms - target_rms)
     
