@@ -1,11 +1,9 @@
 from numpy import *
 import scipy.optimize.lbfgsb as lbfgsb
-import numpy.linalg
 from numpy.linalg import norm
 from scipy.fftpack.realtransforms import dct,idct
 import numpy as np
 import numpy.ma as ma
-from scipy.linalg._flinalg import sdet_c
 
 # Exit codes
 EXIT_SUCCESS = 0
