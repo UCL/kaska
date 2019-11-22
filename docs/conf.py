@@ -33,6 +33,8 @@ import kaska
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.viewcode']
+# If building on RTD - https://docs.readthedocs.io/en/stable/faq.html#i-get-import-errors-on-libraries-that-depend-on-c-modules
+autodoc_mock_imports = ["gdal"]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
