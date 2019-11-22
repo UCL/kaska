@@ -14,52 +14,23 @@ import sys
 
 from .. import smoothn
 
-# Make a test from the first example of the smoothn code
-def test_robust1d():
-    # The target resdiuals for this test
-    unrobust_target = 0.7503929639274534
-    robust_target = 0.18943656067148762
-
-    prec = 1e-5
-
-    general_robustness_test(isrobust=None,
-                            target=unrobust_target,
-                            s=None, prec=prec)
-    general_robustness_test(isrobust=True,
-                            target=robust_target,
-                            s=None, prec=prec)
-
-def general_robustness_test(isrobust=None, target=0.0, s=None, prec=1e-12):
+@pytest.mark.parmetrize("is_robust, target, s, prec", [[False, 0.7503929639274534, None, 1e-5], # 1d unrobust
+                                                       [True, 0.18943656067148762, None, 1e-5], # 1d robust
+                                                       [False, 0.7503929639274534, 56.93236088601813, 1e-5], # fixed order - unrobust target/order
+                                                       [True, 0.17266123460914873, 27.61712142163073, 1e-5], # fixed order - robust target/order
+])
+def test_general_robustness(is_robust, target, s, prec=1e-12):
     x = np.linspace(0, 100, 256)
     y_base = np.cos(x/10) + (x/50.)**2
     np.random.seed(3141592653)
     y_noise = y_base + np.random.randn(len(x))/10
-    y = np.copy(y_noise) ; y[70:85:5] = (5.5, 5, 6)
-    if (isrobust is None):
-        (z, s, flag, wtot) = smoothn.smoothn(y, s=s)
-    else:
-        (z, s, flag, wtot) = smoothn.smoothn(y, s=s, isrobust=isrobust)
+    y = np.copy(y_noise)
+    y[70:85:5] = (5.5, 5, 6)
+    (z, s, flag, wtot) = smoothn.smoothn(y, s=s, isrobust=is_robust)
 
     res = z - y_base
 
     assert np.abs(np.max(np.abs(res)) - target) < prec
-    
-    
-def test_fixed_order():
-    # The target resdiuals for this test
-    unrobust_target = 0.7503929639274534
-    robust_target = 0.17266123460914873
-    # The fixed smoothing order that should achieve those residuals
-    unrobust_order = 56.93236088601813
-    robust_order = 27.61712142163073
-    prec = 1e-5
-
-    general_robustness_test(isrobust=None, 
-                            target=unrobust_target,
-                            s=unrobust_order, prec=prec)
-    general_robustness_test(isrobust=True,
-                            target=robust_target,
-                            s=robust_order, prec=prec)
 
 
 def test_sd_weights():
