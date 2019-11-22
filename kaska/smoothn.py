@@ -512,7 +512,7 @@ def initial_guess(y,i):
     k = np.array(z.shape)
     m = np.ceil(k/10)+1
     d = []
-    for i in xrange(len(k)):
+    for i in range(len(k)):
         d.append(np.arange(m[i],k[i]))
     d = np.array(d).astype(int)
     z[d] = 0.
@@ -555,7 +555,7 @@ def peaks(n):
     xp = np.arange(n)
     [x,y] = np.meshgrid(xp,xp)
     z = np.zeros_like(x).astype(float)
-    for i in xrange(n/5):
+    for i in range(n/5):
         x0 = np.random()*n
         y0 = np.random()*n
         sdx = np.random()*n/4.
