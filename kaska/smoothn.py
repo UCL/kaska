@@ -203,12 +203,6 @@ def smoothn(y,nS0=10,axis=None,smoothOrder=2.0,sd=None,verbose=False,\
     #---
     # Automatic smoothing?
     isauto = not s
-    #---
-    # DCTN and IDCTN are required
-    try:
-        from scipy.fftpack.realtransforms import dct,idct
-    except:
-        return y, s, EXIT_LIB_NOT_FOUND, W_TOT_DEFAULT
 
 ## Creation of the Lambda tensor
     lambda_ = define_lambda(y, axis)
