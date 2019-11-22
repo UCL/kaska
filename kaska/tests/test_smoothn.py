@@ -19,7 +19,7 @@ from .. import smoothn
                                                         [False, 0.7503929639274534, 56.93236088601813, 1e-5], # fixed order - unrobust target/order
                                                         [True, 0.17266123460914873, 27.61712142163073, 1e-5], # fixed order - robust target/order
 ])
-def test_general_robustness(is_robust, target, s, prec=1e-12):
+def test_general_robustness(is_robust, target, s, prec):
     x = np.linspace(0, 100, 256)
     y_base = np.cos(x/10) + (x/50.)**2
     np.random.seed(3141592653)
