@@ -20,9 +20,11 @@ from osgeo import gdal
 from .utils import get_chunks, define_temporal_grid
 from .s2_observations import Sentinel2Observations
 from .kaska import KaSKA
+from .s1_observations import Sentinel1Observations
+from .kaska_sar import sar_inversion, save_s1_output
 
 Config = namedtuple(
-    "Config", "s2_obs temporal_grid state_mask inverter output_folder"
+    "Config", "s2_obs s1_obs temporal_grid state_mask inverter output_folder"
 )
 
 LOG = logging.getLogger(__name__)
@@ -123,8 +125,9 @@ def stitch_outputs(output_folder, parameter_list):
         )
         shutil.move(p / "temporary.tif", (p / f"{parameter:s}.tif").as_posix())
         # Remove unneeded leftover files
-        vrts = [f.unlink() for f in p.glob("*.vrt")]
-        ovr = [f.unlink() for f in p.glob("*.ovr")]
+        for ext in ("vrt", "ovr"):
+            for f in p.glob("*." + ext):
+                f.unlink()
 
         LOG.info(f"Saved {parameter:s} file as {output_tiffs[parameter]:s}")
     return output_tiffs
@@ -179,9 +182,17 @@ def process_tile(the_chunk, config):
             config.output_folder,
             chunk=hex(chunk_no),
         )
-        parameter_names, parameter_data = kaska.run_retrieval()
-        kaska.save_s2_output(parameter_names, parameter_data)
-        return parameter_names
+        s2_retrieval = kaska.run_retrieval()
+        S2Data = namedtuple("S2Data", ["f"])
+        s2_data = S2Data(s2_retrieval)
+        s2_parameter_names = ["lai", "cab", "cbrown"]
+        smoother_results_names = {"lai": "slai", "cab": "scab", "cbrown": "scbrown"}
+        s2_parameter_data = [getattr(s2_retrieval, smoother_results_names[i]) for i in s2_parameter_names]
+        sar_time_grid, sar_data = sar_inversion(config.s1_obs, s2_data)
+        kaska.save_s2_output(s2_parameter_names, s2_parameter_data)
+        save_s1_output(config.output_folder, config.s1_obs, sar_data,
+                       time_grid = sar_time_grid, chunk = hex(chunk_no))
+        return s2_parameter_names
 
 
 def kaska_runner(
@@ -192,6 +203,7 @@ def kaska_runner(
     s2_folder,
     approx_inverter,
     s2_emulator,
+    s1_ncfile,
     output_folder,
     dask_client=None,
     block_size= [256, 256],
@@ -217,6 +229,8 @@ def kaska_runner(
         The inverter filename
     s2_emulator : str
         The emulator filename
+    s1_ncfile: str
+        NetCDF file containing the Sentinel 1 data
     output_folder : str
         A folder where the output files will be dumped.
     dask_client : dask, optional
@@ -245,12 +259,18 @@ def kaska_runner(
         time_grid=temporal_grid,
     )
 
+    s1_obs = Sentinel1Observations(s1_ncfile,
+                                   state_mask,
+                                   time_grid=temporal_grid
+                                   )
+
     output_folder = Path(output_folder)
     output_folder.mkdir(parents=True, exist_ok=True)
     # "s2_obs temporal_grid state_mask inverter output_folder"
     config = Config(
-        s2_obs, temporal_grid, state_mask, approx_inverter, output_folder
-    )
+        s2_obs, s1_obs, temporal_grid, state_mask,
+        approx_inverter, output_folder
+        )
     # Avoid reading mask in memory in case we fill it up
     g = gdal.Open(state_mask)
     ny, nx = g.RasterYSize, g.RasterXSize
@@ -260,11 +280,11 @@ def kaska_runner(
             nx, ny, block_size=block_size)]
 
         wrapper = partial(process_tile, config=config)
-        if dask_client is None:
-            retval = list(map(wrapper, them_chunks))
-        else:
+        if dask_client:
             A = dask_client.map(wrapper, them_chunks)
             retval = dask_client.gather(A)
+        else:
+            retval = list(map(wrapper, them_chunks))
 
         try:
             parameter_names = next(item for item in retval if item is not None)

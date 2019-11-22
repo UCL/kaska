@@ -36,7 +36,7 @@ class Sentinel2Observations(object):
         self.band_prob_threshold = band_prob_threshold
         parent_folder = Path(parent_folder)
         if not parent_folder.exists():
-            LOG.info(f"S2 data folder: {str(parent_folder):s}")
+            LOG.info(f"S2 data folder: {parent_folder}")
             raise IOError("S2 data folder doesn't exist")
         self.band_map = [
             "B01",
@@ -282,6 +282,7 @@ class Sentinel2Observations(object):
         # Now, ensure all surface reflectance pixels have values above
         # 0 & aren't cloudy.
         # So valid pixels if all refl > 0 AND mask is True
+        # Array of the desired bands. Not necessarily contiguous. 
         sel_bands = np.array([1, 2, 3, 4, 5, 6, 7, 8])
         mask1 = np.logical_and(
             np.all(rho_surface[sel_bands] > 0, axis=0), mask

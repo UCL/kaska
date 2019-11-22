@@ -8,17 +8,17 @@ import numpy as np
 
 from scipy.interpolate import interp1d
 
-from NNParameterInversion import NNParameterInversion
+from .NNParameterInversion import NNParameterInversion
 
-from s2_observations import Sentinel2Observations
+from .s2_observations import Sentinel2Observations
 
-from s1_observations import Sentinel1Observations
+from .s1_observations import Sentinel1Observations
 
-from smoothn import smoothn
+from .smoothn import smoothn
 
-from utils import define_temporal_grid
+from .utils import define_temporal_grid, save_output_parameters
 
-from watercloudmodel import cost, cost_jac, cost_hess
+from .watercloudmodel import cost, cost_jac, cost_hess
 
 import scipy.optimize
 
@@ -26,27 +26,15 @@ import time # Just for timekeeping
 
 LOG = logging.getLogger(__name__ )
 
-if __name__ == "__main__":
-    state_mask = "/home/ucfajlg/Data/python/KaFKA_Validation/LMU/carto/ESU.tif"
-    nc_file = "/data/selene/ucfajlg/ELBARA_LMU/mirror_ftp/141.84.52.201/S1/S1_LMU_site_2017_new.nc"
-    start_date = dt.datetime(2017, 5, 1)
-    end_date = dt.datetime(2017, 9, 1)
-    temporal_grid_space = 5
-    temporal_grid = define_temporal_grid(start_date, end_date,
-                                        temporal_grid_space)
-    # Define S1 observations
-    s1_obs = Sentinel1Observations(nc_file,
-                state_mask,
-                time_grid=temporal_grid)
-    
-    # Read in smoothed S2 retrievals
-    s2_data = np.load("temporary_dump.npz")
-    # Move everything to DoY to simplify interpolation
+def sar_inversion(s1_obs, s2_data):
+        # Move everything to DoY to simplify interpolation
     s2_doys = [int(dt.datetime.strftime(x, "%j"))
                for x in s2_data.f.temporal_grid]
     s1_doys = [int(dt.datetime.strftime(x, "%j"))
                for x in s1_obs.dates.keys()]
     n_sar_obs = len(s1_doys)
+    s1_temporal_grid = sorted(s1_obs.dates.keys())
+    
     # Interpolate S2 retrievals to S1 time grid
     f = interp1d(s2_doys, s2_data.f.slai, axis=0, bounds_error=False)
     lai_s1 = f(s1_doys)
@@ -55,7 +43,7 @@ if __name__ == "__main__":
     f = interp1d(s2_doys, s2_data.f.scbrown, axis=0, bounds_error=False)
     cbrown_s1 = f(s1_doys)
     # Read in S1 data
-    S1_backscatter=s1_obs.read_time_series(temporal_grid)  
+    S1_backscatter=s1_obs.read_time_series(s1_temporal_grid)  
 
 
     # Wrap cost functions
@@ -136,4 +124,26 @@ if __name__ == "__main__":
             n_pxls = 0
             LOG.info(f"Done 100 pixels in {(time.time()-tic):g}")
             tic = time.time()
+    return s1_temporal_grid, sigma_soil_out
 
+def save_s1_output(output_folder, obs, sar_data, time_grid, chunk):
+    save_output_parameters(time_grid, obs, output_folder, ["sigma"], [sar_data],
+                           output_format = "GTiff", chunk = chunk,
+                           fname_pattern = "s1")
+
+if __name__ == "__main__":
+    state_mask = "/home/ucfajlg/Data/python/KaFKA_Validation/LMU/carto/ESU.tif"
+    nc_file = "/data/selene/ucfajlg/ELBARA_LMU/mirror_ftp/141.84.52.201/S1/S1_LMU_site_2017_new.nc"
+    start_date = dt.datetime(2017, 5, 1)
+    end_date = dt.datetime(2017, 9, 1)
+    temporal_grid_space = 5
+    temporal_grid = define_temporal_grid(start_date, end_date,
+                                        temporal_grid_space)
+    # Define S1 observations
+    s1_obs = Sentinel1Observations(nc_file,
+                state_mask,
+                time_grid=temporal_grid)
+    
+    # Read in smoothed S2 retrievals
+    s2_data = np.load("temporary_dump.npz")
+    sar_inversion(s1_obs, s2_data)

@@ -20,6 +20,7 @@ from .smoothn import smoothn
 from .utils import save_output_parameters
 
 from .interp_fix import interp1d
+from collections import namedtuple
 
 LOG = logging.getLogger(__name__)
             
@@ -114,9 +115,9 @@ class KaSKA(object):
         lai = -2 * np.log(parameter_block[-2, :, :, :])
         cab = -100*np.log(parameter_block[1, :, :, :])
         cbrown = parameter_block[2, :, :, :]
-        if self.save_sgl_inversion is True:
-            save_output_parameters(dates, self.observations, 
-                self.output_folder/"single_imgs/", ["lai", "cab", "cbrown"],
+        if self.save_sgl_inversion:
+            save_output_parameters(dates, self.observations,
+                self.output_folder / "single_imgs", ["lai", "cab", "cbrown"],
                            [lai, cab, cbrown], output_format="GTiff",
                            chunk=self.chunk, fname_pattern="s2_sgl",
                            options=['COMPRESS=DEFLATE',
@@ -159,7 +160,9 @@ class KaSKA(object):
         laii = interp1d(doy_grid, doys, slai)
         cabi = interp1d(doy_grid, doys, scab)
         cbrowni =  interp1d(doy_grid, doys, scbrown)
-        return (["lai", "cab", "cbrown"], [laii, cabi, cbrowni])
+        #return (["lai", "cab", "cbrown"], [laii, cabi, cbrowni])
+        SmootherResults = namedtuple("SmootherResults", ["temporal_grid", "slai", "scab", "scbrown"])
+        return SmootherResults(self.time_grid, laii, cabi, cbrowni)
 
     def save_s2_output(self, parameter_names, output_data,
                        time_grid=None, output_format="GTiff"):

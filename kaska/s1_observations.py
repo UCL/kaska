@@ -90,14 +90,19 @@ class Sentinel1Observations(object):
             g = gdal.Open(self.state_mask)
             proj = g.GetProjection()
             geoT = np.array(g.GetGeoTransform())
+            nx = g.RasterXSize
+            ny = g.RasterYSize
+
         except RuntimeError:
             proj = self.state_mask.GetProjection()
             geoT = np.array(self.state_mask.GetGeoTransform())
+            nx = self.state_mask.RasterXSize
+            ny = self.state_mask.RasterYSize
 
         # new_geoT = geoT*1.
         # new_geoT[0] = new_geoT[0] + self.ulx*new_geoT[1]
         # new_geoT[3] = new_geoT[3] + self.uly*new_geoT[5]
-        return proj, geoT.tolist()  # new_geoT.tolist()
+        return proj, geoT.tolist(), nx, ny  # new_geoT.tolist()
         
     def _match_to_mask(self):
         """Matches the observations to the state mask.
@@ -134,9 +139,9 @@ class Sentinel1Observations(object):
         late = time_grid[-1]
         
         sel_dates = [k for k,v in self.dates.items()
-                           if ((k >= early) and (k < late))]
+                           if (early <= k <= late)]
         sel_bands = [v for k,v in self.dates.items()
-                           if ((k >= early) and (k < late))]
+                           if (early <= k <= late)]
         obs = {}
         for ii, layer in enumerate(self.s1_data_ptr.keys()):
                 obs[layer] = np.array([self.s1_data_ptr[
