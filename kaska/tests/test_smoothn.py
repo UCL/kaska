@@ -51,68 +51,49 @@ def test_sd_weights():
     # should be identical
     prec = 2e-15
     rms = np.sqrt(np.mean((z_sd - z_w)**2))
-    assert(rms < prec)
-
-def test_masked_array():
-    (d, w) = txy_data()
-    masky = ma.array(d, mask = (w == 0.))
-    (s, ess, flag, wtot) = smoothn.smoothn(masky, W = w, axis=0, isrobust=True)
-
-    target_maximum_residuals = np.array([[0.19063412, 1.63927078, 3.22016034],
-                                         [2.86830946, 3.3060494 , 5.26835424],
-                                         [4.74814422, 6.95324161, 4.21698349]])
-
-    target_rms = np.array([[0.04373571, 0.31264841, 0.61608984],
-                           [1.39772024, 0.99905187, 1.30683329],
-                           [3.05899054, 2.85209818, 1.88332256]])
-
-    residual_rms_assessment(s, d, target_maximum_residuals, target_rms)
+    assert rms < prec
 
 
 # A test emulating the way smoothn is used in KaSKA
-def test_time_txy():
+@pytest.mark.parmetrize("weights, target_max_resid, target_rms",[['masked',
+                                                                  np.array([[0.19063412, 1.63927078, 3.22016034],
+                                                                            [2.86830946, 3.3060494 , 5.26835424],
+                                                                            [4.74814422, 6.95324161, 4.21698349]])
+                                                                  np.array([[0.04373571, 0.31264841, 0.61608984],
+                                                                            [1.39772024, 0.99905187, 1.30683329],
+                                                                            [3.05899054, 2.85209818, 1.88332256]])],
+                                                                 ['bisquare', # time_txy
+                                                                  np.array([[0.18979927, 1.63548774, 3.21602835],
+                                                                            [2.87126492, 3.30231171, 5.26648978],
+                                                                            [4.69832211, 6.88804564, 4.19266901]]),
+                                                                  np.array([[0.04338182, 0.31158228, 0.61451283],
+                                                                            [1.39932148, 1.00197386, 1.306045  ],
+                                                                            [3.00532792, 2.80878405, 1.85278847]])],
+                                                                 ['cauchy',
+                                                                  np.array([[0.20149125, 1.72772566, 3.42323339],
+                                                                            [2.78516476, 3.45869778, 5.50720599],
+                                                                            [4.28855901, 6.58983133, 4.37961953]])
+                                                                  np.array([[0.04707677, 0.33686247, 0.66873105],
+                                                                            [1.37314063, 1.03404982, 1.36475258],
+                                                                            [2.57311525, 2.46561701, 1.80441455]])],
+                                                                 ['talworth',
+                                                                  np.array([[0.14892761, 1.347204  , 2.69440801],
+                                                                            [3.3310566 , 3.13332464, 5.24182578],
+                                                                            [4.31627292, 7.45370604, 3.33895975]]),
+                                                                  np.array([[0.02994288, 0.23521695, 0.47043391],
+                                                                            [1.44108898, 1.08753645, 1.29324771],
+                                                                            [3.1671869 , 3.03369429, 1.83437903]])],
+])
+def test_residual_rms_assessment(weights, target_max_resid, target_rms):
+
     (d, w) = txy_data()
-    (s, ess, flag, wtot) = smoothn.smoothn(d, W=w, axis=0, isrobust=True)
-    
-    target_maximum_residuals = np.array([[0.18979927, 1.63548774, 3.21602835],
-                                         [2.87126492, 3.30231171, 5.26648978],
-                                         [4.69832211, 6.88804564, 4.19266901]])
+    if weights == 'masked':
+        masky = ma.array(d, mask = (w == 0.))
+    else:
+        masky = d
+    (s, ess, flag, wtot) = smoothn.smoothn(masky, W=w, axis=0, isrobust=True, weightstr=weights)
 
-    target_rms = np.array([[0.04338182, 0.31158228, 0.61451283],
-                           [1.39932148, 1.00197386, 1.306045  ],
-                           [3.00532792, 2.80878405, 1.85278847]])
-    
-    residual_rms_assessment(s, d, target_maximum_residuals, target_rms)
 
-def test_cauchy():
-    (d, w) = txy_data()
-    (s, ess, flag, wtot) = smoothn.smoothn(d, W = w, axis=0, isrobust=True, weightstr='cauchy')
-
-    target_maximum_residuals = np.array([[0.20149125, 1.72772566, 3.42323339],
-                                         [2.78516476, 3.45869778, 5.50720599],
-                                         [4.28855901, 6.58983133, 4.37961953]])
-
-    target_rms = np.array([[0.04707677, 0.33686247, 0.66873105],
-                           [1.37314063, 1.03404982, 1.36475258],
-                           [2.57311525, 2.46561701, 1.80441455]])
-
-    residual_rms_assessment(s, d, target_maximum_residuals, target_rms)
-
-def test_talworth():
-    (d, w) = txy_data()
-    (s, ess, flag, wtot) = smoothn.smoothn(d, W = w, axis=0, isrobust=True, weightstr='talworth')
-
-    target_maximum_residuals = np.array([[0.14892761, 1.347204  , 2.69440801],
-                                         [3.3310566 , 3.13332464, 5.24182578],
-                                         [4.31627292, 7.45370604, 3.33895975]])
-
-    target_rms = np.array([[0.02994288, 0.23521695, 0.47043391],
-                           [1.44108898, 1.08753645, 1.29324771],
-                           [3.1671869 , 3.03369429, 1.83437903]])
-
-    residual_rms_assessment(s, d, target_maximum_residuals, target_rms)
-
-def residual_rms_assessment(s, d, target_max_resid, target_rms):
     res = s - np.expand_dims(d[:, 0, :], axis=1)
 
     maximum_residuals = np.max(np.abs(res), axis=0)
