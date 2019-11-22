@@ -147,7 +147,7 @@ def cost_smooth_(x, gamma):
     return xcost_model, xdcost_model
 
 
-def cost_function_(x, svh, svv, theta, gamma, prior_mean, prior_unc, unc=0.8):
+def cost_function(x, svh, svv, theta, gamma, prior_mean, prior_unc, unc=0.8):
     """A combined cost function that calls the prior, fit to the observations
     """
     # Fit to the observations
