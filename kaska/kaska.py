@@ -42,8 +42,8 @@ class KaSKA(object):
         LOG.info("Doing first pass inversion!")
         S = {}
         for obs_date in self.observations.date_data:
-            retval = self.inverter.invert_observations(self.observations, obs_date,
-                                                       state_mask=state_mask)
+            retval = self.inverter.invert_observations(
+                self.observations, obs_date, state_mask=state_mask)
             if retval is not None:
                 S[obs_date] = retval
         return S

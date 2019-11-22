@@ -1,14 +1,13 @@
 #!/usr/bin/env python
 """Test reading s2_observations data"""
-import os
-
-import sys
-import shutil
-
-import pytest
 import datetime as dt
+import os
+import shutil
+import sys
 from pathlib import Path
+
 import numpy as np
+import pytest
 
 from ..inverters import get_emulator
 from ..s2_observations import Sentinel2Observations
@@ -46,7 +45,6 @@ def test_s2_data():
     ]
     assert list(s2_obs.date_data) == ref_dates
     assert [obs[0].parent for _, obs in s2_obs.date_data.items()] == ref_files
-    print(s2_obs.parent)
 
     # Test read_granule when all data files are available
     output_names = ['rho_surface', 'mask', 'sza', 'vza', 'raa', 'rho_unc']
@@ -63,7 +61,7 @@ def test_s2_data():
     # Test read_granule for missing cloud mask file
     shutil.move(ref_files[1].parent / f"cloud.tif",
                 ref_files[1].parent / f"cloud.tif.bac")
-    output_data = dict(zip(output_names, s2_obs.read_granule(ref_dates[0])))
+    output_data = dict(zip(output_names, s2_obs.read_granule(ref_dates[1])))
     for datum in output_data:
         assert output_data[datum] is None
     shutil.move(ref_files[1].parent / f"cloud.tif.bac",
@@ -75,7 +73,7 @@ def test_s2_data():
     output_data = dict(zip(output_names, s2_obs.read_granule(ref_dates[1])))
     for datum in output_data:
         assert output_data[datum] is None
-    s2_obs.date_data[ref_dates[1]] = file_list
+    s2_obs.date_data[ref_dates[1]] = list(file_list)
     # Test read_granule for reflectivity file missing in the folder
     shutil.move(file0, file0.with_suffix(".bac"))
     output_data = dict(zip(output_names, s2_obs.read_granule(ref_dates[1])))
@@ -83,12 +81,13 @@ def test_s2_data():
         assert output_data[datum] is None
     shutil.move(file0.with_suffix(".bac"), file0)
 
-    # Test read_granule for reflectivity uncertainty file missing in the dictionary
+    # Test read_granule for reflectivity uncertainty file missing in the
+    # dictionary
     file1 = s2_obs.date_data[ref_dates[1]].pop(1)
     output_data = dict(zip(output_names, s2_obs.read_granule(ref_dates[1])))
     for datum in output_data:
         assert output_data[datum] is None
-    s2_obs.date_data[ref_dates[1]] = file_list
+    s2_obs.date_data[ref_dates[1]] = list(file_list)
     # Test read_granule for reflectivity uncertainty file missing in the folder
     shutil.move(file1, file1.with_suffix(".bac"))
     output_data = dict(zip(output_names, s2_obs.read_granule(ref_dates[1])))
@@ -96,7 +95,7 @@ def test_s2_data():
         assert output_data[datum] is None
     shutil.move(file1.with_suffix(".bac"), file1)
 
-   # Test read_granule for sun angle file missing
+    # Test read_granule for sun angle file missing
     shutil.move(ref_files[1].parent / "ANG_DATA" / "SAA_SZA.tif",
                 ref_files[1].parent / "ANG_DATA" / "SAA_SZA.tif.bac")
     output_data = dict(zip(output_names, s2_obs.read_granule(ref_dates[1])))
@@ -104,7 +103,7 @@ def test_s2_data():
         assert output_data[datum] is None
     shutil.move(ref_files[1].parent / "ANG_DATA" / "SAA_SZA.tif.bac",
                 ref_files[1].parent / "ANG_DATA" / "SAA_SZA.tif")
-   # Test read_granule for view angle file missing
+    # Test read_granule for view angle file missing
     shutil.move(ref_files[1].parent / "ANG_DATA" / "VAA_VZA_B05.tif",
                 ref_files[1].parent / "ANG_DATA" / "VAA_VZA_B05.tif.bac")
     output_data = dict(zip(output_names, s2_obs.read_granule(ref_dates[1])))
@@ -113,4 +112,4 @@ def test_s2_data():
     shutil.move(ref_files[1].parent / "ANG_DATA" / "VAA_VZA_B05.tif.bac",
                 ref_files[1].parent / "ANG_DATA" / "VAA_VZA_B05.tif")
 
-    #assert False
+    # assert False
