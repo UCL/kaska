@@ -65,7 +65,7 @@ def sar_inversion(s1_obs, s2_data):
     Avv, Bvv, Cvv = -12,  0.05, 0.1
     Avh, Bvh, Cvh = -14, 0.01, 0.1
     sigma_soil0 = np.zeros(n_sar_obs)*0.2  # Say
-    x0_all =
+    x0_all = \
         np.r_[Avv, Bvv, Cvv, Avh, Bvh, Cvh, sigma_soil0]  # ,V1,V2,sigma_soil]
     nt, ny, nx = lai_s1.shape
     Avv_out = np.zeros((ny, nx))
@@ -142,8 +142,8 @@ def save_s1_output(output_folder, obs, sar_data, time_grid, chunk):
 
 if __name__ == "__main__":
     state_mask = "/home/ucfajlg/Data/python/KaFKA_Validation/LMU/carto/ESU.tif"
-    nc_file = "/data/selene/ucfajlg/ELBARA_LMU/mirror_ftp/141.84.52.201" +
-                "/S1/S1_LMU_site_2017_new.nc"
+    nc_file = "/data/selene/ucfajlg/ELBARA_LMU/mirror_ftp/141.84.52.201" + \
+              "/S1/S1_LMU_site_2017_new.nc"
     start_date = dt.datetime(2017, 5, 1)
     end_date = dt.datetime(2017, 9, 1)
     temporal_grid_space = 5
