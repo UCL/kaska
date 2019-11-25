@@ -11,14 +11,6 @@ EXIT_LIB_NOT_FOUND = -1
 W_TOT_DEFAULT = 0
 
 
-def H(y, t0=0):
-    '''
-    Step fn with step at t0
-    '''
-    h = np.zeros_like(y)
-    args = tuple([slice(0, y.shape[i]) for i in y.ndim])
-
-
 def smoothn(y, nS0=10, axis=None, smoothOrder=2.0, sd=None, verbose=False,
             s0=None, z0=None, isrobust=False, w=None, s=None, max_iter=100,
             tol_z=1e-3, weightstr='bisquare'):
