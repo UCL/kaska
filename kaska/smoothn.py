@@ -317,19 +317,15 @@ def smoothn(y, nS0=10, axis=None, smoothOrder=2.0, sd=None, verbose=False,
     #  Warning messages
     # ---
     if isauto:
+        limit=""
         if np.abs(np.log10(s)-np.log10(s_min_bnd)) < errp:
-            warning('smoothn:SLowerBound',
-                    ['s = %.3f ' % (s) + ': the lower bound for s '
-                     + 'has been reached. ' +
-                     'Put s as an input variable if required.'])
+            limit = "lower"
         elif np.abs(np.log10(s)-np.log10(s_max_bnd)) < errp:
-            warning('smoothn:SUpperBound',
-                    ['s = %.3f ' % (s) + ': the upper bound for s '
-                     + 'has been reached. ' +
-                     'Put s as an input variable if required.'])
-    # warning('MATLAB:smoothn:max_iter',\
-    #    ['Maximum number of iterations (%d'%(max_iter) + ') has '\
-    #    + 'been exceeded. Increase max_iter option or decrease tol_z value.'])
+            limit= "upper"
+        warning(f"smoothn:S{limit.capitalize()}Bound",
+                [f"s = {s:.3f}: the {limit} bound for s has been reached. " +
+                "Put s as an input variable if required."])
+
     return z, s, exitflag, w_tot
 
 
