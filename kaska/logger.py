@@ -9,7 +9,7 @@ from .version import __version__
 
 def create_logger(debug=True, fname=None):
     """Creates a python logger
-    
+
     Parameters
     ----------
     debug: bool, optional
@@ -17,7 +17,7 @@ def create_logger(debug=True, fname=None):
     fname : str, optional
         If you pass a filename to this, it'll also output logging info to
         a file.
-    
+
     Returns
     -------
     logging
@@ -50,5 +50,5 @@ def create_logger(debug=True, fname=None):
         logger.addHandler(fh)
         logger.info(f"Logging to {fname:s}")
     logger.propagate = True
-    
+
     return logger
