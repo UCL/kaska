@@ -106,7 +106,8 @@ def stitch_outputs(output_folder, parameter_list):
             ),
         )
         for band in range(1, dst_ds.RasterCount + 1):
-            dst_ds.GetRasterBand(band).SetMetadata({"DoY": dates[band - 1][1:]})
+            dst_ds.GetRasterBand(band).SetMetadata({"DoY":
+                                                    dates[band - 1][1:]})
         output_tiffs[parameter] = dst_ds.GetDescription()
         dst_ds = None
         g = gdal.Open((p / f"{parameter:s}.tif").as_posix(), gdal.GA_Update)
@@ -165,14 +166,13 @@ def process_tile(the_chunk, config):
     s2_obs.apply_roi(ulx, uly, lrx, lry)
     chunk_mask = s2_obs.state_mask.ReadAsArray()
     n_unmasked_pxls = np.sum(chunk_mask)
-    
-    
+
     if n_unmasked_pxls == 0:
         LOG.info(f"No pixels in chunk {hex(chunk_no):s}")
         return None
     else:
         # Define KaSKA object with windowed observations.
-        
+
         LOG.info(f"Unmasked pixels in {hex(chunk_no):s}: {n_unmasked_pxls:d}")
         kaska = KaSKA(
             s2_obs,
@@ -186,12 +186,14 @@ def process_tile(the_chunk, config):
         S2Data = namedtuple("S2Data", ["f"])
         s2_data = S2Data(s2_retrieval)
         s2_parameter_names = ["lai", "cab", "cbrown"]
-        smoother_results_names = {"lai": "slai", "cab": "scab", "cbrown": "scbrown"}
-        s2_parameter_data = [getattr(s2_retrieval, smoother_results_names[i]) for i in s2_parameter_names]
+        smoother_results_names = {"lai": "slai", "cab": "scab",
+                                  "cbrown": "scbrown"}
+        s2_parameter_data = [getattr(s2_retrieval, smoother_results_names[i])
+                             for i in s2_parameter_names]
         sar_time_grid, sar_data = sar_inversion(config.s1_obs, s2_data)
         kaska.save_s2_output(s2_parameter_names, s2_parameter_data)
         save_s1_output(config.output_folder, config.s1_obs, sar_data,
-                       time_grid = sar_time_grid, chunk = hex(chunk_no))
+                       time_grid=sar_time_grid, chunk=hex(chunk_no))
         return s2_parameter_names
 
 
@@ -206,7 +208,7 @@ def kaska_runner(
     s1_ncfile,
     output_folder,
     dask_client=None,
-    block_size= [256, 256],
+    block_size=[256, 256],
     chunk=None
 ):
     """Runs a KaSKA problem for S2 producing parameter estimates between
@@ -296,9 +298,9 @@ def kaska_runner(
     else:
         # Do the splitting
         LOG.info(f"Doing chunk {chunk:d}")
-        the_chunk = [the_chunk 
+        the_chunk = [the_chunk
                      for the_chunk in get_chunks(
-                        nx, ny, block_size=block_size) 
+                        nx, ny, block_size=block_size)
                      if the_chunk[-1] == chunk]
         LOG.info("Single chunk!")
         wrapper(the_chunk[0])
