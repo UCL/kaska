@@ -3,24 +3,18 @@
 """Main module."""
 import logging
 
-from pathlib import Path
-import datetime as dt
+from collections import namedtuple
 import numpy as np
 
 from scipy.interpolate import interp1d
 
 from .NNParameterInversion import NNParameterInversion
 
-from .s2_observations import Sentinel2Observations
-
-from .s1_observations import Sentinel1Observations
-
 from .smoothn import smoothn
 
 from .utils import save_output_parameters
 
 from .interp_fix import interp1d
-from collections import namedtuple
 
 LOG = logging.getLogger(__name__)
 
@@ -137,7 +131,7 @@ class KaSKA(object):
         cab[cab < 0] = np.nan
         cbrown[cbrown < 0] = np.nan
         # Create a mask where we have no (LAI) data
-        mask = np.all(lai == 0, axis=(0))
+        # ßmask = np.all(lai == 0, axis=(0))
 
         # Time axes in days of year
         doys = np.array([int(x.strftime('%j')) for x in dates])
