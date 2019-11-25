@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Lifted from https://gist.github.com/Jwink3101/494e741f07d33edea47d369bcfc4a54a"""
-from __future__ import division, print_function, unicode_literals, absolute_import
+"""Lifted from:
+ https://gist.github.com/Jwink3101/494e741f07d33edea47d369bcfc4a54a"""
+from __future__ \
+    import division, print_function, unicode_literals, absolute_import
 
-#__version__ = '20180726.0'
-#__status__ = 'beta'
+# __version__ = '20180726.0'
+# __status__ = 'beta'
 
 import multiprocessing as mp
 import multiprocessing.dummy as mpd
@@ -34,8 +36,9 @@ else:
 
 CPU_COUNT = mp.cpu_count()
 
-def parmap(fun,seq,N=None,Nt=1,chunksize=1,ordered=True,\
-                daemon=False,progress=False):
+
+def parmap(fun, seq, N=None, Nt=1, chunksize=1, ordered=True,
+           daemon=False, progress=False):
     """
     parmap -- Simple parallel mapper that can split amongst processes (N)
               and threads (Nt) (within the processes).
@@ -78,7 +81,7 @@ def parmap(fun,seq,N=None,Nt=1,chunksize=1,ordered=True,\
     progress [False] (bool)
         Display a progress bar or counter.
         Warning: Inconsistant in iPython/Jupyter notebooks and may clear
-        other printed content. Instead, specify as 'nb' to use a Jupyter 
+        other printed content. Instead, specify as 'nb' to use a Jupyter
         Widget progress
 
     Notes:
@@ -106,7 +109,8 @@ def parmap(fun,seq,N=None,Nt=1,chunksize=1,ordered=True,\
     -------------
 
     This tool allows more data types, can split with threads, has an optional
-    progress bar, and has fewer pickling issues, but these come at a small cost. 
+    progress bar, and has fewer pickling issues, but these come at a small
+    cost.
     For simple needs, the following may be better:
 
     >>> import multiprocessing as mp
@@ -124,13 +128,13 @@ def parmap(fun,seq,N=None,Nt=1,chunksize=1,ordered=True,\
     With the exception of when N == 1 (where it falls back to serial methods)
     the code works as follows:
 
-    - A background thread is started the will iterate over the incoming sequence
-      and add items to the queue. If the incoming sequence is exhausted, the
-      worker sends kill signals into the queue.
+    - A background thread is started the will iterate over the incoming
+      sequence and add items to the queue. If the incoming sequence is
+      exhausted, the worker sends kill signals into the queue.
         - The items are also chunked and indexed (used later)
     - After the background thread is started a function to pull from the OUTPUT
-      queue is created. This counts the number of closed processes but otherwise
-      yields the computed result items
+      queue is created. This counts the number of closed processes but
+      otherwise yields the computed result items
     - A pool of workers is created. Each worker will read from the input queue
       and distribute the work amongst threads (if using). It will then
       return the resuts into a queue
@@ -154,7 +158,7 @@ def parmap(fun,seq,N=None,Nt=1,chunksize=1,ordered=True,\
     if N is None:
         N = CPU_COUNT
 
-    chunksize = max(chunksize,Nt)
+    chunksize = max(chunksize, Nt)
 
     try:
         tot = len(seq)
@@ -162,28 +166,29 @@ def parmap(fun,seq,N=None,Nt=1,chunksize=1,ordered=True,\
         tot = None
 
     if tqdm is None:
-        if   isinstance(progress,(str,unicode))\
-         and progress.lower() in ['jupyter','notebook','nb']:
-            counter = partial(_counter_nb,tot=tot)
+        if isinstance(progress, (str, unicode))\
+         and progress.lower() in ['jupyter', 'notebook', 'nb']:
+            counter = partial(_counter_nb, tot=tot)
         else:
-            counter = partial(_counter,tot=tot)
+            counter = partial(_counter, tot=tot)
     else:
-        if   isinstance(progress,(str,unicode))\
-         and progress.lower() in ['jupyter','notebook','nb']\
-         and hasattr(tqdm,'tqdm_notebook'):
-            counter = partial(tqdm.tqdm_notebook,total=tot)
+        if isinstance(progress, (str, unicode)) \
+         and progress.lower() in ['jupyter', 'notebook', 'nb'] \
+         and hasattr(tqdm, 'tqdm_notebook'):
+            counter = partial(tqdm.tqdm_notebook, total=tot)
         else:
-            counter = partial(tqdm.tqdm,total=tot) # Set the total since tqdm won't be able to get it.
+            # Set the total since tqdm won't be able to get it.
+            counter = partial(tqdm.tqdm, total=tot)
 
     if N == 1:
         if Nt == 1:
-            out = imap(fun,seq)
+            out = imap(fun, seq)
         else:
-            pool = mpd.Pool(Nt)      # thread pools don't have the pickle issues
-            out = pool.imap(fun,seq)
+            pool = mpd.Pool(Nt)  # thread pools don't have the pickle issues
+            out = pool.imap(fun, seq)
 
         if progress:
-           out = counter(out)
+            out = counter(out)
         for item in out:
             yield item
 
@@ -195,8 +200,8 @@ def parmap(fun,seq,N=None,Nt=1,chunksize=1,ordered=True,\
     q_out = mp.Queue()
 
     # Start the workers
-    workers = [mp.Process(target=_worker, args=(fun, q_in, q_out,Nt))
-                for _ in xrange(N)]
+    workers = [mp.Process(target=_worker, args=(fun, q_in, q_out, Nt))
+               for _ in xrange(N)]
 
     for worker in workers:
         worker.daemon = daemon
@@ -204,7 +209,7 @@ def parmap(fun,seq,N=None,Nt=1,chunksize=1,ordered=True,\
 
     # Create a separate thread to add to the queue in the background
     def add_to_queue():
-        for iixs in _iter_chunks(enumerate(seq),chunksize):
+        for iixs in _iter_chunks(enumerate(seq), vchunksize):
             q_in.put(iixs)
 
         # Once (if ever) it is exhausted, send None to close workers
@@ -231,7 +236,7 @@ def parmap(fun,seq,N=None,Nt=1,chunksize=1,ordered=True,\
         out = counter(out)
 
     if ordered:
-        out = _sort_generator_unique_integers(out,key=lambda a:a[0])
+        out = _sort_generator_unique_integers(out, vkey=lambda a: a[0])
 
     # Return
     for item in out:
@@ -242,36 +247,39 @@ def parmap(fun,seq,N=None,Nt=1,chunksize=1,ordered=True,\
     for worker in workers:
         worker.join()
 
-def _counter(items,tot=None):
-    for ii,item in enumerate(items):
+
+def _counter(items, tot=None):
+    for ii, item in enumerate(items):
         if tot is not None:
-            _txtbar(ii,tot,ticks=50,text='')
+            _txtbar(ii, tot, ticks=50, text='')
         else:
             txt = '{}'.format(ii+1)
-            print('\r%s' % txt,end='')
+            print('\r%s' % txt, end='')
             sys.stdout.flush()
         yield item
 
-def _counter_nb(items,tot=None):
-    from ipywidgets import FloatProgress,FloatText
+
+def _counter_nb(items, tot=None):
+    from ipywidgets import FloatProgress, FloatText
     from IPython.display import display
-    
+
     if tot is not None:
-        f = FloatProgress(min=0,max=tot)
+        f = FloatProgress(min=0, max=tot)
     else:
         f = FloatText()
         f.value = 0
     display(f)
-    
-    for ii,item in enumerate(items):
-        f.value += 1    
+
+    for ii, item in enumerate(items):
+        f.value += 1
         yield item
 
-def _worker(fun,q_in,q_out,Nt):
+
+def _worker(fun, q_in, q_out, Nt):
     """ This actually runs everything """
     if Nt > 1:
         pool = mpd.Pool(Nt)
-        _map = pool.map # thread pools don't have the pickle issues
+        _map = pool.map  # thread pools don't have the pickle issues
     else:
         _map = map
 
@@ -281,22 +289,24 @@ def _worker(fun,q_in,q_out,Nt):
             q_out.put(None)
             q_in.task_done()
             break
+
 #         for ix in iixs:
         def _ap(ix):
-            i,x = ix
+            i, x = ix
             q_out.put((i, fun(x)))
-        list(_map(_ap,iixs)) # list forces the iteration
+        list(_map(_ap, iixs))  # list forces the iteration
         q_in.task_done()
 
-    if Nt >1:
+    if Nt > 1:
         pool.close()
 
-def _iter_chunks(seq,n):
+
+def _iter_chunks(seq, n):
     """
     yield a len(n) tuple from seq. If not divisible, the last one would be less
     than n
     """
-    _n = 0;
+    _n = 0
     for item in seq:
         if _n == 0:
             group = [item]
@@ -310,7 +320,8 @@ def _iter_chunks(seq,n):
     if _n > 0:
         yield tuple(group)
 
-def _sort_generator_unique_integers(items,start=0,key=None):
+
+def _sort_generator_unique_integers(items, start=0, key=None):
     """
     Yield from `items` in order assuming UNIQUE keys w/o any missing!
 
@@ -330,17 +341,19 @@ def _sort_generator_unique_integers(items,start=0,key=None):
 
             # Get any stored items
             while start in queue:
-                yield queue.pop(start) # average O(1), worse-case O(N)
-                start += 1             # but based on ref below, should be O(1)
-        else:                          # for integer keys.
-            queue[ik] = item           # Ref: https://wiki.python.org/moin/TimeComplexity
+                yield queue.pop(start)  # average O(1), worse-case O(N)
+                start += 1              # but based on ref below,
+        else:                           # should be O(1) for integer keys.
+            queue[ik] = item
+            # Ref: https://wiki.python.org/moin/TimeComplexity
 
     # Exhaust the rest
     while start in queue:
         yield queue.pop(start)
         start += 1
 
-def _txtbar(count,N,ticks=50,text='Progress'):
+
+def _txtbar(count, N, ticks=50, text='Progress'):
     """
     Print a text-based progress bar.
 
@@ -357,24 +370,24 @@ def _txtbar(count,N,ticks=50,text='Progress'):
     printing other things to screen will mess this up:
     """
 
-    count = int(count+1)
-    ticks = min(ticks,N)
-    isCount = int(1.0*count%round(1.0*N/ticks)) == 0
-
+    count = int(count + 1)
+    ticks = min(ticks, N)
+    isCount = int(1.0*count % round(1.0*N/ticks)) == 0
 
     if not (isCount or count == 1 or count == N):
         return
 
-    Npound = int(round(1.0 * count/N*ticks));
-    Nspace = int(1.0*ticks - Npound);
-    Nprint = int(round(1.0 * count/N*100));
+    Npound = int(round(1.0 * count/N*ticks))
+    Nspace = int(1.0*ticks - Npound)
+    Nprint = int(round(1.0 * count/N*100))
 
     if count == 1:
         Nprint = 0
 
-    if len(text)>0:
-        text +=': '
+    if len(text) > 0:
+        text += ': '
 
-    txt = '{:s}{:s}{:s} : {:3d}%  '.format(text,'#'*Npound,'-'*Nspace,Nprint)
-    print('\r%s' % txt,end='')
+    txt = '{:s}{:s}{:s} : {:3d}%  '.format(text, '#'*Npound,
+                                           '-'*Nspace, Nprint)
+    print('\r%s' % txt, end='')
     sys.stdout.flush()
