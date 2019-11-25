@@ -10,8 +10,6 @@ import pytest
 import numpy as np
 import numpy.ma as ma
 
-import sys
-
 from .. import smoothn
 
 @pytest.mark.parametrize("is_robust, target, s, prec", [[False, 0.7503929639274534, None, 1e-5], # 1d unrobust
