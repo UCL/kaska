@@ -7,8 +7,6 @@ spatial tiles and distributing over some dask-aware cluster.
 import copy
 import logging
 import shutil
-from copy import deepcopy
-import datetime as dt
 from functools import partial
 from pathlib import Path
 from collections import namedtuple
