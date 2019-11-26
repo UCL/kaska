@@ -183,7 +183,7 @@ def smoothn(y, nS0=10, axis=None, smoothOrder=2.0, sd=None, verbose=False,
             W = np.array(W)
             W[mask] = 0.
         if np.any(sd != None):
-            W = np.array(1./sd**2)
+            W = np.array(1. / sd**2)
             W[mask] = 0.
             sd = None
         y[mask] = np.nan
@@ -192,11 +192,11 @@ def smoothn(y, nS0=10, axis=None, smoothOrder=2.0, sd=None, verbose=False,
         sd_ = np.array(sd)
         mask = (sd > 0.)
         W = np.zeros_like(sd_)
-        W[mask] = 1./sd_[mask]**2
+        W[mask] = 1. / sd_[mask]**2
         sd = None
 
     if np.any(W != None):
-        W = W/W.max()
+        W = W / W.max()
 
     sizy = y.shape
 
@@ -228,7 +228,7 @@ def smoothn(y, nS0=10, axis=None, smoothOrder=2.0, sd=None, verbose=False,
     # (Inf/NaN values = missing data).
     IsFinite = np.array(isfinite(y)).astype(bool)
     nof = IsFinite.sum()  # number of finite elements
-    W = W*IsFinite
+    W = W * IsFinite
     if any(W < 0):
         raise RuntimeError('smoothn:NegativeWeights',
                            'Weights must all be >=0')
@@ -268,12 +268,12 @@ def smoothn(y, nS0=10, axis=None, smoothOrder=2.0, sd=None, verbose=False,
         # cos(pi*(reshape(1:sizy(i),siz0)-1)/sizy(i)))
         # (arange(1,sizy[i]+1).reshape(siz0) - 1.)/sizy[i]
         Lambda = Lambda + \
-            (cos(pi*(arange(1, sizy[i]+1) - 1.)/sizy[i]).reshape(siz0))
+            (cos(pi * (arange(1, sizy[i] + 1) - 1.) / sizy[i]).reshape(siz0))
         # else:
         #   Lambda = Lambda + siz0
-    Lambda = -2.*(len(axis)-Lambda)
+    Lambda = -2. * (len(axis) - Lambda)
     if not isauto:
-        Gamma = 1./(1+(s*abs(Lambda))**smoothOrder)
+        Gamma = 1. / (1 + (s * abs(Lambda))**smoothOrder)
 
     # Upper and lower bound for the smoothness parameter
     # The average leverage (h) is by definition in [0 1]. Weak smoothing occurs
@@ -290,11 +290,13 @@ def smoothn(y, nS0=10, axis=None, smoothOrder=2.0, sd=None, verbose=False,
     # (a**2 -1)/16
     try:
         sMinBnd = np.sqrt(
-          (((1+sqrt(1+8*hMax**(2./N)))/4./hMax**(2./N))**2-1)/16.
-          )
+            (((1 + sqrt(1 + 8 * hMax**(2. / N))) / 4.
+                / hMax**(2. / N))**2 - 1) / 16.
+        )
         sMaxBnd = np.sqrt(
-          (((1+sqrt(1+8*hMin**(2./N)))/4./hMin**(2./N))**2-1)/16.
-          )
+            (((1 + sqrt(1 + 8 * hMin**(2. / N))) / 4.
+                / hMin**(2. / N))**2 - 1) / 16.
+        )
     except ValueError:
         sMinBnd = None
         sMaxBnd = None
@@ -327,26 +329,26 @@ def smoothn(y, nS0=10, axis=None, smoothOrder=2.0, sd=None, verbose=False,
     errp = 0.1
     # opt = optimset('TolX',errp);
     # --- Relaxation factor RF: to speedup convergence
-    RF = 1 + 0.75*isweighted
+    RF = 1 + 0.75 * isweighted
     # ??
     # Main iterative process
     # ---
     if isauto:
         try:
-            xpost = array([(0.9*log10(sMinBnd) + log10(sMaxBnd)*0.1)])
+            xpost = array([(0.9 * log10(sMinBnd) + log10(sMaxBnd) * 0.1)])
         except:
             array([100.])
     else:
         xpost = array([log10(s)])
     while RobustIterativeProcess:
         # --- "amount" of weights (see the function GCVscore)
-        aow = sum(Wtot)/noe  # 0 < aow <= 1
+        aow = sum(Wtot) / noe  # 0 < aow <= 1
         # ---
         while tol > TolZ and nit < MaxIter:
             if verbose:
                 print('tol', tol, 'nit', nit)
-            nit = nit+1
-            DCTy = dctND(Wtot*(y-z)+z, f=dct)
+            nit = nit + 1
+            DCTy = dctND(Wtot * (y - z) + z, f=dct)
             if isauto and not remainder(log2(nit), 1):
                 # ---
                 # The generalized cross-validation (GCV) method is used.
@@ -368,8 +370,8 @@ def smoothn(y, nS0=10, axis=None, smoothOrder=2.0, sd=None, verbose=False,
                 # nS0 is teh number of samples used
                 if not s0:
                     ss = np.arange(nS0) * \
-                        (1./(nS0-1.))*(log10(sMaxBnd)-log10(sMinBnd)) + \
-                        log10(sMinBnd)
+                        (1. / (nS0 - 1.)) * (log10(sMaxBnd) - log10(sMinBnd)) \
+                        + log10(sMinBnd)
                     g = np.zeros_like(ss)
                     for i, p in enumerate(ss):
                         g[i] = gcv(p, Lambda, aow, DCTy, IsFinite,
@@ -394,41 +396,41 @@ def smoothn(y, nS0=10, axis=None, smoothOrder=2.0, sd=None, verbose=False,
             # update the value we use for the initial s estimate
             s0 = xpost[0]
 
-            Gamma = 1./(1+(s*abs(Lambda))**smoothOrder)
+            Gamma = 1. / (1 + (s * abs(Lambda))**smoothOrder)
 
-            z = RF*dctND(Gamma*DCTy, f=idct) + (1-RF)*z
+            z = RF * dctND(Gamma * DCTy, f=idct) + (1 - RF) * z
             # if no weighted/missing data => tol=0 (no iteration)
-            tol = isweighted*norm(z0-z)/norm(z)
+            tol = isweighted * norm(z0 - z) / norm(z)
 
             z0 = z  # re-initialization
         exitflag = nit < MaxIter
 
         if isrobust:  # -- Robust Smoothing: iteratively re-weighted process
             # --- average leverage
-            h = sqrt(1+16.*s)
-            h = sqrt(1+h)/sqrt(2)/h
+            h = sqrt(1 + 16. * s)
+            h = sqrt(1 + h) / sqrt(2) / h
             h = h**N
             # --- take robust weights into account
-            Wtot = W*RobustWeights(y-z, IsFinite, h, weightstr)
+            Wtot = W * RobustWeights(y - z, IsFinite, h, weightstr)
             # --- re-initialize for another iterative weighted process
             isweighted = True
             tol = 1
             nit = 0
             # ---
             RobustStep = RobustStep + 1
-            RobustIterativeProcess = RobustStep < 3  # 3 robust steps are
-                                                     # enough
+            # 3 robust steps are enough
+            RobustIterativeProcess = RobustStep < 3
         else:
             RobustIterativeProcess = False  # stop the whole process
 
     # Warning messages
     # ---
     if isauto:
-        if abs(log10(s)-log10(sMinBnd)) < errp:
+        if abs(log10(s) - log10(sMinBnd)) < errp:
             warning('MATLAB:smoothn:SLowerBound',
                     ['s = %.3f ' %(s) + ': the lower bound for s has been '
                         + 'reached. Put s as an input variable if required.'])
-        elif abs(log10(s)-log10(sMaxBnd)) < errp:
+        elif abs(log10(s) - log10(sMaxBnd)) < errp:
             warning('MATLAB:smoothn:SUpperBound',
                     ['s = %.3f ' %(s) + ': the upper bound for s has been '
                         + 'reached. Put s as an input variable if required.'])
@@ -448,35 +450,35 @@ def gcv(p, Lambda, aow, DCTy, IsFinite, Wtot, y, nof, noe, smoothOrder):
     # Search the smoothing parameter s that minimizes the GCV score
     # ---
     s = 10**p
-    Gamma = 1./(1+(s*abs(Lambda))**smoothOrder)
+    Gamma = 1. / (1 + (s * abs(Lambda))**smoothOrder)
     # --- RSS = Residual sum-of-squares
     if aow > 0.9:  # aow = 1 means that all of the data are equally weighted
         # very much faster: does not require any inverse DCT
-        RSS = norm(DCTy*(Gamma-1.))**2
+        RSS = norm(DCTy * (Gamma - 1.))**2
     else:
         # take account of the weights to calculate RSS:
-        yhat = dctND(Gamma*DCTy, f=idct)
-        RSS = norm(sqrt(Wtot[IsFinite])*(y[IsFinite]-yhat[IsFinite]))**2
+        yhat = dctND(Gamma * DCTy, f=idct)
+        RSS = norm(sqrt(Wtot[IsFinite]) * (y[IsFinite] - yhat[IsFinite]))**2
     # ---
     TrH = sum(Gamma)
-    GCVscore = RSS/float(nof)/(1.-TrH/float(noe))**2
+    GCVscore = RSS / float(nof) / (1. - TrH / float(noe))**2
     return GCVscore
 
 
 # Robust weights
 def RobustWeights(r, I, h, wstr):
     # weights for robust smoothing.
-    MAD = median(abs(r[I]-median(r[I])))  # median absolute deviation
-    u = abs(r/(1.4826*MAD)/sqrt(1-h))  # studentized residuals
+    MAD = median(abs(r[I] - median(r[I])))  # median absolute deviation
+    u = abs(r / (1.4826 * MAD) / sqrt(1 - h))  # studentized residuals
     if wstr == 'cauchy':
         c = 2.385
-        W = 1./(1+(u/c)**2)  # Cauchy weights
+        W = 1. / (1 + (u / c)**2)  # Cauchy weights
     elif wstr == 'talworth':
         c = 2.795
         W = u < c  # Talworth weights
     else:
         c = 4.685
-        W = (1-(u/c)**2)**2.*((u/c) < 1)  # bisquare weights
+        W = (1 - (u / c)**2)**2. * ((u / c) < 1)  # bisquare weights
 
     W[isnan(W)] = 0
     return W
@@ -490,7 +492,7 @@ def InitialGuess(y, I):
             from scipy.ndimage.morphology import distance_transform_edt
             # if license('test','image_toolbox')
             # [z,L] = bwdist(I);
-            L = distance_transform_edt(1-I)
+            L = distance_transform_edt(1 - I)
             z = y
             z[~I] = y[L[~I]]
         except ArithmeticError:
@@ -504,7 +506,7 @@ def InitialGuess(y, I):
     # coarse fast smoothing
     z = dctND(z, f=dct)
     k = array(z.shape)
-    m = ceil(k/10)+1
+    m = ceil(k / 10) + 1
     d = []
     for i in xrange(len(k)):
         d.append(arange(m[i], k[i]))
@@ -552,14 +554,14 @@ def peaks(n):
     xp = arange(n)
     [x, y] = meshgrid(xp, xp)
     z = np.zeros_like(x).astype(float)
-    for i in xrange(n/5):
-        x0 = random()*n
-        y0 = random()*n
-        sdx = random()*n/4.
+    for i in xrange(n / 5):
+        x0 = random() * n
+        y0 = random() * n
+        sdx = random() * n / 4.
         sdy = sdx
-        c = random()*2 - 1.
-        f = exp(-((x-x0)/sdx)**2-((y-y0)/sdy)**2 -
-                (((x-x0)/sdx))*((y-y0)/sdy)*c)
+        c = random() * 2 - 1.
+        f = exp(-((x - x0) / sdx)**2 - ((y - y0) / sdy)**2
+                - (((x - x0) / sdx)) * ((y - y0) / sdy) * c)
         # f /= f.sum()
         f *= random()
         z += f
