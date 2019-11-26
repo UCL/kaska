@@ -396,7 +396,7 @@ def preprocessing(y, w, sd):
     #    nof = is_finite.sum() # number of finite elements
     w = w * is_finite
     if np.any(w < 0):
-        error('smoothn:NegativeWeights', 'Weights must all be >=0')
+        raise ValueError("smoothn: Weights must all be >=0")
 
     return (y, w)
 
