@@ -611,27 +611,6 @@ def dctND(data, f=dct):
                  norm="ortho", type=2, axis=3)
 
 
-def peaks(n):
-    """
-      Mimic basic of matlab peaks fn
-    """
-    xp = np.arange(n)
-    [x, y] = np.meshgrid(xp, xp)
-    z = np.zeros_like(x).astype(float)
-    for _ in range(n/5):
-        x0 = np.random.random() * n
-        y0 = np.random.random() * n
-        sdx = np.random.random() * n / 4.0
-        sdy = sdx
-        c = np.random.random()*2 - 1.
-        f = np.exp(-((x-x0)/sdx)**2-((y-y0)/sdy)**2 -
-                   (((x-x0)/sdx))*((y-y0)/sdy)*c)
-        # f /= f.sum()
-        f *= np.random.random()
-        z += f
-    return z
-
-
 """
 def test1():
    plt.figure(1)
