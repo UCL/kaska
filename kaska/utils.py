@@ -149,7 +149,7 @@ def reproject_data(source_img,
             srcNodata=srcNodata,
             resampleAlg=resample,
             srcSRS=_srcSRS
-            )  '''tohere'''
+            )
     if verbose:
         LOG.debug("There are %d bands in this file, use "
                   + "g.GetRasterBand(<band>) to avoid reading the whole file."
