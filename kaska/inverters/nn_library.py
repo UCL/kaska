@@ -9,7 +9,7 @@ as a function of parameters of interest.
 * An **inverter** is a fast model that implements the inverse of the model
 the emulator emulates: it predicts parameters of interest *from observations*.
 
-Both emulators and inverters have been trained with a particular sensor 
+Both emulators and inverters have been trained with a particular sensor
 spectral characteristics in mind.
 """
 import logging
@@ -32,6 +32,7 @@ valid_sensors = [
     "MODIS",
     "Sentinel1",
 ]
+
 
 # The NN come in a variety of file formats:
 # 1. npz: numpy npz
@@ -85,9 +86,9 @@ def get_filename(package, resource):
 
 
 def get_inverters():
-    """Returns the list of available inverters as distributed with the 
+    """Returns the list of available inverters as distributed with the
     package.
-    
+
     Returns
     -------
     list
@@ -98,7 +99,7 @@ def get_inverters():
 
 def get_emulators():
     """Returns a list of available emulators distributed with the package.
-    
+
     Returns
     -------
     lits
@@ -110,7 +111,7 @@ def get_emulators():
 def get_emulator(name, sensor, fname=True):
     """Retrieve an emulator (`name`) for sensor `sensor`. The function
     returns either the file contents or the file name.
-    
+
     Parameters
     ----------
     name : str
@@ -120,7 +121,7 @@ def get_emulator(name, sensor, fname=True):
         A sensor list. Currently, it's only Sentinel2
     fname : bool, optional
         Whether to return the filename (True) or the file contents (False)
-    
+
     Returns
     -------
     Emulator file content or filename.
@@ -145,7 +146,7 @@ def get_emulator(name, sensor, fname=True):
 def get_inverter(name, sensor, fname=True):
     """Retrieve an inverter (`name`) for sensor `sensor`. The function
     returns either the file contents or the file name.
-    
+
     Parameters
     ----------
     name : str
@@ -155,7 +156,7 @@ def get_inverter(name, sensor, fname=True):
         A sensor list. Currently, it's only Sentinel2
     fname : bool, optional
         Whether to return the filename (True) or the file contents (False)
-    
+
     Returns
     -------
     Inverter file content or filename.

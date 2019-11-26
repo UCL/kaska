@@ -69,10 +69,10 @@ class Sentinel2Observations(object):
         self.chunk = chunk
 
     def apply_roi(self, ulx, uly, lrx, lry):
-        """Applies a region of interest (ROI) window to the state mask, which is
-        then used to subset the data spatially. Useful for spatial windowing/
-        chunking
-        
+        """Applies a region of interest (ROI) window to the state mask, which
+        is then used to subset the data spatially. Useful for spatial
+        windowing/chunking
+
         Parameters
         ----------
         ulx : integer
@@ -104,9 +104,9 @@ class Sentinel2Observations(object):
 
     def define_output(self):
         """Define the output array shapes to be consistent with the state
-        mask. You get the projection and geotransform, that should be 
+        mask. You get the projection and geotransform, that should be
         enough to define an ouput dataset that conforms to the state mask.
-        
+
         Returns
         -------
         tuple
@@ -150,7 +150,8 @@ class Sentinel2Observations(object):
             ]
         # Sort dates by time, as currently S2A/S2B will be part of ordering
 
-        # test_files = sorted(test_files, key=lambda x:dates[test_files.index(x)])
+        # test_files
+        #     = sorted(test_files, key=lambda x:dates[test_files.index(x)])
         # dates = sorted(dates)
         if time_grid is not None:
             start_date = time_grid[0]
@@ -172,7 +173,8 @@ class Sentinel2Observations(object):
         self.date_data = {k: temp_dict[k] for k in dates}
         self.dates = dates
 
-        # self.date_data = dict(zip(self.dates, [f.parent for f in test_files]))
+        # self.date_data = dict(zip(self.dates,
+        #                          [f.parent for f in test_files]))
         self.bands_per_observation = {}
         LOG.info(f"Found {len(test_files):d} S2 granules")
         LOG.info(
@@ -215,17 +217,17 @@ class Sentinel2Observations(object):
         return s2_obs
 
     def read_granule(self, timestep):
-        """Reads data granule for a given `timestep`. Returns all relevant 
+        """Reads data granule for a given `timestep`. Returns all relevant
         bits and bobs (surface reflectrance, angles, cloud mask, uncertainty).
         The mask is true for OK pixels. If there are no suitable pixels, the
         returned tuple is a collection of `None`
-        
-        
+
+
         Parameters
         ----------
         timestep : datetime
             The datetime object
-        
+
         Returns
         -------
         tuple
@@ -282,7 +284,7 @@ class Sentinel2Observations(object):
         # Now, ensure all surface reflectance pixels have values above
         # 0 & aren't cloudy.
         # So valid pixels if all refl > 0 AND mask is True
-        # Array of the desired bands. Not necessarily contiguous. 
+        # Array of the desired bands. Not necessarily contiguous.
         sel_bands = np.array([1, 2, 3, 4, 5, 6, 7, 8])
         mask1 = np.logical_and(
             np.all(rho_surface[sel_bands] > 0, axis=0), mask
