@@ -131,7 +131,7 @@ class KaSKA(object):
         cab[cab < 0] = np.nan
         cbrown[cbrown < 0] = np.nan
         # Create a mask where we have no (LAI) data
-        # ßmask = np.all(lai == 0, axis=(0))
+        # mask = np.all(lai == 0, axis=(0))
 
         # Time axes in days of year
         doys = np.array([int(x.strftime('%j')) for x in dates])

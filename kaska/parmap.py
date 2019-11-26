@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Lifted from:
  https://gist.github.com/Jwink3101/494e741f07d33edea47d369bcfc4a54a"""
-from __future__ \
-    import division, print_function, unicode_literals, absolute_import
 
 # __version__ = '20180726.0'
 # __status__ = 'beta'
@@ -209,7 +207,7 @@ def parmap(fun, seq, N=None, Nt=1, chunksize=1, ordered=True,
 
     # Create a separate thread to add to the queue in the background
     def add_to_queue():
-        for iixs in _iter_chunks(enumerate(seq), vchunksize):
+        for iixs in _iter_chunks(enumerate(seq), chunksize):
             q_in.put(iixs)
 
         # Once (if ever) it is exhausted, send None to close workers
@@ -236,7 +234,7 @@ def parmap(fun, seq, N=None, Nt=1, chunksize=1, ordered=True,
         out = counter(out)
 
     if ordered:
-        out = _sort_generator_unique_integers(out, vkey=lambda a: a[0])
+        out = _sort_generator_unique_integers(out, key=lambda a: a[0])
 
     # Return
     for item in out:
