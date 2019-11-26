@@ -39,7 +39,7 @@ def affine_backward(dout, cache):
       - x: Input data, of shape (D, )
       - w: Weights, of shape (D, M)
     :return the jacobian matrix containing derivatives of the O neural network
-            outputs with respect to this layer's inputs, evaluated at x, of 
+            outputs with respect to this layer's inputs, evaluated at x, of
             shape (O, D)
     """
     x, w = cache
@@ -62,7 +62,7 @@ def relu_backward(dout, cache):
     Backward pass of ReLU
     :param dout: Upstream Jacobian
     :param cache: the cached input for this layer
-    :return: the jacobian matrix containing derivatives of the O neural 
+    :return: the jacobian matrix containing derivatives of the O neural
               network outputs with respect tothis layer's inputs,
               evaluated at x.
     """
