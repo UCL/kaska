@@ -456,7 +456,7 @@ def bound_calc(h_limit, rank):
     """
     return np.sqrt((
                 ((1 + np.sqrt(1 + 8 * h_limit ** (2.0 / rank))
-                    ) / 4. / h_limit ** (2.0 / rank)
+                  ) / 4. / h_limit ** (2.0 / rank)
                 ) ** 2 - 1) / 16.)
 
 
@@ -510,7 +510,7 @@ def gcv(p, lambda_v, aow, dct_y, is_finite, w_tot, y, nof, noe, smooth_order):
     else:
         # take account of the weights to calculate rss:
         yhat = dctND(gamma*dct_y, f=idct)
-        rss = norm(np.sqrt(w_tot[is_finite]) * 
+        rss = norm(np.sqrt(w_tot[is_finite]) *
                    (y[is_finite] - yhat[is_finite])) ** 2
     # ---
     tr_h = np.sum(gamma)
@@ -550,7 +550,7 @@ def initial_guess(y, i):
     if np.any(~i):
         try:
             from scipy.ndimage.morphology import distance_transform_edt
-            
+
             # if license('test','image_toolbox')
             # [z,ell] = bwdist(i);
             ell = distance_transform_edt(1 - i)
@@ -569,8 +569,8 @@ def initial_guess(y, i):
     k = np.array(z.shape)
     m = np.ceil(k / 10) + 1
     d = []
-    for j in range(len(k)):
-        d.append(np.arange(m[j], k[j]))
+    for j, kj in enumerate(k):
+        d.append(np.arange(m[j], kj))
     d = np.array(d).astype(int)
     z[d] = 0.0
     z = dctND(z, f=idct)
