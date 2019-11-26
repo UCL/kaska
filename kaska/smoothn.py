@@ -295,7 +295,7 @@ def smoothn(y, nS0=10, axis=None, smoothOrder=2.0, sd=None, verbose=False,
         sMaxBnd = np.sqrt(
           (((1+sqrt(1+8*hMin**(2./N)))/4./hMin**(2./N))**2-1)/16.
           )
-    except:
+    except ValueError:
         sMinBnd = None
         sMaxBnd = None
     # Initialize before iterating
@@ -493,7 +493,7 @@ def InitialGuess(y, I):
             L = distance_transform_edt(1-I)
             z = y
             z[~I] = y[L[~I]]
-        except:
+        except ArithmeticError:
             # If BWDIST does not exist, NaN values are all replaced with the
             # same scalar. The initial guess is not optimal and a warning
             # message thus appears.
