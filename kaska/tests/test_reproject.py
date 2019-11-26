@@ -1,15 +1,16 @@
 #!/usr/bin/env python
 """Test reproject data"""
-import gdal
-import numpy as np
+
 import os
-import pytest
 import sys
+import numpy as np
+import pytest
+import gdal
+from ..utils import reproject_data
+
 sys.path.append("../")
 
 DATA_PATH = os.path.dirname(__file__)
-
-from ..utils import reproject_data
 
 
 def test_reproject_data():

@@ -1,17 +1,15 @@
 #!/usr/bin/env python
 """Test reproject data"""
-
-import gdal
-import numpy as np
 import os
-import pytest
 import sys
+import pytest
+import gdal
+from ..inverters import get_emulators, get_emulator
+from ..inverters import get_inverters, get_inverter
+
 sys.path.append("../")
 
 DATA_PATH = os.path.dirname(__file__)
-
-from ..inverters import get_emulators, get_emulator
-from ..inverters import get_inverters, get_inverter
 
 
 def test_getinverters():
