@@ -8,8 +8,6 @@ import pytest
 import gdal
 from ..utils import reproject_data
 
-sys.path.append("../")
-
 DATA_PATH = os.path.dirname(__file__)
 
 

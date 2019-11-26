@@ -7,8 +7,6 @@ import gdal
 from ..inverters import get_emulators, get_emulator
 from ..inverters import get_inverters, get_inverter
 
-sys.path.append("../")
-
 DATA_PATH = os.path.dirname(__file__)
 
 
