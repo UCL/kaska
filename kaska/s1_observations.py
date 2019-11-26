@@ -33,7 +33,7 @@ layers = [
 def get_s1_dates(s1_file):
     """Gets the dates from a LMU processed netCDF Sentinel 1 file"""
     times = [float(s1_file.GetRasterBand(b+1).GetMetadata()['NETCDF_DIM_time'])
-             or b in range(s1_file.RasterCount)]
+             for b in range(s1_file.RasterCount)]
     times = [dt.datetime(1970, 1, 1) + dt.timedelta(days=x) for x in times]
     LOG.info(f"Sentinel 1 First obs: {times[0].strftime('%Y-%m-%d'):s}")
     LOG.info(f"Sentinel 1 Last obs: {times[-1].strftime('%Y-%m-%d'):s}")
