@@ -482,7 +482,7 @@ def initial_z(y, z0, is_weighted):
 
 def init_xpost(s, s_min_bnd, s_max_bnd, is_auto):
     """
-    Calculate xpost based on the smoothing and soothiing bounds values.
+    Calculate xpost based on the smoothing and smoothing bounds values.
     """
     if is_auto:
         try:
