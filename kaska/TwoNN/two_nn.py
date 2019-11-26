@@ -11,8 +11,10 @@ import tensorflow as tf
 from tensorflow.keras import layers
 
 
-# the forward and backpropogation
-# are from https://medium.com/unit8-machine-learning-publication/computing-the-jacobian-matrix-of-a-neural-network-in-python-4f162e5db180
+# the forward and backpropagation
+# are from
+# https://medium.com/unit8-machine-learning-publication/
+# computing-the-jacobian-matrix-of-a-neural-network-in-python-4f162e5db180
 # but added jit for faster speed in the calculation
 
 
