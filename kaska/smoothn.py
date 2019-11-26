@@ -1,7 +1,6 @@
-'''
-Implements the SMOOTHN Matlab function of Damien Garcia
+""""Implements the SMOOTHN Matlab function of Damien Garcia
 (http://www.biomecardio.com/matlab/smoothn_doc.html) in python.
-'''
+"""
 
 import numpy as np
 import numpy.ma as ma
@@ -19,7 +18,7 @@ W_TOT_DEFAULT = 0
 def smoothn(y, nS0=10, axis=None, smoothOrder=2.0, sd=None, verbose=False,
             s0=None, z0=None, isrobust=False, w=None, s=None, max_iter=100,
             tol_z=1e-3, weightstr='bisquare'):
-    '''
+    """
     function [z,s,exitflag,w_tot] = smoothn(varargin)
 
     SMOOTHN Robust spline smoothing for 1-D to n-D data.
@@ -174,7 +173,7 @@ def smoothn(y, nS0=10, axis=None, smoothOrder=2.0, sd=None, verbose=False,
     error(nargchk(1,12,nargin));
 
     z0=None,w=None,s=None,max_iter=100,tol_z=1e-3
-    '''
+    """
 
     (y, w) = preprocessing(y, w, sd)
 
@@ -206,7 +205,7 @@ def smoothn(y, nS0=10, axis=None, smoothOrder=2.0, sd=None, verbose=False,
     # Automatic smoothing?
     isauto = not s
 
-#  Creation of the Lambda tensor
+    # Creation of the Lambda tensor
     lambda_ = define_lambda(y, axis)
 
     #  Upper and lower bound for the smoothness parameter
@@ -222,7 +221,7 @@ def smoothn(y, nS0=10, axis=None, smoothOrder=2.0, sd=None, verbose=False,
     z0 = z
     y[~is_finite] = 0  # arbitrary values for missing y-data
     # ---
-    tol = 1.
+    tol = 1.0
     robust_iterative_process = True
     robust_step = 1
     nit = 0
@@ -230,7 +229,7 @@ def smoothn(y, nS0=10, axis=None, smoothOrder=2.0, sd=None, verbose=False,
     errp = 0.1
     # opt = optimset('TolX',errp);
     # --- Relaxation factor relaxation_factor: to speedup convergence
-    relaxation_factor = 1 + 0.75*isweighted
+    relaxation_factor = 1 + 0.75 * isweighted
     # ??
     #  Main iterative process
     # ---
@@ -238,13 +237,13 @@ def smoothn(y, nS0=10, axis=None, smoothOrder=2.0, sd=None, verbose=False,
 
     while robust_iterative_process:
         # --- "amount" of weights (see the function GCVscore)
-        aow = np.sum(w_tot)/noe  # 0 < aow <= 1
+        aow = np.sum(w_tot) / noe  # 0 < aow <= 1
         # ---
         while tol > tol_z and nit < max_iter:
             if verbose:
                 print('tol', tol, 'nit', nit)
-            nit = nit+1
-            dct_y = dctND(w_tot*(y-z)+z, f=dct)
+            nit = nit + 1
+            dct_y = dctND(w_tot * (y - z) + z, f=dct)
             if isauto and not np.remainder(np.log2(nit), 1):
                 # ---
                 # The generalized cross-validation (GCV) method is used.
@@ -266,9 +265,9 @@ def smoothn(y, nS0=10, axis=None, smoothOrder=2.0, sd=None, verbose=False,
                 # only need to do it once though. nS0 is the number of samples
                 # used
                 if not s0:
-                    ss = np.arange(nS0)*(1./(nS0-1.)) *\
-                        (np.log10(s_max_bnd)-np.log10(s_min_bnd)) +\
-                        np.log10(s_min_bnd)
+                    ss = np.arange(nS0) * (1.0 / (nS0 - 1.0)) * (
+                        np.log10(s_max_bnd) - np.log10(s_min_bnd)
+                        ) + np.log10(s_min_bnd)
                     g = np.zeros_like(ss)
                     for i, p in enumerate(ss):
                         g[i] = gcv(p, lambda_, aow, dct_y, is_finite, w_tot,
@@ -283,37 +282,39 @@ def smoothn(y, nS0=10, axis=None, smoothOrder=2.0, sd=None, verbose=False,
                 bounds = [(np.log10(s_min_bnd), np.log10(s_max_bnd))]
                 args = (lambda_, aow, dct_y, is_finite,
                         w_tot, y, nof, noe, smoothOrder)
-                xpost, _, _ =\
-                    lbfgsb.fmin_l_bfgs_b(gcv, xpost, fprime=None, factr=1e7,
-                                         approx_grad=True, bounds=bounds,
-                                         args=args)
-            s = 10**xpost[0]
+                xpost, _, _ = lbfgsb.fmin_l_bfgs_b(gcv, xpost,
+                                                   fprime=None,
+                                                   factr=1e7,
+                                                   approx_grad=True,
+                                                   bounds=bounds,
+                                                   args=args)
+            s = 10 ** xpost[0]
             # update the value we use for the initial s estimate
             s0 = xpost[0]
 
-            gamma = 1./(1+(s*np.abs(lambda_))**smoothOrder)
+            gamma = 1.0 / (1 + (s * np.abs(lambda_)) ** smoothOrder)
 
-            z = relaxation_factor*dctND(gamma*dct_y, f=idct) +\
-                (1-relaxation_factor)*z
+            z = relaxation_factor * dctND(gamma*dct_y, f=idct) +\
+                (1 - relaxation_factor) * z
             # if no weighted/missing data => tol=0 (no iteration)
-            tol = isweighted*norm(z0-z)/norm(z)
+            tol = isweighted * norm(z0 - z) / norm(z)
 
             z0 = z  # re-initialization
         exitflag = nit < max_iter
 
         if isrobust:  # -- Robust Smoothing: iteratively re-weighted process
             # --- average leverage
-            h = np.sqrt(1+16.*s)
-            h = np.sqrt(1+h)/np.sqrt(2)/h
-            h = h**y_tensor_rank
+            h = np.sqrt(1 + 16.0 * s)
+            h = np.sqrt(1 + h) / np.sqrt(2) / h
+            h = h ** y_tensor_rank
             # --- take robust weights into account
-            w_tot = w*robust_weights(y-z, is_finite, h, weightstr)
+            w_tot = w*robust_weights(y - z, is_finite, h, weightstr)
             # --- re-initialize for another iterative weighted process
             isweighted = True
             tol = 1
             nit = 0
             # ---
-            robust_step = robust_step+1
+            robust_step = robust_step + 1
             # 3 robust steps are enough.
             robust_iterative_process = robust_step < 3
         else:
@@ -323,21 +324,23 @@ def smoothn(y, nS0=10, axis=None, smoothOrder=2.0, sd=None, verbose=False,
     # ---
     if isauto:
         limit = ""
-        if np.abs(np.log10(s)-np.log10(s_min_bnd)) < errp:
+        if np.abs(np.log10(s) - np.log10(s_min_bnd)) < errp:
             limit = "lower"
-        elif np.abs(np.log10(s)-np.log10(s_max_bnd)) < errp:
+        elif np.abs(np.log10(s) - np.log10(s_max_bnd)) < errp:
             limit = "upper"
-        warning(f"smoothn:S{limit.capitalize()}Bound",
-                [f"s = {s:.3f}: the {limit} bound for s has been reached. " +
-                 "Put s as an input variable if required."])
+        warning(
+            f"smoothn:S{limit.capitalize()}Bound",
+            [f"s = {s:.3f}: the {limit} bound for s has been reached. " +
+             "Put s as an input variable if required."]
+        )
 
     return z, s, exitflag, w_tot
 
 
 def warning(s1, s2):
-    '''
+    """
     Combine warnings.
-    '''
+    """
     print(s1)
     print(s2[0])
 
@@ -345,23 +348,23 @@ def warning(s1, s2):
 def weights_from_sd(sd):
     """Take the standard deviation values and produce a set of weights."""
     sd = np.array(sd)
-    mask = sd > 0.
+    mask = sd > 0.0
     w = np.zeros_like(sd)
-    w[mask] = sd[mask]**(-2)
+    w[mask] = sd[mask] ** (-2)
     sd = None
     return w
 
 
 def unmask_array(m, w):
-    '''
+    """
     Convert a masked numpy array (m) into an unmasked array, with zero
     weighting on the masked points.
-    '''
+    """
     mask = m.mask
     y = np.array(m)
     if np.any(w is not None):
         w = np.array(w)
-    w[mask] = 0.
+    w[mask] = 0.0
     y[mask] = np.nan
     return (y, w)
 
@@ -378,34 +381,33 @@ def preprocessing(y, w, sd):
     if isinstance(y, ma.core.MaskedArray):
         (y, w) = unmask_array(y, w)
 
-# Normalize weights to a maximum of 1
+    # Normalize weights to a maximum of 1
     if np.any(w is not None):
         w = w/w.max()
 
     sizy = y.shape
 
-# Set the weights to unity if there are none defined
+    # Set the weights to unity if there are none defined
     if np.all(w is None):
         w = np.ones(sizy)
 
-# Unweight non-finite values
+    # Unweight non-finite values
     is_finite = np.isfinite(y)
-#    nof = is_finite.sum() # number of finite elements
-    w = w*is_finite
+    #    nof = is_finite.sum() # number of finite elements
+    w = w * is_finite
     if np.any(w < 0):
-        error('smoothn:NegativeWeights',
-              'Weights must all be >=0')
+        error('smoothn:NegativeWeights', 'Weights must all be >=0')
 
     return (y, w)
 
 
 def define_lambda(y, axis):
-    '''
+    """
     Creation of the Lambda tensor.
 
     Lambda contains the eingenvalues of the difference matrix used in this
     penalized least squares process.
-    '''
+    """
     axis_tuple = tuple(np.array(axis).flatten())
 
     lam = np.zeros(y.shape)
@@ -415,13 +417,13 @@ def define_lambda(y, axis):
         lam = lam + (np.cos(np.pi*(np.arange(1, y.shape[i] + 1) - 1) /
                             y.shape[i]).reshape(siz0))
 
-    lam = -2. * (len(axis_tuple) - lam)
+    lam = -2.0 * (len(axis_tuple) - lam)
 
     return lam
 
 
 def smoothness_bounds(y):
-    '''
+    """
     Upper and lower bound for the smoothness parameter
 
     The average leverage (h) is by definition in [0 1]. Weak smoothing occurs
@@ -429,20 +431,14 @@ def smoothness_bounds(y):
     and lower bounds for h are given to avoid under- or over-smoothing. See
     equation relating h to the smoothness parameter (Equation #12 in the
     referenced CSDA paper).
-    '''
+    """
     rnk = np.sum(np.array(y.shape) != 1)
     h_min = 1e-6
     h_max = 0.99
 
-    # (h/rnk)**2 = (1 + a)/( 2 a)
-    # a = 1/(2 (h/rnk)**2 -1)
-    # where a = sqrt(1 + 16 s)
-    # (a**2 -1)/16
     try:
-        s_min_bnd = np.sqrt((((1+np.sqrt(1+8*h_max**(2./rnk))) /
-                              4./h_max**(2./rnk))**2-1)/16.)
-        s_max_bnd = np.sqrt((((1+np.sqrt(1+8*h_min**(2./rnk))) /
-                              4./h_min**(2./rnk))**2-1)/16.)
+        s_min_bnd = bound_calc(h_max, rnk)
+        s_max_bnd = bound_calc(h_min, rnk)
     except ValueError:
         s_min_bnd = None
         s_max_bnd = None
@@ -450,20 +446,34 @@ def smoothness_bounds(y):
     return s_min_bnd, s_max_bnd
 
 
+def bound_calc(h_limit, rank):
+    """
+    Calculate smooth bound from leverage bound.
+    (h/rnk)**2 = (1 + a)/( 2 a)
+    a = 1/(2 (h/rnk)**2 -1)
+    where a = sqrt(1 + 16 s)
+    (a**2 -1)/16
+    """
+    return np.sqrt((
+                ((1 + np.sqrt(1 + 8 * h_limit ** (2.0 / rank))
+                    ) / 4. / h_limit ** (2.0 / rank)
+                ) ** 2 - 1) / 16.)
+
+
 def initial_z(y, z0, is_weighted):
-    '''
+    """
     An initial conditions for z.
     With weighted/missing data, an initial guess is provided to ensure faster
     convergence. For that purpose, a nearest neighbor interpolation followed
     by a coarse smoothing are performed.
 
     For unweighted data, the initial guess is zero.
-    '''
+    """
     if is_weighted:
         if z0 is not None:  # an initial guess (z0) has been provided
             z = z0
         else:
-            z = np.where(np.isfinite(y), y, 0.)  # initial_guess(y,IsFinite);
+            z = np.where(np.isfinite(y), y, 0.0)  # initial_guess(y,IsFinite);
     else:
         z = np.zeros_like(y)
 
@@ -471,15 +481,15 @@ def initial_z(y, z0, is_weighted):
 
 
 def init_xpost(s, s_min_bnd, s_max_bnd, is_auto):
-    '''
+    """
     Calculate xpost based on the smoothing and soothiing bounds values.
-    '''
+    """
     if is_auto:
         try:
-            return np.array([(0.9*np.log10(s_min_bnd)
-                              + np.log10(s_max_bnd)*0.1)])
+            return np.array([(0.9 * np.log10(s_min_bnd) +
+                              np.log10(s_max_bnd) * 0.1)])
         except ValueError:
-            return np.array([100.])
+            return np.array([100.0])
     else:
         return np.array([np.log10(s)])
 
@@ -488,42 +498,43 @@ def init_xpost(s, s_min_bnd, s_max_bnd, is_auto):
 # ---
 # function GCVscore = gcv(p)
 def gcv(p, lambda_v, aow, dct_y, is_finite, w_tot, y, nof, noe, smooth_order):
-    '''
+    """
     Search the smoothing parameter s that minimizes the GCV score
-    '''
-    s = 10**p
-    gamma = 1./(1+(s*np.abs(lambda_v))**smooth_order)
+    """
+    s = 10 ** p
+    gamma = 1.0 / (1 + (s * np.abs(lambda_v)) ** smooth_order)
     # --- rss = Residual sum-of-squares
     if aow > 0.9:  # aow = 1 means that all of the data are equally weighted
         # very much faster: does not require any inverse DCT
-        rss = norm(dct_y*(gamma-1.))**2
+        rss = norm(dct_y * (gamma - 1.0)) ** 2
     else:
         # take account of the weights to calculate rss:
         yhat = dctND(gamma*dct_y, f=idct)
-        rss = norm(np.sqrt(w_tot[is_finite])*(y[is_finite]-yhat[is_finite]))**2
+        rss = norm(np.sqrt(w_tot[is_finite]) * 
+                   (y[is_finite] - yhat[is_finite])) ** 2
     # ---
     tr_h = np.sum(gamma)
-    gcv_score = rss/float(nof)/(1.-tr_h/float(noe))**2
+    gcv_score = rss / float(nof) / (1.0 - tr_h / float(noe)) ** 2
     return gcv_score
 
 
 #  Robust weights
 # function W = robust_weights(r,I,h,wstr)
 def robust_weights(r, i, h, wstr):
-    '''
+    """
     Recalculate the weights for robust smoothing.
-    '''
-    mad = np.median(np.abs(r[i]-np.median(r[i])))  # median absolute deviation
-    u = np.abs(r/(1.4826*mad)/np.sqrt(1-h))  # studentized residuals
-    if wstr == 'cauchy':
+    """
+    mad = np.median(np.abs(r[i] - np.median(r[i])))  # median absolute deviation
+    u = np.abs(r / (1.4826 * mad) / np.sqrt(1 - h))  # studentized residuals
+    if wstr == "cauchy":
         c = 2.385
-        w = 1./(1+(u/c)**2)  # Cauchy weights
-    elif wstr == 'talworth':
+        w = 1.0 / (1 + (u / c) ** 2)  # Cauchy weights
+    elif wstr == "talworth":
         c = 2.795
         w = u < c  # Talworth weights
     else:
         c = 4.685
-        w = (1-(u/c)**2)**2.*((u/c) < 1)  # bisquare weights
+        w = (1 - (u / c) ** 2) ** 2.0 * ((u / c) < 1)  # bisquare weights
 
     w[np.isnan(w)] = 0
     return w
@@ -532,16 +543,17 @@ def robust_weights(r, i, h, wstr):
 #  Initial Guess with weighted/missing data
 # function z = initial_guess(y,i)
 def initial_guess(y, i):
-    '''
+    """
     Generate an initial guess using nearest naighbour interpolation.
-    '''
+    """
     # -- nearest neighbor interpolation (in case of missing values)
     if np.any(~i):
         try:
             from scipy.ndimage.morphology import distance_transform_edt
+            
             # if license('test','image_toolbox')
             # [z,ell] = bwdist(i);
-            ell = distance_transform_edt(1-i)
+            ell = distance_transform_edt(1 - i)
             z = y
             z[~i] = y[ell[~i]]
         except ArithmeticError:
@@ -555,12 +567,12 @@ def initial_guess(y, i):
     # coarse fast smoothing
     z = dctND(z, f=dct)
     k = np.array(z.shape)
-    m = np.ceil(k/10)+1
+    m = np.ceil(k / 10) + 1
     d = []
     for j in range(len(k)):
         d.append(np.arange(m[j], k[j]))
     d = np.array(d).astype(int)
-    z[d] = 0.
+    z[d] = 0.0
     z = dctND(z, f=idct)
     return z
     # -- coarse fast smoothing using one-tenth of the DCT coefficients
@@ -578,38 +590,38 @@ def initial_guess(y, i):
 
 
 def dctND(data, f=dct):
-    '''
+    """
     One to four dimensional application of the function f.
     The function f defaults to scipy.fftpack.realtransforms.dct.
     The dimensionality of the function is easy to that of data.
-    '''
+    """
     nd = len(data.shape)
     if nd == 1:
-        return f(data, norm='ortho', type=2)
+        return f(data, norm="ortho", type=2)
     if nd == 2:
-        return f(f(data, norm='ortho', type=2).T, norm='ortho', type=2).T
+        return f(f(data, norm="ortho", type=2).T, norm="ortho", type=2).T
     if nd == 3:
-        return f(f(f(data, norm='ortho', type=2, axis=0),
-                   norm='ortho', type=2, axis=1),
-                 norm='ortho', type=2, axis=2)
+        return f(f(f(data, norm="ortho", type=2, axis=0),
+                   norm="ortho", type=2, axis=1),
+                 norm="ortho", type=2, axis=2)
     if nd == 4:
-        return f(f(f(f(data, norm='ortho', type=2, axis=0),
-                     norm='ortho', type=2, axis=1),
-                   norm='ortho', type=2, axis=2),
-                 norm='ortho', type=2, axis=3)
+        return f(f(f(f(data, norm="ortho", type=2, axis=0),
+                     norm="ortho", type=2, axis=1),
+                   norm="ortho", type=2, axis=2),
+                 norm="ortho", type=2, axis=3)
 
 
 def peaks(n):
-    '''
+    """
       Mimic basic of matlab peaks fn
-    '''
+    """
     xp = np.arange(n)
     [x, y] = np.meshgrid(xp, xp)
     z = np.zeros_like(x).astype(float)
-    for i in range(n/5):
-        x0 = np.random.random()*n
-        y0 = np.random.random()*n
-        sdx = np.random.random()*n/4.
+    for _ in range(n/5):
+        x0 = np.random.random() * n
+        y0 = np.random.random() * n
+        sdx = np.random.random() * n / 4.0
         sdy = sdx
         c = np.random.random()*2 - 1.
         f = np.exp(-((x-x0)/sdx)**2-((y-y0)/sdy)**2 -
@@ -620,7 +632,7 @@ def peaks(n):
     return z
 
 
-'''
+"""
 def test1():
    plt.figure(1)
    plt.clf()
@@ -804,4 +816,4 @@ def sparseTest(n=1000):
   # ((Vt.T * (np.diag(np.array(eigenvalues).flatten())**2)) * Vt)
   # we see you get the same as m.T * m by squaring the eigenvalues
 
-'''
+"""
