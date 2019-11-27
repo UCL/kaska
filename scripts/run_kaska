@@ -115,7 +115,6 @@ def parse_file(filename):
                 print("start_date=" + str(start_date))
                 print("end_date=" + str(end_date))
                 print("temporal_grid_space=" + str(temporal_grid_space))
-                #print("parent_folder=" + str(parent_folder))
                 print("s2_folder=" + str(s2_folder))
                 print("s1_ncfile=" + str(s1_ncfile)) 
                 print("state_mask=" + str(state_mask))
@@ -153,7 +152,6 @@ if (args.config_file):
     run_process(str2date(str(mydict["start_date"])),
                 str2date(str(mydict["end_date"])),
                 mydict["temporal_grid_space"],
-                # mydict["parent_folder"], 
                 mydict["s2_folder"],
                 mydict["s1_ncfile"],
                 mydict["state_mask"],
