@@ -1,25 +1,22 @@
 #!/usr/bin/env python
 """Test reproject data"""
+
 import os
-
 import sys
-sys.path.append("../")
-
+import numpy as np
 import pytest
 import gdal
-import numpy as np
-
+from ..utils import reproject_data
 
 DATA_PATH = os.path.dirname(__file__)
 
-from ..utils import reproject_data
 
 def test_reproject_data():
     """Test than when reprojecting a file to match another,
     the output has the same extent and size as the "target"
     one."""
     target = DATA_PATH + "/data/ESU.tif"
-    source = DATA_PATH +  "/data/s2_test_file.tif"
+    source = DATA_PATH + "/data/s2_test_file.tif"
     gg = reproject_data(source, target)
     g = gdal.Open(target)
     assert g.RasterXSize == gg.RasterXSize
