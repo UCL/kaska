@@ -153,7 +153,6 @@ if (args.config_file):
     run_process(str2date(str(mydict["start_date"])),
                 str2date(str(mydict["end_date"])),
                 mydict["temporal_grid_space"],
-                # mydict["parent_folder"], 
                 mydict["s2_folder"],
                 mydict["s1_ncfile"],
                 mydict["state_mask"],

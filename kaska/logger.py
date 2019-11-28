@@ -41,13 +41,13 @@ def create_logger(debug=True, fname=None):
     logger.addHandler(ch)
 
     if fname is not None:
-        fh = logging.FileHandler(fname)
+        file_handle = logging.FileHandler(fname)
         if debug:
-            fh.setLevel(logging.DEBUG)
+            file_handle.setLevel(logging.DEBUG)
         else:
-            fh.setLevel(logging.INFO)
-        fh.setFormatter(formatter)
-        logger.addHandler(fh)
+            file_handle.setLevel(logging.INFO)
+        file_handle.setFormatter(formatter)
+        logger.addHandler(file_handle)
         logger.info(f"Logging to {fname:s}")
     logger.propagate = True
 
