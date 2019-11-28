@@ -20,7 +20,7 @@ def create_logger(debug=True, fname=None):
 
     Returns
     -------
-    logging
+    logger
         A log object.
     """
     logger = logging.getLogger()
@@ -32,13 +32,13 @@ def create_logger(debug=True, fname=None):
         "%(asctime)s - %(name)s -" " %(levelname)s - %(message)s"
     )
 
-    ch = logging.StreamHandler()
+    stream_handle = logging.StreamHandler()
     if debug:
-        ch.setLevel(logging.DEBUG)
+        stream_handle.setLevel(logging.DEBUG)
     else:
-        ch.setLevel(logging.INFO)
-    ch.setFormatter(formatter)
-    logger.addHandler(ch)
+        stream_handle.setLevel(logging.INFO)
+    stream_handle.setFormatter(formatter)
+    logger.addHandler(stream_handle)
 
     if fname is not None:
         file_handle = logging.FileHandler(fname)
@@ -48,7 +48,8 @@ def create_logger(debug=True, fname=None):
             file_handle.setLevel(logging.INFO)
         file_handle.setFormatter(formatter)
         logger.addHandler(file_handle)
-        logger.info(f"Logging to {fname:s}")
+        # logger.info(f"Logging to {fname:s}")
+        logger.info("Logging to %s", fname)
     logger.propagate = True
 
     return logger
