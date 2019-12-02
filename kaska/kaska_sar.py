@@ -2,27 +2,26 @@
 
 """Main module."""
 import logging
-
+import time  # Just for timekeeping
 import datetime as dt
 import numpy as np
 
 from scipy.interpolate import interp1d
 
-from .NNParameterInversion import NNParameterInversion
+import scipy.optimize
 
-from .s2_observations import Sentinel2Observations
+# from .NNParameterInversion import NNParameterInversion
+
+# from .s2_observations import Sentinel2Observations
 
 from .s1_observations import Sentinel1Observations
 
-from .smoothn import smoothn
+# from .smoothn import smoothn
 
 from .utils import define_temporal_grid, save_output_parameters
 
 from .watercloudmodel import cost, cost_jac, cost_hess
 
-import scipy.optimize
-
-import time  # Just for timekeeping
 
 LOG = logging.getLogger(__name__)
 
