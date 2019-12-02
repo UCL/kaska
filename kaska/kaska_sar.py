@@ -27,6 +27,7 @@ LOG = logging.getLogger(__name__)
 
 
 def sar_inversion(s1_obs, s2_data):
+    """SAR inversion"""
     # Move everything to DoY to simplify interpolation
     s2_doys = [int(dt.datetime.strftime(x, "%j"))
                for x in s2_data.f.temporal_grid]
@@ -41,7 +42,7 @@ def sar_inversion(s1_obs, s2_data):
     f = interp1d(s2_doys, s2_data.f.scab, axis=0, bounds_error=False)
     cab_s1 = f(s1_doys)
     f = interp1d(s2_doys, s2_data.f.scbrown, axis=0, bounds_error=False)
-    cbrown_s1 = f(s1_doys)
+    # cbrown_s1 = f(s1_doys)
     # Read in S1 data
     S1_backscatter = s1_obs.read_time_series(s1_temporal_grid)
 
@@ -77,15 +78,15 @@ def sar_inversion(s1_obs, s2_data):
     sigma_soil_out = np.zeros((nt, ny, nx))
     tic = time.time()
     n_pxls = 0
-    bounds = [
-        [-40, -5],
-        [1e-4, 1],
-        [-40, -1],
-        [-40, -5],
-        [1e-4, 1],
-        [-40, -1],
-        *([[0.01, 1]]*n_sar_obs)
-    ]
+    # bounds = [
+    #    [-40, -5],
+    #    [1e-4, 1],
+    #    [-40, -1],
+    #    [-40, -5],
+    #    [1e-4, 1],
+    #    [-40, -1],
+    #    *([[0.01, 1]]*n_sar_obs)
+    # ß]
     x0 = x0_all
     for (row, col) in np.ndindex(*lai_s1[0].shape):
         lai = lai_s1[:, row, col]
@@ -134,6 +135,7 @@ def sar_inversion(s1_obs, s2_data):
 
 
 def save_s1_output(output_folder, obs, sar_data, time_grid, chunk):
+    """Save the S1 output."""
     save_output_parameters(time_grid, obs, output_folder, ["sigma"],
                            [sar_data], output_format="GTiff",
                            chunk=chunk, fname_pattern="s1")
