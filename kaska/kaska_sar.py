@@ -62,7 +62,7 @@ def sar_inversion(s1_obs, s2_data):
         return cost_hess(np.concatenate([xx[:6], lai, lai, xx[-n_obs:]]),
                          svh, svv, theta)
 
-    Avv, Bvv, Cvv = -12,  0.05, 0.1
+    Avv, Bvv, Cvv = -12, 0.05, 0.1
     Avh, Bvh, Cvh = -14, 0.01, 0.1
     sigma_soil0 = np.zeros(n_sar_obs)*0.2  # Say
     x0_all = \
@@ -79,14 +79,14 @@ def sar_inversion(s1_obs, s2_data):
     tic = time.time()
     n_pxls = 0
     bounds = [
-            [-40, -5],
-            [1e-4, 1],
-            [-40, -1],
-            [-40, -5],
-            [1e-4, 1],
-            [-40, -1],
-            *([[0.01, 1]]*n_sar_obs)
-            ]
+        [-40, -5],
+        [1e-4, 1],
+        [-40, -1],
+        [-40, -5],
+        [1e-4, 1],
+        [-40, -1],
+        *([[0.01, 1]]*n_sar_obs)
+    ]
     x0 = x0_all
     for (row, col) in np.ndindex(*lai_s1[0].shape):
         lai = lai_s1[:, row, col]
