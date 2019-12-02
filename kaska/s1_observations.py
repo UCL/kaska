@@ -156,15 +156,15 @@ class Sentinel1Observations(object):
 
 
 if __name__ == "__main__":
-    start_date = dt.datetime(2017, 3, 1)
-    end_date = dt.datetime(2017, 9, 1)
-    temporal_grid_space = 5
-    temporal_grid = define_temporal_grid(start_date, end_date,
-                                         temporal_grid_space)
-    nc_file = "/data/selene/ucfajlg/ELBARA_LMU/mirror_ftp/" + \
+    START_DATE = dt.datetime(2017, 3, 1)
+    END_DATE = dt.datetime(2017, 9, 1)
+    TEMPORAL_GRID_SPACE = 5
+    TEMPORAL_GRID = define_temporal_grid(START_DATE, END_DATE,
+                                         TEMPORAL_GRID_SPACE)
+    NC_FILE = "/data/selene/ucfajlg/ELBARA_LMU/mirror_ftp/" + \
               "141.84.52.201/S1/S1_LMU_site_2017_new.nc"
-    s1_obs = Sentinel1Observations(
-                nc_file,
+    S1_OBS = Sentinel1Observations(
+                NC_FILE,
                 "/home/ucfajlg/Data/python/KaFKA_Validation/LMU/carto/ESU.tif",
-                time_grid=temporal_grid)
-    vv = s1_obs.read_time_series(temporal_grid[:5])
+                time_grid=TEMPORAL_GRID)
+    VV = S1_OBS.read_time_series(TEMPORAL_GRID[:5])
