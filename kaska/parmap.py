@@ -344,41 +344,41 @@ def _sort_generator_unique_integers(items, start=0, key=None):
         start += 1
 
 
-def _txtbar(count, N, ticks=50, text='Progress'):
+def _txtbar(count, iter_size, ticks=50, text='Progress'):
     """
     Print a text-based progress bar.
 
     Usage:
-        _txtbar(count,N)
+        _txtbar(count, iter_size)
 
     Inputs:
-        count   : Iteration count (start at 0)
-        N       : Iteration size
-        ticks   : [50] Number of ticks
-        text    : ['Progress'] Text to display (don't include `:`)
+        count     : Iteration count (start at 0)
+        iter_size : Iteration size
+        ticks     : [50] Number of ticks
+        text      : ['Progress'] Text to display (don't include `:`)
 
-    Prints a text-based progress bar to the terminal. Obviosly
-    printing other things to screen will mess this up:
+    Prints a text-based progress bar to the terminal. Obviously
+    printing other things to screen will mess this up.
     """
 
     count = int(count + 1)
-    ticks = min(ticks, N)
-    isCount = int(1.0*count % round(1.0*N/ticks)) == 0
+    ticks = min(ticks, iter_size)
+    is_count = int(1.0*count % round(1.0*iter_size/ticks)) == 0
 
-    if not (isCount or count == 1 or count == N):
+    if not (is_count or count == 1 or count == iter_size):
         return
 
-    Npound = int(round(1.0 * count/N*ticks))
-    Nspace = int(1.0*ticks - Npound)
-    Nprint = int(round(1.0 * count/N*100))
+    num_pound = int(round(1.0 * count/iter_size*ticks))
+    num_space = int(1.0*ticks - num_pound)
+    num_print = int(round(1.0 * count/iter_size*100))
 
     if count == 1:
-        Nprint = 0
+        num_print = 0
 
     if len(text) > 0:
         text += ': '
 
-    txt = '{:s}{:s}{:s} : {:3d}%  '.format(text, '#'*Npound,
-                                           '-'*Nspace, Nprint)
+    txt = '{:s}{:s}{:s} : {:3d}%  '.format(text, '#'*num_pound,
+                                           '-'*num_space, num_print)
     print('\r%s' % txt, end='')
     sys.stdout.flush()
