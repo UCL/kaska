@@ -88,10 +88,10 @@ class Sentinel2Observations():
         None
         Doesn't return anything, but changes `self.state_mask`
         """
-        self.ulx = ulx
-        self.uly = uly
-        self.lrx = lrx
-        self.lry = lry
+        # self.ulx = ulx
+        # self.uly = uly
+        # self.lrx = lrx
+        # self.lry = lry
         width = lrx - ulx
         height = uly - lry
 
@@ -310,15 +310,15 @@ class Sentinel2Observations():
         sun_angles = reproject_data(
             str(current_folder.parent / "ANG_DATA/SAA_SZA.tif"),
             target_img=self.state_mask,
-            xRes=20,
-            yRes=20,
+            x_res=20,
+            y_res=20,
             resample=0,
         ).ReadAsArray()
         view_angles = reproject_data(
             str(current_folder.parent / "ANG_DATA/VAA_VZA_B05.tif"),
             target_img=self.state_mask,
-            xRes=20,
-            yRes=20,
+            x_res=20,
+            y_res=20,
             resample=0,
         ).ReadAsArray()
         sza = np.cos(np.deg2rad(sun_angles[1].mean() / 100.0))
