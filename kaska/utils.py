@@ -11,6 +11,8 @@ from osgeo import osr
 
 import numpy as np
 
+from .TwoNN import Two_NN
+
 LOG = logging.getLogger(__name__)
 
 
@@ -79,13 +81,13 @@ def reproject_data(source_img,
         dst_no_data = 0
 
     if src_srs is not None:
-        _srcSRS = osr.SpatialReference()
+        _my_src_srs = osr.SpatialReference()
         try:
-            _srcSRS.ImportFromEPSG(int(src_srs.split(":")[1]))
+            _my_src_srs.ImportFromEPSG(int(src_srs.split(":")[1]))
         except:
-            _srcSRS.ImportFromWkt(src_srs)
+            _my_src_srs.ImportFromWkt(src_srs)
     else:
-        _srcSRS = None
+        _my_src_srs = None
 
     if (target_img is None) & (dst_srs is None):
         raise IOError(
@@ -134,7 +136,7 @@ def reproject_data(source_img,
             outputType=output_type,
             srcNodata=src_no_data,
             resampleAlg=resample,
-            srcSRS=_srcSRS
+            srcSRS=_my_src_srs
             )
 
     else:
@@ -152,7 +154,7 @@ def reproject_data(source_img,
             dstNodata=dst_no_data,
             srcNodata=src_no_data,
             resampleAlg=resample,
-            srcSRS=_srcSRS
+            srcSRS=_my_src_srs
             )
     if verbose:
         LOG.debug("There are %d bands in this file, use " \
@@ -298,8 +300,10 @@ def rasterise_vector(vector_f, sample_f=None, pixel_size=20):
     GDAL object
         A GDAL object
     """
-    source_ds = ogr.Open(vector_f)
-    source_layer = source_ds.GetLayer()
+    # source_ds = ogr.Open(vector_f)
+    # source_layer = source_ds.GetLayer()
+    # Reducing no. of locals to stop pylint complaint.
+    source_layer = ogr.Open(vector_f).GetLayer()
 
     if sample_f is not None:
         dataset = gdal.Open(sample_f)
