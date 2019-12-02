@@ -24,6 +24,7 @@ S2MSIdata = namedtuple(
 
 
 class Sentinel2Observations():
+    """Class for dealing with Sentinel 2 observations"""
     def __init__(
             self,
             parent_folder,
@@ -36,7 +37,7 @@ class Sentinel2Observations():
         self.band_prob_threshold = band_prob_threshold
         parent_folder = Path(parent_folder)
         if not parent_folder.exists():
-            LOG.info(f"S2 data folder: {parent_folder}")
+            LOG.info("S2 data folder: %s", parent_folder)
             raise IOError("S2 data folder doesn't exist")
         self.band_map = [
             "B01",
@@ -59,9 +60,10 @@ class Sentinel2Observations():
         self.original_mask = state_mask
         self.state_mask = state_mask
 
-        f = np.load(emulator, allow_pickle=True)
+        my_file = np.load(emulator, allow_pickle=True)
         self.emulator = Two_NN(
-            Hidden_Layers=f.f.Hidden_Layers, Output_Layers=f.f.Output_Layers
+            Hidden_Layers=my_file.f.Hidden_Layers,
+            Output_Layers=my_file.f.Output_Layers
         )
         LOG.debug("Read emulator in")
         LOG.debug("Searching for files....")
@@ -114,20 +116,20 @@ class Sentinel2Observations():
             the second element is the geotransform.
         """
         try:
-            g = gdal.Open(self.state_mask)
-            proj = g.GetProjection()
-            geoT = np.array(g.GetGeoTransform())
-            nx = g.RasterXSize
-            ny = g.RasterYSize
+            dataset = gdal.Open(self.state_mask)
+            proj = dataset.GetProjection()
+            geo_transform = np.array(dataset.GetGeoTransform())
+            num_x = dataset.RasterXSize
+            num_y = dataset.RasterYSize
         except RuntimeError:
             proj = self.state_mask.GetProjection()
-            geoT = np.array(self.state_mask.GetGeoTransform())
-            nx = self.state_mask.RasterXSize
-            ny = self.state_mask.RasterYSize
+            geo_transform = np.array(self.state_mask.GetGeoTransform())
+            num_x = self.state_mask.RasterXSize
+            num_y = self.state_mask.RasterYSize
         # new_geoT = geoT*1.
         # new_geoT[0] = new_geoT[0] + self.ulx*new_geoT[1]
         # new_geoT[3] = new_geoT[3] + self.uly*new_geoT[5]
-        return proj, geoT.tolist(), nx, ny  # new_geoT.tolist()
+        return proj, geo_transform.tolist(), num_x, num_y  # new_geoT.tolist()
 
     def _find_granules(self, parent_folder, time_grid=None):
         """Finds granules. Currently does so by checking for
@@ -176,7 +178,7 @@ class Sentinel2Observations():
         # self.date_data = dict(zip(self.dates,
         #                          [f.parent for f in test_files]))
         self.bands_per_observation = {}
-        LOG.info(f"Found {len(test_files):d} S2 granules")
+        LOG.info("Found %d S2 granules", len(test_files))
         LOG.info(
             f"First granule: "
             + f"{sorted(self.dates)[0].strftime('%Y-%m-%d'):s}"
@@ -261,7 +263,7 @@ class Sentinel2Observations():
             original_s2_file = current_folder / (
                 f"{fname_prefix:s}" + f"{the_band:s}_sur.tif"
             )
-            LOG.debug(f"Original file {str(original_s2_file):s}")
+            LOG.debug("Original file: %s", str(original_s2_file))
             rho = reproject_data(
                 str(original_s2_file), target_img=self.state_mask
             ).ReadAsArray()
@@ -291,7 +293,7 @@ class Sentinel2Observations():
         )
         mask = mask1
         if mask.sum() == 0:
-            LOG.info(f"{str(timestep):s} -> No clear observations")
+            LOG.info("%s -> No clear observations", str(timestep))
             return None, None, None, None, None, None
         LOG.info(
             f"{str(timestep):s} -> Total of {mask.sum():d} clear pixels "
