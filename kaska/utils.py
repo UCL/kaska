@@ -300,10 +300,11 @@ def rasterise_vector(vector_f, sample_f=None, pixel_size=20):
     GDAL object
         A GDAL object
     """
-    # source_ds = ogr.Open(vector_f)
-    # source_layer = source_ds.GetLayer()
+    source_ds = ogr.Open(vector_f)
+    source_layer = source_ds.GetLayer()
     # Reducing no. of locals to stop pylint complaint.
-    source_layer = ogr.Open(vector_f).GetLayer()
+    # But that causes a seg fault when run pytest
+    # source_layer = ogr.Open(vector_f).GetLayer()
 
     if sample_f is not None:
         dataset = gdal.Open(sample_f)
