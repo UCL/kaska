@@ -23,7 +23,7 @@ the scatterers within the turbid medium, and are usually related to LAI.
 
 import numpy as np
 
-from numba import jit
+# from numba import jit  # unused import
 
 
 def wcm(x, theta=30.):
@@ -83,9 +83,9 @@ def wcm_jac(x, theta=30.):
     tau = np.exp(-2 * b * V2 / m)
 
     der_dA = V1 - V1 * tau
-    der_dV1 = a - a * tau
+    # der_dV1 = a - a * tau   unused variable
     der_dB = (-2 * V2 / m) * tau * (-a * V1 + s)
-    der_dV2 = (-2 * b / m) * tau * (-a * V1 + s)
+    # der_dV2 = (-2 * b / m) * tau * (-a * V1 + s)   unused variable
     der_dC = tau
     der_dsigmasoil = tau
 
@@ -187,19 +187,19 @@ def hessian_time_residual(hess_xx, diff_xx):
     AA = np.sum(hess_xx[0] * diff_xx)  # daa
     AB = np.sum(hess_xx[1] * diff_xx)
     AC = np.sum(hess_xx[2] * diff_xx)
-    AS = hess_xx[3] * diff_xx
+    # AS = hess_xx[3] * diff_xx   unused variable
 #     ABCS = np.concatenate([np.array([AA, AB, AC]), AS])
     # Second row
     BA = np.sum(hess_xx[4] * diff_xx)
     BB = np.sum(hess_xx[5] * diff_xx)
     BC = np.sum(hess_xx[6] * diff_xx)
-    BS = hess_xx[7] * diff_xx
+    # BS = hess_xx[7] * diff_xx   unused variable
 #     BACS = np.concatenate([np.array([BA, BB, BC]), BS])
     # Third row
     CA = np.sum(hess_xx[8] * diff_xx)
     CB = np.sum(hess_xx[9] * diff_xx)
     CC = np.sum(hess_xx[10] * diff_xx)
-    CS = hess_xx[11] * diff_xx
+    # CS = hess_xx[11] * diff_xx   unused variable
 #     CABS = np.concatenate([np.array([CA, CB, CC]), CS])
     # All other rows
     SA = hess_xx[12] * diff_xx
