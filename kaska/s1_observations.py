@@ -35,8 +35,10 @@ def get_s1_dates(s1_file):
     times = [float(s1_file.GetRasterBand(b+1).GetMetadata()['NETCDF_DIM_time'])
              for b in range(s1_file.RasterCount)]
     times = [dt.datetime(1970, 1, 1) + dt.timedelta(days=x) for x in times]
-    LOG.info(f"Sentinel 1 First obs: {times[0].strftime('%Y-%m-%d'):s}")
-    LOG.info(f"Sentinel 1 Last obs: {times[-1].strftime('%Y-%m-%d'):s}")
+    # LOG.info(f"Sentinel 1 First obs: {times[0].strftime('%Y-%m-%d'):s}")
+    LOG.info("Sentinel 1 First obs: %s", times[0].strftime('%Y-%m-%d'))
+    # LOG.info(f"Sentinel 1 Last obs: {times[-1].strftime('%Y-%m-%d'):s}")
+    LOG.info("Sentinel 1 Last obs: %s", times[-1].strftime('%Y-%m-%d'))
     return times
 
 
@@ -140,9 +142,9 @@ class Sentinel1Observations(object):
         late = time_grid[-1]
 
         sel_dates = [k for k, v in self.dates.items()
-                     if (early <= k <= late)]
+                     if early <= k <= late]
         sel_bands = [v for k, v in self.dates.items()
-                     if (early <= k <= late)]
+                     if early <= k <= late]
         obs = {}
         for ii, layer in enumerate(self.s1_data_ptr.keys()):
             obs[layer] = np.array([self.s1_data_ptr[
