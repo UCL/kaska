@@ -9,14 +9,7 @@
 import multiprocessing as mp
 import multiprocessing.dummy as mpd
 from threading import Thread
-import threading
 import sys
-from collections import defaultdict
-
-try:
-    from queue import Queue
-except ImportError:
-    from Queue import Queue
 
 try:
     import tqdm
@@ -35,11 +28,11 @@ else:
 CPU_COUNT = mp.cpu_count()
 
 
-def parmap(fun, seq, N=None, Nt=1, chunksize=1, ordered=True,
+def parmap(fun, seq, num_proc=None, num_threads=1, chunksize=1, ordered=True,
            daemon=False, progress=False):
     """
-    parmap -- Simple parallel mapper that can split amongst processes (N)
-              and threads (Nt) (within the processes).
+    parmap -- Simple parallel mapper that can split amongst processes
+              (num_proc) and threads (num_threads) (within the processes).
 
               Does *NOT* require functions to be pickleable (unlike
               vanilla multiprocess.Pool.map)
@@ -55,16 +48,16 @@ def parmap(fun, seq, N=None, Nt=1, chunksize=1, ordered=True,
 
     Options:
     --------
-    N [None] (integer or None)
+    num_proc [None] (integer or None)
         Number of processes to use. If `None`, will use the CPU_COUNT
 
-    Nt [1] (integer)
+    num_threads [1] (integer)
         Number of threads to use. See notes below on multi-threaded vs
         multi-processes.
 
     chunksize [1] (int)
         How to be break up the incoming sequence. Useful if also using threads.
-        Will be (re)set to max(chunksize,Nt)
+        Will be (re)set to max(chunksize, num_threads)
 
     ordered [True] (bool)
         Whether or not to order the results. If False, will return in whatever
@@ -112,7 +105,7 @@ def parmap(fun, seq, N=None, Nt=1, chunksize=1, ordered=True,
     For simple needs, the following may be better:
 
     >>> import multiprocessing as mp
-    >>> pool = mp.Pool(N) # Or mp.Pool() for N=None
+    >>> pool = mp.Pool(num_proc) # Or mp.Pool() for num_proc=None
     >>> results = list( pool.imap(fun,seq) ) # or just pool.map
     >>> pool.close()
 
@@ -123,8 +116,8 @@ def parmap(fun, seq, N=None, Nt=1, chunksize=1, ordered=True,
     counting function for display of the progress without the use of
     global (multiprocessing manager) variables and locks.
 
-    With the exception of when N == 1 (where it falls back to serial methods)
-    the code works as follows:
+    With the exception of when num_proc == 1 (where it falls back to serial
+    methods) the code works as follows:
 
     - A background thread is started the will iterate over the incoming
       sequence and add items to the queue. If the incoming sequence is
@@ -151,12 +144,12 @@ def parmap(fun, seq, N=None, Nt=1, chunksize=1, ordered=True,
 
     Last Updated:
     -------------
-    2018-07-30
+    2010-12-02
     """
-    if N is None:
-        N = CPU_COUNT
+    if num_proc is None:
+        num_proc = CPU_COUNT
 
-    chunksize = max(chunksize, Nt)
+    chunksize = max(chunksize, num_threads)
 
     try:
         tot = len(seq)
@@ -178,11 +171,11 @@ def parmap(fun, seq, N=None, Nt=1, chunksize=1, ordered=True,
             # Set the total since tqdm won't be able to get it.
             counter = partial(tqdm.tqdm, total=tot)
 
-    if N == 1:
-        if Nt == 1:
+    if num_proc == 1:
+        if num_threads == 1:
             out = imap(fun, seq)
         else:
-            pool = mpd.Pool(Nt)  # thread pools don't have the pickle issues
+            pool = mpd.Pool(num_threads)  # thread pools don't have the pickle issues
             out = pool.imap(fun, seq)
 
         if progress:
@@ -190,7 +183,7 @@ def parmap(fun, seq, N=None, Nt=1, chunksize=1, ordered=True,
         for item in out:
             yield item
 
-        if Nt > 1:
+        if num_threads > 1:
             pool.close()
         return
 
@@ -198,8 +191,8 @@ def parmap(fun, seq, N=None, Nt=1, chunksize=1, ordered=True,
     q_out = mp.Queue()
 
     # Start the workers
-    workers = [mp.Process(target=_worker, args=(fun, q_in, q_out, Nt))
-               for _ in xrange(N)]
+    workers = [mp.Process(target=_worker, args=(fun, q_in, q_out, num_threads))
+               for _ in xrange(num_proc)]
 
     for worker in workers:
         worker.daemon = daemon
@@ -211,7 +204,7 @@ def parmap(fun, seq, N=None, Nt=1, chunksize=1, ordered=True,
             q_in.put(iixs)
 
         # Once (if ever) it is exhausted, send None to close workers
-        for _ in xrange(N):
+        for _ in xrange(num_proc):
             q_in.put(None)
 
     add_to_queue_thread = Thread(target=add_to_queue)
@@ -221,7 +214,7 @@ def parmap(fun, seq, N=None, Nt=1, chunksize=1, ordered=True,
     def queue_getter():
         finished = 0
         count = 0
-        while finished < N:
+        while finished < num_proc:
             out = q_out.get()
             if out is None:
                 finished += 1
@@ -273,10 +266,10 @@ def _counter_nb(items, tot=None):
         yield item
 
 
-def _worker(fun, q_in, q_out, Nt):
+def _worker(fun, q_in, q_out, num_threads):
     """ This actually runs everything """
-    if Nt > 1:
-        pool = mpd.Pool(Nt)
+    if num_threads > 1:
+        pool = mpd.Pool(num_threads)
         _map = pool.map  # thread pools don't have the pickle issues
     else:
         _map = map
@@ -295,7 +288,7 @@ def _worker(fun, q_in, q_out, Nt):
         list(_map(_ap, iixs))  # list forces the iteration
         q_in.task_done()
 
-    if Nt > 1:
+    if num_threads > 1:
         pool.close()
 
 
