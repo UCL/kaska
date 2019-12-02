@@ -144,7 +144,7 @@ def parmap(fun, seq, num_proc=None, num_threads=1, chunksize=1, ordered=True,
 
     Last Updated:
     -------------
-    2010-12-02
+    2018-07-30
     """
     if num_proc is None:
         num_proc = CPU_COUNT
@@ -175,7 +175,8 @@ def parmap(fun, seq, num_proc=None, num_threads=1, chunksize=1, ordered=True,
         if num_threads == 1:
             out = imap(fun, seq)
         else:
-            pool = mpd.Pool(num_threads)  # thread pools don't have the pickle issues
+            pool = mpd.Pool(num_threads)  # thread pools don't have
+                                          # the pickle issues
             out = pool.imap(fun, seq)
 
         if progress:
@@ -213,7 +214,6 @@ def parmap(fun, seq, num_proc=None, num_threads=1, chunksize=1, ordered=True,
     # Generator we use to return
     def queue_getter():
         finished = 0
-        count = 0
         while finished < num_proc:
             out = q_out.get()
             if out is None:
@@ -240,11 +240,11 @@ def parmap(fun, seq, num_proc=None, num_threads=1, chunksize=1, ordered=True,
 
 
 def _counter(items, tot=None):
-    for ii, item in enumerate(items):
+    for my_ii, item in enumerate(items):
         if tot is not None:
-            _txtbar(ii, tot, ticks=50, text='')
+            _txtbar(my_ii, tot, ticks=50, text='')
         else:
-            txt = '{}'.format(ii+1)
+            txt = '{}'.format(my_ii + 1)
             print('\r%s' % txt, end='')
             sys.stdout.flush()
         yield item
@@ -255,14 +255,14 @@ def _counter_nb(items, tot=None):
     from IPython.display import display
 
     if tot is not None:
-        f = FloatProgress(min=0, max=tot)
+        my_text = FloatProgress(min=0, max=tot)
     else:
-        f = FloatText()
-        f.value = 0
-    display(f)
+        my_text = FloatText()
+        my_text.value = 0
+    display(my_text)
 
-    for ii, item in enumerate(items):
-        f.value += 1
+    for my_ii, item in enumerate(items):
+        my_text.value += 1
         yield item
 
 
@@ -282,9 +282,9 @@ def _worker(fun, q_in, q_out, num_threads):
             break
 
 #         for ix in iixs:
-        def _ap(ix):
-            i, x = ix
-            q_out.put((i, fun(x)))
+        def _ap(i_x):
+            i, my_x = i_x
+            q_out.put((i, fun(my_x)))
         list(_map(_ap, iixs))  # list forces the iteration
         q_in.task_done()
 
@@ -292,10 +292,10 @@ def _worker(fun, q_in, q_out, num_threads):
         pool.close()
 
 
-def _iter_chunks(seq, n):
+def _iter_chunks(seq, size):
     """
-    yield a len(n) tuple from seq. If not divisible, the last one would be less
-    than n
+    yield a len(size) tuple from seq. If not divisible, the last one would be less
+    than size
     """
     _n = 0
     for item in seq:
@@ -305,7 +305,7 @@ def _iter_chunks(seq, n):
             group.append(item)
         _n += 1
 
-        if _n == n:
+        if _n == size:
             yield tuple(group)
             _n = 0
     if _n > 0:
@@ -322,11 +322,11 @@ def _sort_generator_unique_integers(items, start=0, key=None):
     queue = dict()
     for item in items:
         if key is not None:
-            ik = key(item)
+            i_k = key(item)
         else:
-            ik = item
+            i_k = item
 
-        if ik == start:
+        if i_k == start:
             yield item
             start += 1
 
@@ -335,7 +335,7 @@ def _sort_generator_unique_integers(items, start=0, key=None):
                 yield queue.pop(start)  # average O(1), worse-case O(N)
                 start += 1              # but based on ref below,
         else:                           # should be O(1) for integer keys.
-            queue[ik] = item
+            queue[i_k] = item
             # Ref: https://wiki.python.org/moin/TimeComplexity
 
     # Exhaust the rest
@@ -369,7 +369,7 @@ def _txtbar(count, iter_size, ticks=50, text='Progress'):
         return
 
     num_pound = int(round(1.0 * count/iter_size*ticks))
-    num_space = int(1.0*ticks - num_pound)
+    num_space = int(1.0 * ticks - num_pound)
     num_print = int(round(1.0 * count/iter_size*100))
 
     if count == 1:
