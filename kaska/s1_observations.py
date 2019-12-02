@@ -23,7 +23,7 @@ S1data = namedtuple(
 )
 
 
-layers = [
+LAYERS = [
     "sigma0_vv_norm_multi_db",
     "sigma0_vh_norm_multi_db",
     "localIncidenceAngle"
@@ -42,17 +42,20 @@ def get_s1_dates(s1_file):
     return times
 
 
-class Sentinel1Observations(object):
+class Sentinel1Observations:
+    """Class for dealing with Sentinel 1 observations"""
     def __init__(
             self,
             netCDF_file,
             state_mask,
             chunk=None,
             time_grid=None,
-            nc_layers={"VV": "sigma0_vv_norm_multi_db",
-                       "VH": "sigma0_vh_norm_multi_db",
-                       "theta": "localIncidenceAngle"}
+            nc_layers=None
         ):
+        if nc_layers is None:
+            nc_layers = {"VV": "sigma0_vv_norm_multi_db",
+                         "VH": "sigma0_vh_norm_multi_db",
+                         "theta": "localIncidenceAngle"}
         self.time_grid = time_grid
         self.state_mask = state_mask
         self.nc_file = Path(netCDF_file)
@@ -60,16 +63,17 @@ class Sentinel1Observations(object):
         self._match_to_mask()
 
     def apply_roi(self, ulx, uly, lrx, lry):
-        self.ulx = ulx
-        self.uly = uly
-        self.lrx = lrx
-        self.lry = lry
+        """Apply a region of interest"""
+        # self.ulx = ulx
+        # self.uly = uly
+        # self.lrx = lrx
+        # self.lry = lry
         width = lrx - ulx
         height = uly - lry
 
         self.state_mask = gdal.Translate(
             "",
-            self.original_mask,
+            self.original_mask, # Error: class member does not exist.
             srcWin=[ulx, uly, width, abs(height)],
             format="MEM",
         )
@@ -89,39 +93,41 @@ class Sentinel1Observations(object):
             the second element is the geotransform.
         """
         try:
-            g = gdal.Open(self.state_mask)
-            proj = g.GetProjection()
-            geoT = np.array(g.GetGeoTransform())
-            nx = g.RasterXSize
-            ny = g.RasterYSize
+            dataset = gdal.Open(self.state_mask)
+            proj = dataset.GetProjection()
+            geo_transform = np.array(dataset.GetGeoTransform())
+            num_x = dataset.RasterXSize
+            num_y = dataset.RasterYSize
 
         except RuntimeError:
             proj = self.state_mask.GetProjection()
-            geoT = np.array(self.state_mask.GetGeoTransform())
-            nx = self.state_mask.RasterXSize
-            ny = self.state_mask.RasterYSize
+            geo_transform = np.array(self.state_mask.GetGeoTransform())
+            num_x = self.state_mask.RasterXSize
+            num_y = self.state_mask.RasterYSize
 
         # new_geoT = geoT*1.
         # new_geoT[0] = new_geoT[0] + self.ulx*new_geoT[1]
         # new_geoT[3] = new_geoT[3] + self.uly*new_geoT[5]
-        return proj, geoT.tolist(), nx, ny  # new_geoT.tolist()
+        return proj, geo_transform.tolist(), num_x, num_y  # new_geoT.tolist()
 
     def _match_to_mask(self):
         """Matches the observations to the state mask.
         """
         self.s1_data_ptr = {}
+        last_layer = None
         for layer, layer_name in self.nc_layers.items():
             fname = f'NETCDF:"{self.nc_file.as_posix():s}":{layer_name:s}'
             self.s1_data_ptr[layer] = \
                 reproject_data(fname,
                                output_format="VRT",
-                               srcSRS="EPSG:4326",
+                               src_srs="EPSG:4326",
                                target_img=self.state_mask)
-        s1_dates = get_s1_dates(self.s1_data_ptr[layer])
+            last_layer = layer
+        s1_dates = get_s1_dates(self.s1_data_ptr[last_layer])
         self.dates = {x: (i+1)
                       for i, x in enumerate(s1_dates)
-                      if ((x >= self.time_grid[0]) and
-                          (x <= self.time_grid[-1]))}
+                      if self.time_grid[0] <= x <= self.time_grid[-1]
+                      }
 
     def read_time_series(self, time_grid):
         """Reads a time series of observations. Uses the time grid to provide
@@ -146,7 +152,7 @@ class Sentinel1Observations(object):
         sel_bands = [v for k, v in self.dates.items()
                      if early <= k <= late]
         obs = {}
-        for ii, layer in enumerate(self.s1_data_ptr.keys()):
+        for my_ii, layer in enumerate(self.s1_data_ptr.keys()):
             obs[layer] = np.array([self.s1_data_ptr[
                 layer].GetRasterBand(i).ReadAsArray()
                                    for i in sel_bands])
