@@ -314,15 +314,16 @@ def cost_jac(x, svh, svv, theta, sigma=0.5):
     dvv = wcm_jac(x_vv, theta=theta)
     dvh = wcm_jac(x_vh, theta=theta)
 
-    jac = np.concatenate([np.array([np.sum(dvv[0] * diff_vv),
-                          np.sum(dvv[1] * diff_vv),
-                          np.sum(dvv[2] * diff_vv),
-                          # np.sum(dvv[3]*diff_vv), # Removed D parameter
-                          np.sum(dvh[0] * diff_vh),
-                          np.sum(dvh[1] * diff_vh),
-                          np.sum(dvh[2] * diff_vh)]),
-                          # np.sum(dvh[3]*diff_vh)]),# Removed D parameter
-                          dvv[-1] * diff_vv + dvh[-1] * diff_vh])
+    jac = \
+        np.concatenate([np.array([np.sum(dvv[0] * diff_vv),
+                                  np.sum(dvv[1] * diff_vv),
+                                  np.sum(dvv[2] * diff_vv),
+                                  # np.sum(dvv[3]*diff_vv), # Removed D param
+                                  np.sum(dvh[0] * diff_vh),
+                                  np.sum(dvh[1] * diff_vh),
+                                  np.sum(dvh[2] * diff_vh)]),
+                        # np.sum(dvh[3]*diff_vh)]),# Removed D parameter
+                        dvv[-1] * diff_vv + dvh[-1] * diff_vh])
     return -jac / sigma**2
 
 
@@ -377,15 +378,19 @@ def cost_hess(x, svh, svv, theta, sigma=0.5):
     # The hessian contribution to the cost function is given by
     # H'C_{obs}H'^{T} - H''C_{obs}(H(x)-y)
     # since C_obs is diagonal, the first term is diagonal
-    linear_hess_term = np.diag(np.concatenate([np.array([np.sum(dvv[0]),
-                               np.sum(dvv[1]),
-                               np.sum(dvv[2]),
-                               # np.sum(dvv[3]*diff_vv), # Removed D parameter
-                               np.sum(dvh[0]),
-                               np.sum(dvh[1]),
-                               np.sum(dvh[2])]),
-        # np.sum(dvh[3]*diff_vh)]), Removed D parameter
-        dvv[-1] + dvh[-1]])**2) / (sigma**2)
+    linear_hess_term = \
+        np.diag(np.concatenate([np.array([np.sum(dvv[0]),
+                                          np.sum(dvv[1]),
+                                          np.sum(dvv[2]),
+                                          # np.sum(dvv[3]*diff_vv),
+                                          # Removed D parameter
+                                          np.sum(dvh[0]),
+                                          np.sum(dvh[1]),
+                                          np.sum(dvh[2])
+                                         ]),
+                                # np.sum(dvh[3]*diff_vh)]),
+                                # Removed D parameter
+                                dvv[-1] + dvh[-1]])**2) / (sigma**2)
 
     ABC_ABC_vv, ABCS_vv, SS_vv = hessian_time_residual(hess_vv, diff_vv)
     # top_rows = np.vstack([ABC_ABC, ABCS.T])
