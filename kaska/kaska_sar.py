@@ -140,19 +140,19 @@ def save_s1_output(output_folder, obs, sar_data, time_grid, chunk):
 
 
 if __name__ == "__main__":
-    state_mask = "/home/ucfajlg/Data/python/KaFKA_Validation/LMU/carto/ESU.tif"
-    nc_file = "/data/selene/ucfajlg/ELBARA_LMU/mirror_ftp/141.84.52.201" + \
+    STATE_MASK = "/home/ucfajlg/Data/python/KaFKA_Validation/LMU/carto/ESU.tif"
+    NC_FILE = "/data/selene/ucfajlg/ELBARA_LMU/mirror_ftp/141.84.52.201" + \
               "/S1/S1_LMU_site_2017_new.nc"
-    start_date = dt.datetime(2017, 5, 1)
-    end_date = dt.datetime(2017, 9, 1)
-    temporal_grid_space = 5
-    temporal_grid = define_temporal_grid(start_date, end_date,
-                                         temporal_grid_space)
+    START_DATE = dt.datetime(2017, 5, 1)
+    END_DATE = dt.datetime(2017, 9, 1)
+    TEMPORAL_GRID_SPACE = 5
+    TEMPORAL_GRID = define_temporal_grid(START_DATE, END_DATE,
+                                         TEMPORAL_GRID_SPACE)
     # Define S1 observations
-    s1_obs = Sentinel1Observations(nc_file,
-                                   state_mask,
-                                   time_grid=temporal_grid)
+    S1_OBS = Sentinel1Observations(NC_FILE,
+                                   STATE_MASK,
+                                   time_grid=TEMPORAL_GRID)
 
     # Read in smoothed S2 retrievals
-    s2_data = np.load("temporary_dump.npz")
-    sar_inversion(s1_obs, s2_data)
+    S2_DATA = np.load("temporary_dump.npz")
+    sar_inversion(S1_OBS, S2_DATA)
