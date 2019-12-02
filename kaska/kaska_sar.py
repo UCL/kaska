@@ -129,7 +129,8 @@ def sar_inversion(s1_obs, s2_data):
         n_pxls += 1
         if n_pxls % 1000 == 0:
             n_pxls = 0
-            LOG.info(f"Done 100 pixels in {(time.time()-tic):g}")
+            # LOG.info(f"Done 100 pixels in {(time.time()-tic):g}")
+            LOG.info("Done 100 pixels in %g", time.time()-tic)
             tic = time.time()
     return s1_temporal_grid, sigma_soil_out
 
