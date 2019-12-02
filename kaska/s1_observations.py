@@ -42,15 +42,15 @@ def get_s1_dates(s1_file):
 
 class Sentinel1Observations(object):
     def __init__(
-        self,
-        netCDF_file,
-        state_mask,
-        chunk=None,
-        time_grid=None,
-        nc_layers={"VV": "sigma0_vv_norm_multi_db",
-                   "VH": "sigma0_vh_norm_multi_db",
-                   "theta": "localIncidenceAngle"}
-    ):
+            self,
+            netCDF_file,
+            state_mask,
+            chunk=None,
+            time_grid=None,
+            nc_layers={"VV": "sigma0_vv_norm_multi_db",
+                       "VH": "sigma0_vh_norm_multi_db",
+                       "theta": "localIncidenceAngle"}
+        ):
         self.time_grid = time_grid
         self.state_mask = state_mask
         self.nc_file = Path(netCDF_file)
@@ -119,7 +119,7 @@ class Sentinel1Observations(object):
         self.dates = {x: (i+1)
                       for i, x in enumerate(s1_dates)
                       if ((x >= self.time_grid[0]) and
-                      (x <= self.time_grid[-1]))}
+                          (x <= self.time_grid[-1]))}
 
     def read_time_series(self, time_grid):
         """Reads a time series of observations. Uses the time grid to provide
@@ -146,7 +146,7 @@ class Sentinel1Observations(object):
         obs = {}
         for ii, layer in enumerate(self.s1_data_ptr.keys()):
             obs[layer] = np.array([self.s1_data_ptr[
-                                   layer].GetRasterBand(i).ReadAsArray()
+                layer].GetRasterBand(i).ReadAsArray()
                                    for i in sel_bands])
         the_obs = S1data(sel_dates, obs['VV'], obs['VH'],
                          obs['theta'], 0.5, 0.5)
