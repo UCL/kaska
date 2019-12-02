@@ -330,20 +330,20 @@ class Sentinel2Observations():
 
 
 if __name__ == "__main__":
-    time_grid = []
-    today = dt.datetime(2017, 1, 1)
-    while today <= dt.datetime(2017, 12, 31):
-        time_grid.append(today)
-        today += dt.timedelta(days=5)
+    TIME_GRID = []
+    TODAY = dt.datetime(2017, 1, 1)
+    while TODAY <= dt.datetime(2017, 12, 31):
+        TIME_GRID.append(TODAY)
+        TODAY += dt.timedelta(days=5)
 
-    s2_obs = Sentinel2Observations(
+    S2_OBS = Sentinel2Observations(
         "/home/ucfajlg/Data/python/KaFKA_Validation/LMU/s2_obs/",
         "/home/ucfafyi/DATA/Prosail/prosail_2NN.npz",
         "/home/ucfajlg/Data/python/KaFKA_Validation/LMU/carto/ESU.tif",
         band_prob_threshold=20,
         chunk=None,
-        time_grid=time_grid,
+        time_grid=TIME_GRID,
     )
-    retval = s2_obs.read_time_series(
+    RET_VAL = S2_OBS.read_time_series(
         [dt.datetime(2017, 1, 1), dt.datetime(2017, 12, 31)]
     )
