@@ -23,15 +23,15 @@ S2MSIdata = namedtuple(
 )
 
 
-class Sentinel2Observations(object):
+class Sentinel2Observations():
     def __init__(
-        self,
-        parent_folder,
-        emulator,
-        state_mask,
-        band_prob_threshold=5,
-        chunk=None,
-        time_grid=None,
+            self,
+            parent_folder,
+            emulator,
+            state_mask,
+            band_prob_threshold=5,
+            chunk=None,
+            time_grid=None,
     ):
         self.band_prob_threshold = band_prob_threshold
         parent_folder = Path(parent_folder)
