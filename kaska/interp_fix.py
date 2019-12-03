@@ -11,6 +11,7 @@ LICENSE: GNU GENERAL PUBLIC LICENSE V3
 import numpy as np
 from numba import jit
 
+
 @jit(nopython=True)
 def interp1d(newx, oldx, oldy):
     """Linear interpolation."""

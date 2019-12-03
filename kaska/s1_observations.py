@@ -51,7 +51,7 @@ class Sentinel1Observations:
             chunk=None,
             time_grid=None,
             nc_layers=None
-        ):
+            ):
         if nc_layers is None:
             nc_layers = {"VV": "sigma0_vv_norm_multi_db",
                          "VH": "sigma0_vh_norm_multi_db",
@@ -73,7 +73,7 @@ class Sentinel1Observations:
 
         self.state_mask = gdal.Translate(
             "",
-            self.original_mask, # Error: class member does not exist.
+            self.original_mask,  # Error: class member does not exist.
             srcWin=[ulx, uly, width, abs(height)],
             format="MEM",
         )

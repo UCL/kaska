@@ -387,8 +387,7 @@ def cost_hess(x, svh, svv, theta, sigma=0.5):
                                           # Removed D parameter
                                           np.sum(dvh[0]),
                                           np.sum(dvh[1]),
-                                          np.sum(dvh[2])
-                                         ]),
+                                          np.sum(dvh[2])]),
                                 # np.sum(dvh[3]*diff_vh)]),
                                 # Removed D parameter
                                 dvv[-1] + dvh[-1]])**2) / (sigma**2)

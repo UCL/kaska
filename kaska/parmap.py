@@ -175,8 +175,8 @@ def parmap(fun, seq, num_proc=None, num_threads=1, chunksize=1, ordered=True,
         if num_threads == 1:
             out = imap(fun, seq)
         else:
-            pool = mpd.Pool(num_threads)  # thread pools don't have
-                                          # the pickle issues
+            # Thread pools don't have the pickle issues
+            pool = mpd.Pool(num_threads)
             out = pool.imap(fun, seq)
 
         if progress:
@@ -294,8 +294,8 @@ def _worker(fun, q_in, q_out, num_threads):
 
 def _iter_chunks(seq, size):
     """
-    yield a len(size) tuple from seq. If not divisible, the last one would be less
-    than size
+    Yield a len(size) tuple from seq. If not divisible, the last one
+    would be less than size
     """
     _n = 0
     for item in seq:

@@ -157,7 +157,7 @@ def reproject_data(source_img,
             srcSRS=_my_src_srs
             )
     if verbose:
-        LOG.debug("There are %d bands in this file, use " \
+        LOG.debug("There are %d bands in this file, use "
                   "g.GetRasterBand(<band>) to avoid reading the whole file.",
                   warped.RasterCount
                   # % gg.RasterCount
@@ -183,8 +183,8 @@ def save_output_parameters(time_grid, observations, output_folder,
         output_folder.mkdir(parents=True, exist_ok=True)
     assert len(parameter_names) == len(output_data)
     num_t = output_data[0].shape[0]
-    assert len(time_grid) == num_t, f"time_grid length = {len(time_grid)}, " + \
-        f"data length = {num_t}. output_data[0].shape = {output_data[0].shape}"
+    assert len(time_grid) == num_t, f"time_grid length = {len(time_grid)}, " \
+        + f"data length = {num_t}. output_data[0].shape = {output_data[0].shape}"
     projection, geo_transform, num_x, num_y = observations.define_output()
     drv = gdal.GetDriverByName(output_format)
     for (param, data) in zip(parameter_names, output_data):
@@ -202,7 +202,7 @@ def save_output_parameters(time_grid, observations, output_folder,
 
             if outfile.exists():
                 outfile.unlink()
-            #LOG.info(f"Saving file {str(outfile):s}...")
+            # LOG.info(f"Saving file {str(outfile):s}...")
             LOG.info("Saving file %s...", str(outfile))
             dst_ds = drv.Create(str(outfile), num_x, num_y, 1,
                                 gdal.GDT_Float32, options)
@@ -240,7 +240,7 @@ def get_chunks(num_x, num_y, block_size=None):
     `block_size` most of the time except it'll be smaller to cope with edges)
     and `chunk_no`, the chunk number.
     """
-    #blocks = []
+    # blocks = []
 
     if block_size is None:
         block_size = [256, 256]
@@ -253,21 +253,21 @@ def get_chunks(num_x, num_y, block_size=None):
         # change the block size of the final piece
         if my_x == nx_blocks - 1:
             nx_valid = num_x - my_x * block_size[0]
-            #buf_size = nx_valid * ny_valid
+            # buf_size = nx_valid * ny_valid
 
         # find X offset
         this_x = my_x * block_size[0]
 
         # reset buffer size for start of Y loop
         ny_valid = block_size[1]
-        #buf_size = nx_valid * ny_valid
+        # buf_size = nx_valid * ny_valid
 
         # loop through Y lines
         for my_y in range(ny_blocks):
             # change the block size of the final piece
             if my_y == ny_blocks - 1:
                 ny_valid = num_y - my_y * block_size[1]
-                #buf_size = nx_valid * ny_valid
+                # buf_size = nx_valid * ny_valid
             chunk_no += 1
             # find Y offset
             this_y = my_y * block_size[1]

@@ -183,7 +183,7 @@ class Two_NN:
             np_model_file=None,
             Hidden_Layers=None,
             Output_Layers=None,
-        ):
+            ):
 
         self.history = None
 
@@ -213,7 +213,7 @@ class Two_NN:
             iterations=2000,
             tf_fname=("model.json", "model.h5"),
             _save_tf_model=False,
-        ):
+            ):
         # self.X, self.targs = X, targs
         # self.iterations = iterations
         if (X is not None) & (targs is not None):

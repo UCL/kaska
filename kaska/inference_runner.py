@@ -29,6 +29,7 @@ LOGGER = logging.getLogger(__name__)
 
 # pylint: disable=no-else-return
 
+
 def stitch_outputs(output_folder, parameter_list):
     """Given a folder with some contiguous files in GeoTIFF format, this
     function will stitch them together using their georeference information.
@@ -60,7 +61,8 @@ def stitch_outputs(output_folder, parameter_list):
     # chunks and dates
     output_tiffs = {}
     for parameter in parameter_list:
-        # files = sorted([fich for fich in path.glob(f"*{parameter:s}_A*_0x*.tif")])
+        # files = sorted(
+        #    [fich for fich in path.glob(f"*{parameter:s}_A*_0x*.tif")])
         files = sorted(list(path.glob(f"*{parameter:s}_A*_0x*.tif")))
         # e.g. if file is "LAI_A2019135_0xfd", fich is "A2019135"
         # dates = sorted(list(set([fich.stem.split(parameter)[1].split("_")[1]
@@ -109,7 +111,8 @@ def stitch_outputs(output_folder, parameter_list):
                                                     dates[band - 1][1:]})
         output_tiffs[parameter] = dst_ds.GetDescription()
         dst_ds = None
-        my_gdal = gdal.Open((path / f"{parameter:s}.tif").as_posix(), gdal.GA_Update)
+        my_gdal = gdal.Open((path / f"{parameter:s}.tif").as_posix(),
+                            gdal.GA_Update)
         my_gdal.BuildOverviews("average", np.power(2, np.arange(8)))
         my_gdal = None
         my_gdal = gdal.Translate(
@@ -123,13 +126,14 @@ def stitch_outputs(output_folder, parameter_list):
                 "COPY_SRC_OVERVIEWS=YES",
             ],
         )
-        shutil.move(path / "temporary.tif", (path / f"{parameter:s}.tif").as_posix())
+        shutil.move(path / "temporary.tif",
+                    (path / f"{parameter:s}.tif").as_posix())
         # Remove unneeded leftover files
         for ext in ("vrt", "ovr"):
             for a_file in path.glob("*." + ext):
                 a_file.unlink()
 
-        #LOG.info(f"Saved {parameter:s} file as {output_tiffs[parameter]:s}")
+        # LOG.info(f"Saved {parameter:s} file as {output_tiffs[parameter]:s}")
         LOGGER.info("Saved %s file as %s", parameter, output_tiffs[parameter])
     return output_tiffs
 
@@ -154,11 +158,11 @@ def process_tile(the_chunk, config):
     """
     # Unpack chunk object with UL pixel coordinates,
     # number of pixels in tile and chunk number
-    #this_x, this_y, nx_valid, ny_valid, chunk_no = the_chunk
-    #ulx = this_x
-    #uly = this_y
-    #lrx = this_x + nx_valid
-    #lry = this_y + ny_valid
+    # this_x, this_y, nx_valid, ny_valid, chunk_no = the_chunk
+    # ulx = this_x
+    # uly = this_y
+    # lrx = this_x + nx_valid
+    # lry = this_y + ny_valid
     ulx, uly, nx_valid, ny_valid, chunk_no = the_chunk
     lrx = ulx + nx_valid
     lry = uly + ny_valid
@@ -176,7 +180,8 @@ def process_tile(the_chunk, config):
     else:
         # Define KaSKA object with windowed observations.
 
-        LOGGER.info("Unmasked pixels in %s: %d", hex(chunk_no), n_unmasked_pxls)
+        LOGGER.info("Unmasked pixels in %s: %d",
+                    hex(chunk_no), n_unmasked_pxls)
         kaska = KaSKA(
             s2_obs,
             config.temporal_grid,
