@@ -13,6 +13,8 @@ import numpy as np
 
 from .TwoNN import Two_NN
 
+from .constants import DEFAULT_BLOCK_SIZE
+
 LOG = logging.getLogger(__name__)
 
 
@@ -243,7 +245,7 @@ def get_chunks(num_x, num_y, block_size=None):
     # blocks = []
 
     if block_size is None:
-        block_size = [256, 256]
+        block_size = [DEFAULT_BLOCK_SIZE, DEFAULT_BLOCK_SIZE]  # [256, 256]
 
     nx_blocks = (int)((num_x + block_size[0] - 1) / block_size[0])
     ny_blocks = (int)((num_y + block_size[1] - 1) / block_size[1])
