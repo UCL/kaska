@@ -177,13 +177,13 @@ def load_np_model(fname):
 
 class Two_NN(object):
     def __init__(
-        self,
-        tf_model=None,
-        tf_model_file=None,
-        np_model_file=None,
-        Hidden_Layers=None,
-        Output_Layers=None,
-    ):
+            self,
+            tf_model=None,
+            tf_model_file=None,
+            np_model_file=None,
+            Hidden_Layers=None,
+            Output_Layers=None,
+        ):
 
         if tf_model_file is not None:
             self.tf_model_file = tf_model_file
@@ -205,13 +205,13 @@ class Two_NN(object):
             self.Output_Layers = Output_Layers
 
     def train(
-        self,
-        X,
-        targs,
-        iterations=2000,
-        tf_fname=("model.json", "model.h5"),
-        save_tf_model=False,
-    ):
+            self,
+            X,
+            targs,
+            iterations=2000,
+            tf_fname=("model.json", "model.h5"),
+            save_tf_model=False,
+        ):
         # self.X, self.targs = X, targs
         # self.iterations = iterations
         if (X is not None) & (targs is not None):
