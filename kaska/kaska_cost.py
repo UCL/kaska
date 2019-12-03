@@ -1,4 +1,8 @@
 #!/usr/bin/env python
+"""kaska_cost.py
+Add meaningful description here!
+Is this class even used anywhere?
+"""
 from collections import namedtuple
 
 import numpy as np
@@ -8,7 +12,7 @@ common_computations = namedtuple('common_computations',
                                  'dprior_cost')
 
 
-class CostWrapper(object):
+class CostWrapper():
     def __init__(self, time_grid, current_data,
                  gamma, emu,
                  mu_prior, c_prior_inv):
@@ -29,9 +33,10 @@ class CostWrapper(object):
         self.x = None
 
     def calc_cost(self, x, *args):
+        """Calculate the cost"""
 
         idx = np.argmin(np.abs(np.array(self.doy_obs)[:, None] -
-                        np.array(self.time_grid)),
+                               np.array(self.time_grid)),
                         axis=1)
         obs_cost = 0.
         obs_dcost = np.zeros_like(x)
