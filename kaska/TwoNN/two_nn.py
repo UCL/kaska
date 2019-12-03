@@ -19,16 +19,16 @@ from tensorflow.keras import layers
 
 
 @jit(nopython=True)
-def affine_forward(x, w, b):
+def affine_forward(x, weights, bias):
     """
     Forward pass of an affine layer
     :param x: input of dimension (D, )
-    :param w: weights matrix of dimension (D, M)
-    :param b: biais vector of dimension (M, )
+    :param weights: weights matrix of dimension (D, M)
+    :param bias: bias vector of dimension (M, )
     :return output of dimension (M, ), and cache needed for backprop
     """
-    out = np.dot(x, w) + b
-    cache = (x, w)
+    out = np.dot(x, weights) + bias
+    cache = (x, weights)
     return out, cache
 
 
@@ -50,11 +50,11 @@ def affine_backward(dout, cache):
 
 
 @jit(nopython=True)
-def relu_forward(x):
+def relu_forward(my_x):
     """ Forward ReLU
     """
-    out = np.maximum(np.zeros(x.shape).astype(np.float32), x)
-    cache = x
+    out = np.maximum(np.zeros(my_x.shape).astype(np.float32), my_x)
+    cache = my_x
     return out, cache
 
 
@@ -175,7 +175,7 @@ def load_np_model(fname):
     return Hidden_Layers, Output_Layers
 
 
-class Two_NN(object):
+class Two_NN:
     def __init__(
             self,
             tf_model=None,
@@ -184,6 +184,8 @@ class Two_NN(object):
             Hidden_Layers=None,
             Output_Layers=None,
         ):
+
+        self.history = None
 
         if tf_model_file is not None:
             self.tf_model_file = tf_model_file
@@ -210,14 +212,14 @@ class Two_NN(object):
             targs,
             iterations=2000,
             tf_fname=("model.json", "model.h5"),
-            save_tf_model=False,
+            _save_tf_model=False,
         ):
         # self.X, self.targs = X, targs
         # self.iterations = iterations
         if (X is not None) & (targs is not None):
             self.tf_model, self.history = training(X, targs, epochs=iterations)
             self.Hidden_Layers, self.Output_Layers = get_layers(self.tf_model)
-            if save_tf_model:
+            if _save_tf_model:
                 save_tf_model(self.tf_model, tf_fname)
         else:
             raise IOError("X and targs need to have values")
@@ -269,24 +271,24 @@ class Two_NN(object):
 
 
 if __name__ == "__main__":
-    f = np.load("/home/ucfafyi/DATA/Prosail/prosail_2NN.npz")
-    v = np.load("/home/ucfafyi/DATA/Prosail/vals.npz")
-    tnn = Two_NN(
-        Hidden_Layers=f.f.Hidden_Layers, Output_Layers=f.f.Output_Layers
+    MY_F = np.load("/home/ucfafyi/DATA/Prosail/prosail_2NN.npz")
+    MY_VALS = np.load("/home/ucfafyi/DATA/Prosail/vals.npz")
+    TNN = Two_NN(
+        Hidden_Layers=MY_F.f.Hidden_Layers, Output_Layers=MY_F.f.Output_Layers
     )
 
-    refs = tnn.predict(v.f.vals_x)
+    REFS = TNN.predict(MY_VALS.f.vals_x)
     from scipy.stats import linregress
     import pylab as plt
 
-    fig, axs = plt.subplots(ncols=3, nrows=3, figsize=(16, 16))
-    axs = axs.ravel()
+    FIG, AXS = plt.subplots(ncols=3, nrows=3, figsize=(16, 16))
+    AXS = AXS.ravel()
     # refs = model.predict(vals_x)
-    vals = v.f.vals
+    VALS = MY_VALS.f.vals
     for i in range(9):
-        axs[i].plot(refs[i], vals[:, i], "o", alpha=0.1)
+        AXS[i].plot(REFS[i], VALS[:, i], "o", alpha=0.1)
         # axs[i].set_title(s2a.iloc[100:2100, b_ind[i]+1].name)
-        lin = linregress(refs[i].ravel(), vals[:, i])
+        lin = linregress(REFS[i].ravel(), VALS[:, i])
         print(lin.slope, lin.intercept, lin.rvalue, lin.stderr)
 
     plt.show()
