@@ -37,7 +37,7 @@ class Sentinel2Observations():
         self.band_prob_threshold = band_prob_threshold
         parent_folder = Path(parent_folder)
         if not parent_folder.exists():
-            LOG.info("S2 data folder: %s", parent_folder)
+            LOG.info(f"S2 data folder: {parent_folder}")
             raise IOError("S2 data folder doesn't exist")
         self.band_map = [
             "B01",
@@ -178,7 +178,7 @@ class Sentinel2Observations():
         # self.date_data = dict(zip(self.dates,
         #                          [f.parent for f in test_files]))
         self.bands_per_observation = {}
-        LOG.info("Found %d S2 granules", len(test_files))
+        LOG.info(f"Found {len(test_files):d} S2 granules")
         LOG.info(
             f"First granule: "
             + f"{sorted(self.dates)[0].strftime('%Y-%m-%d'):s}"
@@ -263,7 +263,7 @@ class Sentinel2Observations():
             original_s2_file = current_folder / (
                 f"{fname_prefix:s}" + f"{the_band:s}_sur.tif"
             )
-            LOG.debug("Original file: %s", str(original_s2_file))
+            LOG.debug(f"Original file {str(original_s2_file):s}")
             rho = reproject_data(
                 str(original_s2_file), target_img=self.state_mask
             ).ReadAsArray()

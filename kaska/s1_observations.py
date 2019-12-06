@@ -152,7 +152,7 @@ class Sentinel1Observations:
         sel_bands = [v for k, v in self.dates.items()
                      if early <= k <= late]
         obs = {}
-        for my_ii, layer in enumerate(self.s1_data_ptr.keys()):
+        for j, layer in enumerate(self.s1_data_ptr.keys()):
             obs[layer] = np.array([self.s1_data_ptr[
                 layer].GetRasterBand(i).ReadAsArray()
                                    for i in sel_bands])

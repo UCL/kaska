@@ -240,9 +240,9 @@ def parmap(fun, seq, num_proc=None, num_threads=1, chunksize=1, ordered=True,
 
 
 def _counter(items, tot=None):
-    for my_ii, item in enumerate(items):
+    for i, item in enumerate(items):
         if tot is not None:
-            _txtbar(my_ii, tot, ticks=50, text='')
+            _txtbar(i, tot, ticks=50, text='')
         else:
             txt = '{}'.format(my_ii + 1)
             print('\r%s' % txt, end='')
