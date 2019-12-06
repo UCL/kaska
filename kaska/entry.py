@@ -7,7 +7,7 @@ import datetime as dt
 from .logger import create_logger
 from .inference_runner import kaska_runner
 from .inverters import get_emulator, get_inverter
-
+from .constants import DEFAULT_BLOCK_SIZE
 
 # pylint: disable-msg=too-many-arguments
 # I don't think it's worthwhile refactoring this entry code.
@@ -57,7 +57,7 @@ def run_process(start_date, end_date, temporal_grid_space, s2_folder,
     """
     # Fix pylint "W0102: Dangerous default value [] as argument" warning
     if block_size is None:
-        block_size = [256, 256]
+        block_size = [DEFAULT_BLOCK_SIZE, DEFAULT_BLOCK_SIZE]
 
     # Setup logger and log run info
     if logfile is None:

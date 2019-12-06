@@ -20,6 +20,7 @@ from .s2_observations import Sentinel2Observations
 from .kaska import KaSKA
 from .s1_observations import Sentinel1Observations
 from .kaska_sar import sar_inversion, save_s1_output
+from .constants import DEFAULT_BLOCK_SIZE
 
 Config = namedtuple(
     "Config", "s2_obs s1_obs temporal_grid state_mask inverter output_folder"
@@ -261,7 +262,7 @@ def kaska_runner(
 
     # Fix pylint "W0102: Dangerous default value [] as argument" warning
     if block_size is None:
-        block_size = [256, 256]
+        block_size = [DEFAULT_BLOCK_SIZE, DEFAULT_BLOCK_SIZE]
 
     temporal_grid = define_temporal_grid(
         start_date, end_date, temporal_grid_space

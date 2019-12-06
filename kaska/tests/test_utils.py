@@ -10,7 +10,7 @@ import numpy as np
 
 from ..utils import get_chunks
 from ..utils import rasterise_vector
-
+from ..constants import DEFAULT_BLOCK_SIZE as DBS
 
 def test_get_chunks():
     nx = 512
@@ -18,10 +18,10 @@ def test_get_chunks():
     chunker = np.array([x for x in get_chunks(nx, ny)])
     target = np.array(
         [
-            [0, 0, 256, 256, 1],
-            [0, 256, 256, 256, 2],
-            [256, 0, 256, 256, 3],
-            [256, 256, 256, 256, 4],
+            [0, 0, DBS, DBS, 1],
+            [0, DBS, DBS, DBS, 2],
+            [DBS, 0, DBS, DBS, 3],
+            [DBS, DBS, DBS, DBS, 4],
         ]
     )
     np.allclose(chunker, target)
@@ -34,12 +34,12 @@ def test_get_chunks_over_x():
     chunker = np.array([x for x in get_chunks(nx, ny)])
     target = np.array(
         [
-            [0, 0, 256, 256, 1],
-            [0, 256, 256, 256, 2],
-            [256, 0, 256, 256, 3],
-            [256, 256, 256, 256, 4],
-            [512, 0, 13, 256, 5],
-            [512, 256, 13, 256, 6],
+            [0, 0, DBS, DBS, 1],
+            [0, DBS, DBS, DBS, 2],
+            [DBS, 0, DBS, DBS, 3],
+            [DBS, DBS, DBS, DBS, 4],
+            [512, 0, 13, DBS, 5],
+            [512, DBS, 13, DBS, 6],
         ]
     )
     np.allclose(chunker, target)
