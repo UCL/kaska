@@ -23,15 +23,16 @@ S2MSIdata = namedtuple(
 )
 
 
-class Sentinel2Observations(object):
+class Sentinel2Observations():
+    """Class for dealing with Sentinel 2 observations"""
     def __init__(
-        self,
-        parent_folder,
-        emulator,
-        state_mask,
-        band_prob_threshold=5,
-        chunk=None,
-        time_grid=None,
+            self,
+            parent_folder,
+            emulator,
+            state_mask,
+            band_prob_threshold=5,
+            chunk=None,
+            time_grid=None,
     ):
         self.band_prob_threshold = band_prob_threshold
         parent_folder = Path(parent_folder)
@@ -59,9 +60,10 @@ class Sentinel2Observations(object):
         self.original_mask = state_mask
         self.state_mask = state_mask
 
-        f = np.load(emulator, allow_pickle=True)
+        my_file = np.load(emulator, allow_pickle=True)
         self.emulator = Two_NN(
-            Hidden_Layers=f.f.Hidden_Layers, Output_Layers=f.f.Output_Layers
+            Hidden_Layers=my_file.f.Hidden_Layers,
+            Output_Layers=my_file.f.Output_Layers
         )
         LOG.debug("Read emulator in")
         LOG.debug("Searching for files....")
@@ -88,10 +90,10 @@ class Sentinel2Observations(object):
         None
         Doesn't return anything, but changes `self.state_mask`
         """
-        self.ulx = ulx
-        self.uly = uly
-        self.lrx = lrx
-        self.lry = lry
+        # self.ulx = ulx
+        # self.uly = uly
+        # self.lrx = lrx
+        # self.lry = lry
         width = lrx - ulx
         height = uly - lry
 
@@ -114,20 +116,20 @@ class Sentinel2Observations(object):
             the second element is the geotransform.
         """
         try:
-            g = gdal.Open(self.state_mask)
-            proj = g.GetProjection()
-            geoT = np.array(g.GetGeoTransform())
-            nx = g.RasterXSize
-            ny = g.RasterYSize
+            dataset = gdal.Open(self.state_mask)
+            proj = dataset.GetProjection()
+            geo_transform = np.array(dataset.GetGeoTransform())
+            num_x = dataset.RasterXSize
+            num_y = dataset.RasterYSize
         except RuntimeError:
             proj = self.state_mask.GetProjection()
-            geoT = np.array(self.state_mask.GetGeoTransform())
-            nx = self.state_mask.RasterXSize
-            ny = self.state_mask.RasterYSize
+            geo_transform = np.array(self.state_mask.GetGeoTransform())
+            num_x = self.state_mask.RasterXSize
+            num_y = self.state_mask.RasterYSize
         # new_geoT = geoT*1.
         # new_geoT[0] = new_geoT[0] + self.ulx*new_geoT[1]
         # new_geoT[3] = new_geoT[3] + self.uly*new_geoT[5]
-        return proj, geoT.tolist(), nx, ny  # new_geoT.tolist()
+        return proj, geo_transform.tolist(), num_x, num_y  # new_geoT.tolist()
 
     def _find_granules(self, parent_folder, time_grid=None):
         """Finds granules. Currently does so by checking for
@@ -291,7 +293,7 @@ class Sentinel2Observations(object):
         )
         mask = mask1
         if mask.sum() == 0:
-            LOG.info(f"{str(timestep):s} -> No clear observations")
+            LOG.info("%s -> No clear observations", str(timestep))
             return None, None, None, None, None, None
         LOG.info(
             f"{str(timestep):s} -> Total of {mask.sum():d} clear pixels "
@@ -310,15 +312,15 @@ class Sentinel2Observations(object):
         sun_angles = reproject_data(
             str(current_folder.parent / "ANG_DATA/SAA_SZA.tif"),
             target_img=self.state_mask,
-            xRes=20,
-            yRes=20,
+            x_res=20,
+            y_res=20,
             resample=0,
         ).ReadAsArray()
         view_angles = reproject_data(
             str(current_folder.parent / "ANG_DATA/VAA_VZA_B05.tif"),
             target_img=self.state_mask,
-            xRes=20,
-            yRes=20,
+            x_res=20,
+            y_res=20,
             resample=0,
         ).ReadAsArray()
         sza = np.cos(np.deg2rad(sun_angles[1].mean() / 100.0))
@@ -330,20 +332,20 @@ class Sentinel2Observations(object):
 
 
 if __name__ == "__main__":
-    time_grid = []
-    today = dt.datetime(2017, 1, 1)
-    while today <= dt.datetime(2017, 12, 31):
-        time_grid.append(today)
-        today += dt.timedelta(days=5)
+    TIME_GRID = []
+    TODAY = dt.datetime(2017, 1, 1)
+    while TODAY <= dt.datetime(2017, 12, 31):
+        TIME_GRID.append(TODAY)
+        TODAY += dt.timedelta(days=5)
 
-    s2_obs = Sentinel2Observations(
+    S2_OBS = Sentinel2Observations(
         "/home/ucfajlg/Data/python/KaFKA_Validation/LMU/s2_obs/",
         "/home/ucfafyi/DATA/Prosail/prosail_2NN.npz",
         "/home/ucfajlg/Data/python/KaFKA_Validation/LMU/carto/ESU.tif",
         band_prob_threshold=20,
         chunk=None,
-        time_grid=time_grid,
+        time_grid=TIME_GRID,
     )
-    retval = s2_obs.read_time_series(
+    RET_VAL = S2_OBS.read_time_series(
         [dt.datetime(2017, 1, 1), dt.datetime(2017, 12, 31)]
     )

@@ -17,7 +17,7 @@ import sys
 import os
 import pkgutil
 
-from io import BytesIO
+# from io import BytesIO
 
 from enum import Enum
 
@@ -94,7 +94,7 @@ def get_inverters():
     list
         List of inverter names
     """
-    return [x for x in Inverters.keys()]
+    return list(Inverters.keys())
 
 
 def get_emulators():
@@ -105,7 +105,7 @@ def get_emulators():
     lits
         A list of emulator names
     """
-    return [x for x in Emulators.keys()]
+    return list(Emulators.keys())
 
 
 def get_emulator(name, sensor, fname=True):

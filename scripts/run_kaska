@@ -25,7 +25,7 @@ missing = []
 
 
 def str2date(string):
-    """ Create and return a dattime object from a string.
+    """ Create and return a datetime object from a string.
 
     Keyword arguments:
     string -- The string to convert, e.g. "20191121" for 21st Nov 2019.
@@ -153,7 +153,6 @@ if (args.config_file):
     run_process(str2date(str(mydict["start_date"])),
                 str2date(str(mydict["end_date"])),
                 mydict["temporal_grid_space"],
-                # mydict["parent_folder"], 
                 mydict["s2_folder"],
                 mydict["s1_ncfile"],
                 mydict["state_mask"],

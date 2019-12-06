@@ -19,7 +19,7 @@ from .interp_fix import interp1d
 LOG = logging.getLogger(__name__)
 
 
-class KaSKA(object):
+class KaSKA:
     """The main KaSKA object"""
 
     def __init__(self, observations, time_grid, state_mask, approx_inverter,
@@ -49,9 +49,9 @@ class KaSKA(object):
         return S
 
     def _process_first_pass(self, first_passer_dict):
-        """This methods takes the first pass estimates of surface parameters
+        """This method takes the first pass estimates of surface parameters
         (stored as a dictionary) and assembles them into an
-        `(n_params, n_times, nx, ny)` grid. The assumption here is the
+        `(n_params, n_times, num_x, num_y)` grid. The assumption here is the
         dictionary is indexed by dates (e.g. datetime objects) and that for
         each date, we have a list of parameters.
 
@@ -61,9 +61,9 @@ class KaSKA(object):
             A dictionary with first pass guesses in an irregular temporal grid
 
         """
-        dates = [k for k in first_passer_dict.keys()]
-        n_params, nx, ny = first_passer_dict[dates[0]].shape
-        param_grid = np.zeros((n_params, len(dates), nx, ny))
+        dates = list(first_passer_dict.keys())
+        n_params, num_x, num_y = first_passer_dict[dates[0]].shape
+        param_grid = np.zeros((n_params, len(dates), num_x, num_y))
         for i, k in enumerate(dates):
             for j in range(n_params):
                 param_grid[j, i, :, :] = first_passer_dict[k][j]
