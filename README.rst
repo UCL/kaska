@@ -6,17 +6,12 @@ KaSKA
 .. image:: https://img.shields.io/pypi/v/kaska.svg
         :target: https://pypi.python.org/pypi/kaska
 
-.. image:: https://img.shields.io/travis/jgomezdans/kaska.svg
-        :target: https://travis-ci.org/jgomezdans/kaska
+.. image:: https://img.shields.io/travis/UCL/kaska.svg
+        :target: https://travis-ci.org/UCL/kaska
 
 .. image:: https://readthedocs.org/projects/kaska/badge/?version=latest
         :target: https://kaska.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
-
-
-.. image:: https://pyup.io/repos/github/jgomezdans/kaska/shield.svg
-     :target: https://pyup.io/repos/github/jgomezdans/kaska/
-     :alt: Updates
 
 
 
