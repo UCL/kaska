@@ -69,7 +69,7 @@ def wcm_jac(x, theta=30.):
                  V1[1:n_obs], V2[1:n_obs] and VSM[1:n_obs]
 
     Keyword Arguments:
-        theta {float} -- Angle of incidence (default: 30)
+        theta {float} -- Angle of incidence (default: 30) (degrees)
 
     Returns:
         [array] -- Backscatter"""
@@ -100,7 +100,7 @@ def wcm_hess(x, theta=30.):
                  V1[1:n_obs], V2[1:n_obs] and VSM[1:n_obs]
 
     Keyword Arguments:
-        theta {float} -- Angle of incidence (default: 30)
+        theta {float} -- Angle of incidence (default: 30) (degrees)
 
     Returns:
         [array] -- Backscatter Hessian"""
