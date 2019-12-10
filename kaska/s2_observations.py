@@ -26,15 +26,16 @@ S2MSIdata = namedtuple(
 )
 
 
-class Sentinel2Observations(object):
+class Sentinel2Observations():
+    """Class for dealing with Sentinel 2 observations"""
     def __init__(
-        self,
-        parent_folder,
-        emulator,
-        state_mask,
-        band_prob_threshold=20,
-        chunk=None,
-        time_grid=None
+            self,
+            parent_folder,
+            emulator,
+            state_mask,
+            band_prob_threshold=5,
+            chunk=None,
+            time_grid=None,
     ):
         """
         Initialise the Sentinel2Observations object.
@@ -78,9 +79,10 @@ class Sentinel2Observations(object):
             raise IOError("S2 data folder doesn't exist")
         self.parent = parent_folder
 
-        f = np.load(emulator, allow_pickle=True)
+        my_file = np.load(emulator, allow_pickle=True)
         self.emulator = Two_NN(
-            Hidden_Layers=f.f.Hidden_Layers, Output_Layers=f.f.Output_Layers
+            Hidden_Layers=my_file.f.Hidden_Layers,
+            Output_Layers=my_file.f.Output_Layers
         )
         LOG.debug("Read emulator in")
 
@@ -88,19 +90,31 @@ class Sentinel2Observations(object):
         self.state_mask = state_mask
 
         self.band_prob_threshold = band_prob_threshold
-        self.band_map = ['B01', 'B02', 'B03', 'B04', 'B05', 'B06', 'B07',
-                         'B08', 'B8A', 'B09', 'B10', 'B11', 'B12']
-
+        self.band_map = [
+            "B01",
+            "B02",
+            "B03",
+            "B04",
+            "B05",
+            "B06",
+            "B07",
+            "B08",
+            "B8A",
+            "B09",
+            "B10",
+            "B11",
+            "B12",
+        ]
         self.chunk = chunk
 
         LOG.debug("Searching for files....")
         self._find_granules(time_grid)
 
     def apply_roi(self, ulx, uly, lrx, lry):
-        """Applies a region of interest (ROI) window to the state mask, which is
-        then used to subset the data spatially. Useful for spatial windowing/
-        chunking
-        
+        """Applies a region of interest (ROI) window to the state mask, which
+        is then used to subset the data spatially. Useful for spatial
+        windowing/chunking
+
         Parameters
         ----------
         ulx : integer
@@ -128,9 +142,9 @@ class Sentinel2Observations(object):
 
     def define_output(self):
         """Define the output array shapes to be consistent with the state
-        mask. You get the projection and geotransform, that should be 
+        mask. You get the projection and geotransform, that should be
         enough to define an ouput dataset that conforms to the state mask.
-        
+
         Returns
         -------
         tuple
@@ -138,18 +152,18 @@ class Sentinel2Observations(object):
             the second element is the geotransform.
         """
         try:
-            g = gdal.Open(self.state_mask)
-            proj = g.GetProjection()
-            geoT = np.array(g.GetGeoTransform())
-            nx = g.RasterXSize
-            ny = g.RasterYSize
+            dataset = gdal.Open(self.state_mask)
+            proj = dataset.GetProjection()
+            geo_transform = np.array(dataset.GetGeoTransform())
+            num_x = dataset.RasterXSize
+            num_y = dataset.RasterYSize
         except RuntimeError:
             proj = self.state_mask.GetProjection()
-            geoT = np.array(self.state_mask.GetGeoTransform())
-            nx = self.state_mask.RasterXSize
-            ny = self.state_mask.RasterYSize
+            geo_transform = np.array(self.state_mask.GetGeoTransform())
+            num_x = self.state_mask.RasterXSize
+            num_y = self.state_mask.RasterYSize
 
-        return proj, geoT.tolist(), nx, ny
+        return proj, geo_transform.tolist(), num_x, num_y
 
     def _find_granules(self, time_grid=None):
         """Finds granules within the given time grid if given.
@@ -249,7 +263,10 @@ class Sentinel2Observations(object):
         return s2_obs
 
     def read_granule(self, timestep):
-        """Reads the data for the given timestep.
+        """Reads the data for the given timestep. Returns all relevant
+        quantities (surface reflectrance, angles, cloud mask, uncertainty).
+        The mask is true for OK pixels. If there are no suitable pixels, the
+        returned tuple is a collection of `None`
 
         Parameters
         ----------
@@ -261,6 +278,8 @@ class Sentinel2Observations(object):
         NOTE: Currently reads in sequentially. It's better to gather
         all the filenames and read them in parallel using parmap.py
         """
+        assert timestep in self.date_data, f"{str(timestep):s} not available!"
+
         # This is the parent folder for this granule
         current_folder = Path()
         for part in self.date_data[timestep][0].parts:
@@ -269,6 +288,8 @@ class Sentinel2Observations(object):
                 break
 
         # Read in cloud mask and reproject it on state mask.
+        # The cloud mask is the probabilty of cloud. OK pixels have
+        # a probability of cloud below `band_prob_threshold`.
         # Stop processing if cloud mask file doesn't exist,
         # or if no clear pixels exist.
         try:
@@ -280,13 +301,14 @@ class Sentinel2Observations(object):
         cloud_mask = reproject_data(
             str(cloud_mask), target_img=self.state_mask).ReadAsArray()
         mask = cloud_mask <= self.band_prob_threshold
+        # If we have no unmasked pixels, bail out.
         if mask.sum() == 0:
             # No pixels! Pointless to carry on reading!
             LOG.info("No clear observations")
             #print("No clear observations")
             return None, None, None, None, None, None
 
-        # Read in surface data and uncertainty per band
+        # Read in surface reflectance and associated uncertainty per band
         rho_surface = []
         rho_unc = []
         s2_files = self.date_data[timestep]
@@ -304,31 +326,37 @@ class Sentinel2Observations(object):
                 return None, None, None, None, None, None
             rho_unc.append(unc)
         # For reference...
-        #bands = ['B01', 'B02', 'B03', 'B04', 'B05', 'B06', 'B07', 'B08',
+        # bands = ['B01', 'B02', 'B03', 'B04', 'B05', 'B06', 'B07', 'B08',
         #         'B8A', 'B09', 'B10','B11', 'B12']
         # b_ind = np.array([1, 2, 3, 4, 5, 6, 7, 8])
-
         rho_surface = np.array(rho_surface)
-        # Mask manipulations and rescaling:
-        # surface
-        mask1 = np.all(rho_surface[[1, 2, 3, 4, 5, 6, 7, 8, ]] > 0,
-                       axis=0) & (~mask)
-        mask = ~mask1
+
+        # Ensure all surface reflectance pixels have values above 0 and
+        # aren't cloudy. So pixels are valid if all refl > 0 AND mask is True
+        # Array of the desired bands. Not necessarily contiguous.
+        sel_bands = np.array([1, 2, 3, 4, 5, 6, 7, 8])
+        mask1 = np.logical_and(
+            np.all(rho_surface[sel_bands] > 0, axis=0), mask
+        )
+        mask = mask1
         if mask.sum() == 0:
             LOG.info(f"{timestep} -> No clear observations")
             #print(f"{timestep} -> No clear observations")
             return None, None, None, None, None, None
-        rho_surface = rho_surface / 10000.0
-        rho_surface[:, mask1] = np.nan
-        # uncertainty
-        rho_unc = np.array(rho_unc) / 10000.0
-        rho_unc[:, mask] = np.nan
-        # Average uncertainty over the image
-        rho_unc = np.nanmean(rho_unc, axis=(1, 2))
         LOG.info(
             f"{timestep} -> Total of {mask.sum():d} clear pixels "
             + f"({100.*mask.sum()/np.prod(mask.shape):f}%)"
         )
+
+        # Rescaling and setting missing pixels to NaN
+        # reflectivity
+        rho_surface = rho_surface / 10000.0
+        rho_surface[:, ~mask] = np.nan
+        # uncertainty
+        rho_unc = np.array(rho_unc) / 10000.0
+        rho_unc[:, ~mask] = np.nan
+        # Average uncertainty over the image
+        rho_unc = np.nanmean(rho_unc, axis=(1, 2))
 
         # Read in angles
         #print(next(current_folder.glob("**/SAA_SZA.tif")))
@@ -347,15 +375,15 @@ class Sentinel2Observations(object):
         sun_angles = reproject_data(
             str(angle_file_S),
             target_img=self.state_mask,
-            xRes=20,
-            yRes=20,
+            x_res=20,
+            y_res=20,
             resample=0,
         ).ReadAsArray()
         view_angles = reproject_data(
             str(angle_file_V),
             target_img=self.state_mask,
-            xRes=20,
-            yRes=20,
+            x_res=20,
+            y_res=20,
             resample=0,
         ).ReadAsArray()
         # zenith angles: 90 - Altitude
@@ -365,7 +393,6 @@ class Sentinel2Observations(object):
         saa = sun_angles[0].mean() / 100.0
         vaa = view_angles[0].mean() / 100.0
         raa = np.cos(np.deg2rad(vaa - saa))
-
         return rho_surface, mask, sza, vza, raa, rho_unc
 
     def _read_band_data(self, what, band, s2_files):

@@ -1,0 +1,30 @@
+# Sample config file for run_kaska script
+
+# The start date in the format YYYYMMDD , eg. 20170501 for 1st May 2017
+start_date: 20171101
+
+# The end date in the format YYYYMMDD , eg. 20190501 for 1st May 2019.
+end_date: 20191102
+
+# Temporal resolution. The spacing of the time grid, in days.
+temporal_grid_space: 1
+
+# The full path to the folder containing the data. See README for the expected folder tree structure.
+# parent_folder: ..
+
+# Folder where the Sentinel2 data reside.
+s2_folder: ..
+
+# NetCDF file containing the Sentinel 1 data
+s1_ncfile: file.csv
+
+# The full path of the tif file containing the state mask.
+state_mask: ./test.tif
+
+# The full path of the output folder.
+output_folder: .
+
+# The size of the side of the square tile to break the image into. 
+# Default value (i.e. value if this is not set below) is defined
+# in run_kaska as default_block_size
+block_size: 1
