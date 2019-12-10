@@ -24,8 +24,6 @@ the scatterers within the turbid medium, and are usually related to LAI.
 
 import numpy as np
 
-# from numba import jit  # unused import
-
 
 def wcm(x, theta=30.):
     """The Water Cloud Model for one polarisation. This function phrases
@@ -45,17 +43,18 @@ def wcm(x, theta=30.):
         V1[1:n_obs], V2[1:n_obs] and VSM[1:n_obs]
 
     Keyword Arguments:
-        theta {float} -- Angle of incidence (default: 30)
+        theta {float} -- Angle of incidence (default: 30) (degrees)
 
     Returns:
         [array] -- Backscatter
     """
+    offset = 3  # Offset. A, B and C are three values.
     my_m = np.cos(np.deg2rad(theta))
-    n_obs = int((x.shape[0] - 3) / 3)
-    my_a, my_b, my_c = x[:3]
-    my_v1 = x[3:(3 + n_obs)]
-    my_v2 = x[(3 + n_obs):(3 + 2 * n_obs)]
-    s = x[(3 + 2 * n_obs):]
+    n_obs = int((x.shape[0] - offset) / offset)
+    my_a, my_b, my_c = x[:offset]
+    my_v1 = x[offset:(offset + n_obs)]
+    my_v2 = x[(offset + n_obs):(offset + 2 * n_obs)]
+    s = x[(offset + 2 * n_obs):]
 
     tau = np.exp(-2 * my_b * my_v2 / my_m)
     sigma_soil = tau * (my_c + s)
@@ -74,13 +73,13 @@ def wcm_jac(x, theta=30.):
 
     Returns:
         [array] -- Backscatter"""
-
+    offset = 3
     my_m = np.cos(np.deg2rad(theta))
-    n_obs = int((x.shape[0] - 3) / 3)
-    my_a, my_b, my_c = x[:3]
-    my_v1 = x[3:(3 + n_obs)]
-    my_v2 = x[(3 + n_obs):(3 + 2 * n_obs)]
-    my_s = x[(3 + 2 * n_obs):]
+    n_obs = int((x.shape[0] - offset) / offset)
+    my_a, my_b, my_c = x[:offset]
+    my_v1 = x[offset:(offset + n_obs)]
+    my_v2 = x[(offset + n_obs):(offset + 2 * n_obs)]
+    my_s = x[(offset + 2 * n_obs):]
     tau = np.exp(-2 * my_b * my_v2 / my_m)
 
     der_da = my_v1 - my_v1 * tau
@@ -105,13 +104,14 @@ def wcm_hess(x, theta=30.):
 
     Returns:
         [array] -- Backscatter Hessian"""
+    offset = 3
     my_m = np.cos(np.deg2rad(theta))
-    my_a, my_b, my_c = x[:3]
-    n_obs = int((x.shape[0] - 3) / 3)
+    my_a, my_b, my_c = x[:offset]
+    n_obs = int((x.shape[0] - offset) / offset)
 
-    my_v1 = x[3:(3 + n_obs)]
-    my_v2 = x[(3 + n_obs):(3 + 2 * n_obs)]
-    my_s = x[(3 + 2 * n_obs):]
+    my_v1 = x[offset:(offset + n_obs)]
+    my_v2 = x[(offset + n_obs):(offset + 2 * n_obs)]
+    my_s = x[(offset + 2 * n_obs):]
 
     tau = np.exp(-2 * my_b * my_v2 / my_m)
     d_tau = -2 * my_v2 * tau / my_m * np.ones_like(my_s)
@@ -249,13 +249,14 @@ def cost(x, svh, svv, theta, sigma=0.5):
     Returns:
         Cost -- Cost function assuming all observations are independent
     """
+    offset = 6
     a_vv, b_vv, c_vv = x[:3]
-    a_vh, b_vh, c_vh = x[3:6]
-    n_obs = int((x.shape[0] - 6) / 3)
+    a_vh, b_vh, c_vh = x[3:offset]
+    n_obs = int((x.shape[0] - offset) / 3)
 
-    my_v1 = x[6:(6 + n_obs)]
-    my_v2 = x[(6 + n_obs):(6 + 2 * n_obs)]
-    my_s = x[(6 + 2 * n_obs):]
+    my_v1 = x[offset:(offset + n_obs)]
+    my_v2 = x[(offset + n_obs):(offset + 2 * n_obs)]
+    my_s = x[(offset + 2 * n_obs):]
     x_vv = np.r_[a_vv, b_vv, c_vv, my_v1, my_v2, my_s]
     x_vh = np.r_[a_vh, b_vh, c_vh, my_v1, my_v2, my_s]
     # x_vv = np.array([a_vv, b_vv, c_vv, V1, V2, s])
@@ -296,14 +297,14 @@ def cost_jac(x, svh, svv, theta, sigma=0.5):
         Cost -- Jacobian of cost function assuming all observations
         are independent
     """
-
+    offset = 6
     a_vv, b_vv, c_vv = x[:3]
-    a_vh, b_vh, c_vh = x[3:6]
-    n_obs = int((x.shape[0] - 6) / 3)
+    a_vh, b_vh, c_vh = x[3:offset]
+    n_obs = int((x.shape[0] - offset) / 3)
 
-    my_v1 = x[6:(6 + n_obs)]
-    my_v2 = x[(6 + n_obs):(6 + 2 * n_obs)]
-    my_s = x[(6 + 2 * n_obs):]
+    my_v1 = x[offset:(offset + n_obs)]
+    my_v2 = x[(offset + n_obs):(offset + 2 * n_obs)]
+    my_s = x[(offset + 2 * n_obs):]
     x_vv = np.r_[a_vv, b_vv, c_vv, my_v1, my_v2, my_s]
     x_vh = np.r_[a_vh, b_vh, c_vh, my_v1, my_v2, my_s]
     # x_vv = np.array([a_vv, b_vv, c_vv, V1, V2, my_s])
@@ -354,13 +355,14 @@ def cost_hess(x, svh, svv, theta, sigma=0.5):
         Cost -- Hessian of cost function assuming all observations
         are independent
     """
+    offset = 6
     a_vv, b_vv, c_vv = x[:3]
-    a_vh, b_vh, c_vh = x[3:6]
-    n_obs = int((x.shape[0] - 6) / 3)
+    a_vh, b_vh, c_vh = x[3:offset]
+    n_obs = int((x.shape[0] - offset) / 3)
 
-    my_v1 = x[6:(6 + n_obs)]
-    my_v2 = x[(6 + n_obs):(6 + 2 * n_obs)]
-    my_s = x[(6 + 2 * n_obs):]
+    my_v1 = x[offset:(offset + n_obs)]
+    my_v2 = x[(offset + n_obs):(offset + 2 * n_obs)]
+    my_s = x[(offset + 2 * n_obs):]
     x_vv = np.r_[a_vv, b_vv, c_vv, my_v1, my_v2, my_s]
     x_vh = np.r_[a_vh, b_vh, c_vh, my_v1, my_v2, my_s]
     # x_vv = np.array([a_vv, b_vv, c_vv, V1, V2, s])
