@@ -14,6 +14,7 @@ from .constants import DEFAULT_BLOCK_SIZE
 # If necessary, we can create a new object class to store the values,
 # and then pass that as the sole arg.
 
+
 def run_process(start_date, end_date, temporal_grid_space, s2_folder,
                 s1_ncfile, state_mask, output_folder, debug=True,
                 logfile=None, dask_client=None,

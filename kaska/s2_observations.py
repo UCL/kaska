@@ -300,7 +300,7 @@ class Sentinel2Observations():
             + f"({100.*mask.sum()/np.prod(mask.shape):f}%)"
         )
 
-        rho_surface = rho_surface / 10000.0  # FIXME: What is this magic number?  
+        rho_surface = rho_surface / 10000.0  # FIXME: Magic number
 
         rho_unc = np.array(rho_unc) / 10000.0
         rho_unc[:, ~mask] = np.nan
