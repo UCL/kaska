@@ -52,8 +52,8 @@ class NNParameterInversion(object):
         self.b_ind = np.array([1, 2, 3, 4, 5, 6, 7, 8])
 
     def invert_observations(self, data, date, state_mask=None):
-        """Main method to invert observations using a NN inverter. Takes a 
-        date and a data object. The data object could be one defined in 
+        """Main method to invert observations using a NN inverter. Takes a
+        date and a data object. The data object could be one defined in
         s2_observations.py, for example, where we have a `read_granule` method
         that when called with a data with observations returns the reflectance,
         mask, angles and uncertainty."""

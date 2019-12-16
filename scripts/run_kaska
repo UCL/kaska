@@ -25,7 +25,7 @@ missing = []
 
 
 def str2date(string):
-    """ Create and return a dattime object from a string.
+    """ Create and return a datetime object from a string.
 
     Keyword arguments:
     string -- The string to convert, e.g. "20191121" for 21st Nov 2019.
@@ -93,7 +93,9 @@ def parse_file(filename):
             start_date = check_value("start_date", config)
             end_date = check_value("end_date", config)
             temporal_grid_space = check_value("temporal_grid_space", config)
-            parent_folder = check_value("parent_folder", config)
+            # parent_folder = check_value("parent_folder", config)
+            s2_folder = check_value("s2_folder", config)
+            s1_ncfile = check_value("s1_ncfile", config)
             state_mask = check_value("state_mask", config)
             output_folder = check_value("output_folder", config)
 
@@ -113,7 +115,9 @@ def parse_file(filename):
                 print("start_date=" + str(start_date))
                 print("end_date=" + str(end_date))
                 print("temporal_grid_space=" + str(temporal_grid_space))
-                print("parent_folder=" + str(parent_folder))
+                #print("parent_folder=" + str(parent_folder))
+                print("s2_folder=" + str(s2_folder))
+                print("s1_ncfile=" + str(s1_ncfile)) 
                 print("state_mask=" + str(state_mask))
                 print("output_folder=" + str(output_folder))
                 print("block_size=" + str(block_size))
@@ -149,8 +153,11 @@ if (args.config_file):
     run_process(str2date(str(mydict["start_date"])),
                 str2date(str(mydict["end_date"])),
                 mydict["temporal_grid_space"],
-                mydict["parent_folder"], mydict["state_mask"],
-                mydict["output_folder"], debug=debug,
+                mydict["s2_folder"],
+                mydict["s1_ncfile"],
+                mydict["state_mask"],
+                mydict["output_folder"],
+                debug=debug,
                 block_size=[mydict["block_size"], mydict["block_size"]])
 
 # No config file present

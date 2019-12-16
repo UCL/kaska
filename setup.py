@@ -6,9 +6,9 @@ from setuptools.config import read_configuration
 try:
     import gdal
 except ImportError:
-    log.warn("Gdal is not insalled in your sysem "
-    "we recommend to install it through conda "
-    "\n    `conda install -c conda-forge gdal`")
+    log.warn("Gdal is not installed in your sysem "
+             "we recommend to install it through conda "
+             "\n    `conda install -c conda-forge gdal`")
 
 extras = read_configuration("setup.cfg")['options']['extras_require']
 # Dev is everything
