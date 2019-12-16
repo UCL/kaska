@@ -62,7 +62,7 @@ def reproject_data(source_img,
     projection and resolution of the target image.
 
     """
-    # There are lots of magic numbers (e.g. 3 and 5) in this function.
+    # FIXME: There are lots of magic numbers (e.g. 3 and 5) in this function.
 
     output_type = (
         gdal.GDT_Unknown if output_type is None else output_type
@@ -320,7 +320,7 @@ def rasterise_vector(vector_f, sample_f=None, pixel_size=20):
         rows = int((y_max - y_min) / pixel_size)
         geo_transform = [x_min, pixel_size, 0, y_max, 0, -pixel_size]
         target_ds_srs = osr.SpatialReference()
-        target_ds_srs.ImportFromEPSG(4326)  # What is this magic number?
+        target_ds_srs.ImportFromEPSG(4326)  # FIXME: What is this magic number?
         target_ds_srs = target_ds_srs.ExportToWkt()
 
     target_ds = gdal.GetDriverByName("MEM").Create(

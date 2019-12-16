@@ -56,7 +56,7 @@ def sar_inversion(s1_obs, s2_data):
         return cost_hess(np.concatenate([my_xx[:6], lai, lai, my_xx[-n_obs:]]),
                          svh, svv, theta)
 
-    avv, bvv, cvv = -12, 0.05, 0.1   # Magic numbers again
+    avv, bvv, cvv = -12, 0.05, 0.1   # FIXME: Magic numbers
     avh, bvh, cvh = -14, 0.01, 0.1
     sigma_soil0 = np.zeros(n_sar_obs)*0.2  # Say
     x0_all = \

@@ -108,7 +108,7 @@ class KaSKA:
         # transformation function, as well as boundaries, which could be
         # associated with the NN
         lai = -2 * np.log(parameter_block[-2, :, :, :])
-        cab = -100*np.log(parameter_block[1, :, :, :])  # Magic numbers?
+        cab = -100*np.log(parameter_block[1, :, :, :])  # FIXME: Magic numbers
         cbrown = parameter_block[2, :, :, :]
         if self.save_sgl_inversion:
             save_output_parameters(dates, self.observations,
