@@ -62,8 +62,7 @@ def reproject_data(source_img,
     projection and resolution of the target image.
 
     """
-    # FIXME: There are lots of magic numbers (e.g. 3 and 5) in this function.
-
+    
     output_type = (
         gdal.GDT_Unknown if output_type is None else output_type
         )
@@ -106,9 +105,9 @@ def reproject_data(source_img,
         x_size, y_size = dataset.RasterXSize, dataset.RasterYSize
 
         if x_res is None:
-            x_res = abs(geo_t[1])
+            x_res = abs(geo_t[1])  # FIXME: magic number 1
         if y_res is None:
-            y_res = abs(geo_t[5])
+            y_res = abs(geo_t[5])  # FIXME: magic number 5
 
         if x_size is not None:
             x_size = 1.0 * x_size * x_res / abs(geo_t[1])
@@ -218,6 +217,7 @@ def save_output_parameters(time_grid, observations, output_folder,
                                 'doy': this_date})
             dst_ds = None
             dataset = gdal.Open(str(outfile))
+            # FIXME: what is magic number 6 in next line?
             dataset.BuildOverviews("average", np.power(2, np.arange(6)))
 
 
