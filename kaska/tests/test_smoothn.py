@@ -12,6 +12,7 @@ import numpy.ma as ma
 
 from .. import smoothn
 
+
 @pytest.mark.parametrize("is_robust, target, s, prec", [[False, 0.7503929639274534, None, 1e-5], # 1d unrobust
                                                         [True, 0.18943656067148762, None, 1e-5], # 1d robust
                                                         [False, 0.7503929639274534, 56.93236088601813, 1e-5], # fixed order - unrobust target/order
@@ -104,6 +105,7 @@ def test_residual_rms_assessment(weights, target_max_resid, target_rms):
     assert(np.all(resid_diff <= fudge))
     assert(np.all(rms_diff <= fudge))
 
+
 def txy_data():
 
     np.random.seed(2718281828)
@@ -125,7 +127,9 @@ def txy_data():
 
     for i in range(nx):
         for j in range(ny):
-            data_arr[:, i, j] = amplitudes[j] * np.cos(np.radians(t - hottest_day[j])) + offsets[j]
+            data_arr[:, i, j] = \
+                amplitudes[j] * np.cos(np.radians(t - hottest_day[j])) \
+                + offsets[j]
             # add noise
             if i > 0:
                 data_arr[:, i, j] *= 1+data_noise(nt, 0.025)
@@ -137,14 +141,18 @@ def txy_data():
 
     return (data_arr, weight_arr)
 
+
 # Something not very physical creating poor or missing data
 def cloudy_data(nt, mist_threshold):
 
     optical_depth = np.random.randn(nt)
-    optical_depth = np.where(optical_depth < mist_threshold, 0., optical_depth - mist_threshold)
+    optical_depth = np.where(
+                        optical_depth <
+                        mist_threshold, 0., optical_depth - mist_threshold)
     transmission = np.exp(-optical_depth)
     weight = np.where(optical_depth < 1, transmission**2, 0.)
     return (transmission, weight)
+
 
 # a multiplicative noise value
 def data_noise(nt, scale):
