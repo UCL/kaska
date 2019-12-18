@@ -58,7 +58,7 @@ def test_time_txy():
 
     rms = np.sqrt(np.mean(np.square(res), axis=0))
 
-    fudge = 1e-6
+    fudge = 3e-6
 
     assert(np.all(maximum_residuals <= target_maximum_residuals + fudge))
     assert(np.all(rms <= target_rms + fudge))
