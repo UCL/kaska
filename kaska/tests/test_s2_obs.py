@@ -62,8 +62,7 @@ def test_s2_data():
     shutil.move(ref_files[1].parent / f"cloud.tif",
                 ref_files[1].parent / f"cloud.tif.bac")
     output_data = dict(zip(output_names, s2_obs.read_granule(ref_dates[1])))
-    for datum in output_data:
-        assert output_data[datum] is None
+    assert list(output_data.values()) == [None] * len(output_names)
     shutil.move(ref_files[1].parent / f"cloud.tif.bac",
                 ref_files[1].parent / f"cloud.tif")
 
@@ -71,44 +70,38 @@ def test_s2_data():
     file_list = list(s2_obs.date_data[ref_dates[1]])
     file0 = s2_obs.date_data[ref_dates[1]].pop(0)
     output_data = dict(zip(output_names, s2_obs.read_granule(ref_dates[1])))
-    for datum in output_data:
-        assert output_data[datum] is None
+    assert list(output_data.values()) == [None] * len(output_names)
     s2_obs.date_data[ref_dates[1]] = list(file_list)
     # Test read_granule for reflectivity file missing in the folder
     shutil.move(file0, file0.with_suffix(".bac"))
     output_data = dict(zip(output_names, s2_obs.read_granule(ref_dates[1])))
-    for datum in output_data:
-        assert output_data[datum] is None
+    assert list(output_data.values()) == [None] * len(output_names)
     shutil.move(file0.with_suffix(".bac"), file0)
 
     # Test read_granule for reflectivity uncertainty file missing in the
     # dictionary
     file1 = s2_obs.date_data[ref_dates[1]].pop(1)
     output_data = dict(zip(output_names, s2_obs.read_granule(ref_dates[1])))
-    for datum in output_data:
-        assert output_data[datum] is None
+    assert list(output_data.values()) == [None] * len(output_names)
     s2_obs.date_data[ref_dates[1]] = list(file_list)
     # Test read_granule for reflectivity uncertainty file missing in the folder
     shutil.move(file1, file1.with_suffix(".bac"))
     output_data = dict(zip(output_names, s2_obs.read_granule(ref_dates[1])))
-    for datum in output_data:
-        assert output_data[datum] is None
+    assert list(output_data.values()) == [None] * len(output_names)
     shutil.move(file1.with_suffix(".bac"), file1)
 
     # Test read_granule for sun angle file missing
     shutil.move(ref_files[1].parent / "ANG_DATA" / "SAA_SZA.tif",
                 ref_files[1].parent / "ANG_DATA" / "SAA_SZA.tif.bac")
     output_data = dict(zip(output_names, s2_obs.read_granule(ref_dates[1])))
-    for datum in output_data:
-        assert output_data[datum] is None
+    assert list(output_data.values()) == [None] * len(output_names)
     shutil.move(ref_files[1].parent / "ANG_DATA" / "SAA_SZA.tif.bac",
                 ref_files[1].parent / "ANG_DATA" / "SAA_SZA.tif")
     # Test read_granule for view angle file missing
     shutil.move(ref_files[1].parent / "ANG_DATA" / "VAA_VZA_B05.tif",
                 ref_files[1].parent / "ANG_DATA" / "VAA_VZA_B05.tif.bac")
     output_data = dict(zip(output_names, s2_obs.read_granule(ref_dates[1])))
-    for datum in output_data:
-        assert output_data[datum] is None
+    assert list(output_data.values()) == [None] * len(output_names)
     shutil.move(ref_files[1].parent / "ANG_DATA" / "VAA_VZA_B05.tif.bac",
                 ref_files[1].parent / "ANG_DATA" / "VAA_VZA_B05.tif")
 
