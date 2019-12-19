@@ -22,11 +22,77 @@ def smoothn(y, nS0=10, axis=None, smoothOrder=2.0, sd=None, verbose=False,
             s0=None, z0=None, isrobust=False, w=None, s=None, max_iter=100,
             tol_z=1e-3, weightstr='bisquare'):
     """
-    function [z,s,exitflag,w_tot] = smoothn(varargin)
+    Robust spline smoothing for 1-D to n-D data.
 
-    SMOOTHN Robust spline smoothing for 1-D to n-D data.
     SMOOTHN provides a fast, automatized and robust discretized smoothing
     spline for data of any dimension.
+
+    Parameters
+    ----------
+    y : numpy array or numpy masked array
+        The data to be smoothed.
+
+    nS0 : int, optional
+        The number of samples to use when estimating the smoothing parameter.
+        Default value is 10.
+
+    smoothOrder : float, optional
+        The polynomial order to smooth the function to.
+        Default value is 2.0.
+
+    sd : numpy array, optional
+        Weighting of the data points in standard deviation format.
+        Deafult is to not weight by standard deviation.
+
+    verbose : { True, False }, optional
+        Create extra logging during operation.
+
+    s0 : float, optional
+        Initial value of the smoothing parameter.
+        Defaults to no value, being instead derived from calculation.
+
+    z0 : float, optional
+        Initial estimate of the smoothed data.
+
+    isrobust : { False, True }
+        Whether the smoothing applies the robust smoothing algorithm. This
+        allows the smoothing to ignore outlier data without creating large
+        spikes to fit the data.
+
+    w : numpy array, optional
+        Linear wighting to apply to the data.
+        Default is to assume no linear weighting.
+
+    s : float
+        Initial smoothing parameter.
+        Default is to calculate a value.
+
+    max_iter : int, optional
+        The maximum number of iterations to attempt the smoothing.
+        Default is 100 iterations.
+
+    tol_z: float, optional
+        Tolerance at which the smoothing will be considered converged.
+        Default value is 1e-3
+
+    weightstr : { 'bisquare', 'cauchy', 'talworth'}, optional
+        The type of weighting applied to the data when performing robust smoothing.
+
+    Returns
+    -------
+
+    (z, s, exitflag)
+        A tuple of the returned results.
+    z : numpy array
+        The smoothed data.
+    s : float
+        The value of the smoothing parameter used to perform this smoothing.
+    exitflag : {0, -1}
+        A return flag of 0 indicates successfuly execution, -1 an error
+        (see the log).
+
+    Notes
+    -----
 
     Z = SMOOTHN(Y) automatically smoothes the uniformly-sampled array Y. Y
     can be any n-D noisy array (time series, images, 3D data,...). Non
