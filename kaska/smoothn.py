@@ -8,12 +8,15 @@ from numpy.linalg import norm
 import scipy.optimize.lbfgsb as lbfgsb
 from scipy.fftpack.realtransforms import dct, idct
 
+import logging
+
 # Exit codes
 EXIT_SUCCESS = 0
 EXIT_LIB_NOT_FOUND = -1
 
 W_TOT_DEFAULT = 0
 
+LOG = logging.getLogger(__name__)
 
 def smoothn(y, nS0=10, axis=None, smoothOrder=2.0, sd=None, verbose=False,
             s0=None, z0=None, isrobust=False, w=None, s=None, max_iter=100,
@@ -199,9 +202,6 @@ def smoothn(y, nS0=10, axis=None, smoothOrder=2.0, sd=None, verbose=False,
     # Weighted or missing data?
     isweighted = np.any(w != 1)
     # ---
-    # Robust smoothing?
-    # isrobust
-    # ---
     # Automatic smoothing?
     isauto = not s
 
@@ -241,7 +241,7 @@ def smoothn(y, nS0=10, axis=None, smoothOrder=2.0, sd=None, verbose=False,
         # ---
         while tol > tol_z and nit < max_iter:
             if verbose:
-                print('tol', tol, 'nit', nit)
+                LOG.info(f"tol {tol:s} nit {nit:s}")
             nit = nit + 1
             dct_y = dctND(w_tot * (y - z) + z, f=dct)
             if isauto and not np.remainder(np.log2(nit), 1):
@@ -272,11 +272,7 @@ def smoothn(y, nS0=10, axis=None, smoothOrder=2.0, sd=None, verbose=False,
                     for i, p in enumerate(ss):
                         g[i] = gcv(p, lambda_, aow, dct_y, is_finite, w_tot,
                                    y, nof, noe, smoothOrder)
-                        # print 10**p,g[i]
                     xpost = [ss[g == g.min()]]
-                    # print '==============='
-                    # print nit,tol,g.min(),xpost[0],s
-                    # print '==============='
                 else:
                     xpost = [s0]
                 bounds = [(np.log10(s_min_bnd), np.log10(s_max_bnd))]
@@ -292,7 +288,7 @@ def smoothn(y, nS0=10, axis=None, smoothOrder=2.0, sd=None, verbose=False,
             # update the value we use for the initial s estimate
             s0 = xpost[0]
 
-            gamma = 1.0 / (1 + (s * np.abs(lambda_)) ** smoothOrder)
+            gamma = gamma_from_lambda(lambda_, s, smoothOrder)
 
             z = relaxation_factor * dctND(gamma*dct_y, f=idct) +\
                 (1 - relaxation_factor) * z
@@ -341,8 +337,8 @@ def warning(s1, s2):
     """
     Combine warnings.
     """
-    print(s1)
-    print(s2[0])
+    LOG.warning(s1)
+    LOG.warning(s2[0])
 
 
 def weights_from_sd(sd):
@@ -502,7 +498,7 @@ def gcv(p, lambda_v, aow, dct_y, is_finite, w_tot, y, nof, noe, smooth_order):
     Search the smoothing parameter s that minimizes the GCV score
     """
     s = 10 ** p
-    gamma = 1.0 / (1 + (s * np.abs(lambda_v)) ** smooth_order)
+    gamma = gamma_from_lambda(lambda_v, s, smooth_order)
     # --- rss = Residual sum-of-squares
     if aow > 0.9:  # aow = 1 means that all of the data are equally weighted
         # very much faster: does not require any inverse DCT
@@ -575,18 +571,6 @@ def initial_guess(y, i):
     z[d] = 0.0
     z = dctND(z, f=idct)
     return z
-    # -- coarse fast smoothing using one-tenth of the DCT coefficients
-    # siz = z.shape;
-    # z = dct(z,norm='ortho',type=2);
-    # for k in np.arange(len(z.shape)):
-    #    z[ceil(siz[k]/10)+1:-1] = 0;
-    #    ss = tuple(roll(array(siz),1-k))
-    #    z = z.reshape(ss)
-    #    z = np.roll(z.T,1)
-    # z = idct(z,norm='ortho',type=2);
-
-
-# NB: filter is 2*i - (np.roll(i,-1) + np.roll(i,1))
 
 
 def dctND(data, f=dct):
@@ -611,188 +595,5 @@ def dctND(data, f=dct):
                  norm="ortho", type=2, axis=3)
 
 
-"""
-def test1():
-   plt.figure(1)
-   plt.clf()
-   # 1-D example
-   x = linspace(0,100,2**8);
-   y = cos(x/10)+(x/50)**2 + randn(size(x))/10;
-   y[[70, 75, 80]] = [5.5, 5, 6];
-   z = smoothn(y)[0]; # Regular smoothing
-   zr = smoothn(y,isrobust=True)[0]; # Robust smoothing
-   subplot(121)
-   plot(x,y,'r.')
-   plot(x,z,'k')
-   title('Regular smoothing')
-   subplot(122)
-   plot(x,y,'r.')
-   plot(x,zr,'k')
-   title('Robust smoothing')
-
-def test2(axis=None):
-   # 2-D example
-   plt.figure(2)
-   plt.clf()
-   xp = arange(0,1,.02)
-   [x,y] = meshgrid(xp,xp);
-   f = exp(x+y) + sin((x-2*y)*3);
-   fn = f + (randn(f.size)*0.5).reshape(f.shape);
-   fs = smoothn(fn,axis=axis)[0];
-   subplot(121); plt.imshow(fn,interpolation='Nearest');# axis square
-   subplot(122); plt.imshow(fs,interpolation='Nearest'); # axis square
-
-def test3(axis=None):
-   # 2-D example with missing data
-   plt.figure(3)
-   plt.clf()
-   n = 256;
-   y0 = peaks(n);
-   y = (y0 + random(shape(y0))*2 - 1.0).flatten();
-   I = np.random.permutation(range(n**2));
-   y[I[1:n**2*0.5]] = nan; # lose 50% of data
-   y = y.reshape(y0.shape)
-   y[40:90,140:190] = nan; # create a hole
-   yData = y.copy()
-   z0,s,exitflag,Wtot = smoothn(yData,axis=axis); # smooth data
-   yData = y.copy()
-   z,s,exitflag,Wtot = smoothn(yData,isrobust=True,axis=axis); # smooth data
-   y = yData
-   vmin = np.min([np.min(z),np.min(z0),np.min(y),np.min(y0)])
-   vmax = np.max([np.max(z),np.max(z0),np.max(y),np.max(y0)])
-   subplot(221); plt.imshow(y,interpolation='Nearest',vmin=vmin,vmax=vmax);
-   title('Noisy corrupt data')
-   subplot(222); plt.imshow(z0,interpolation='Nearest',vmin=vmin,vmax=vmax);
-   title('Recovered data #1')
-   subplot(223); plt.imshow(z,interpolation='Nearest',vmin=vmin,vmax=vmax);
-   title('Recovered data #2')
-   subplot(224); plt.imshow(y0,interpolation='Nearest',vmin=vmin,vmax=vmax);
-   title('... compared with original data')
-
-def test4(i=10,step=0.2,axis=None):
-  [x,y,z] = mgrid[-2:2:step,-2:2:step,-2:2:step]
-  x = array(x);y=array(y);z=array(z)
-  xslice = [-0.8,1]; yslice = 2; zslice = [-2,0];
-  v0 = x*exp(-x**2-y**2-z**2)
-  vn = v0 + randn(x.size).reshape(x.shape)*0.06
-  v = smoothn(vn)[0];
-  plt.figure(4)
-  plt.clf()
-  vmin = np.min([np.min(v[:,:,i]),np.min(v0[:,:,i]),np.min(vn[:,:,i])])
-  vmax = np.max([np.max(v[:,:,i]),np.max(v0[:,:,i]),np.max(vn[:,:,i])])
-  subplot(221); plt.imshow(v0[:,:,i],interpolation='Nearest',
-      vmin=vmin,vmax=vmax);
-  title('clean z=%d'%i)
-  subplot(223); plt.imshow(vn[:,:,i],interpolation='Nearest',
-      vmin=vmin,vmax=vmax);
-  title('noisy')
-  subplot(224); plt.imshow(v[:,:,i],interpolation='Nearest',
-      vmin=vmin,vmax=vmax);
-  title('cleaned')
-
-
-def test5():
-   t = linspace(0,2*pi,1000);
-   x = 2*cos(t)*(1-cos(t)) + randn(size(t))*0.1;
-   y = 2*sin(t)*(1-cos(t)) + randn(size(t))*0.1;
-   zx = smoothn(x)[0];
-   zy = smoothn(y)[0];
-   plt.figure(5)
-   plt.clf()
-   plt.title('Cardioid')
-   plot(x,y,'r.')
-   plot(zx,zy,'k')
-
-def test6(noise=0.05,nout=30):
-  plt.figure(6)
-  plt.clf()
-  [x,y] = meshgrid(linspace(0,1,24),linspace(0,1,24))
-  Vx0 = cos(2*pi*x+pi/2)*cos(2*pi*y);
-  Vy0 = sin(2*pi*x+pi/2)*sin(2*pi*y);
-  Vx = Vx0 + noise*randn(24,24); # adding Gaussian noise
-  Vy = Vy0 + noise*randn(24,24); # adding Gaussian noise
-  I = np.random.permutation(range(Vx.size))
-  Vx = Vx.flatten()
-  Vx[I[0:nout]] = (rand(nout,1)-0.5)*5; # adding outliers
-  Vx = Vx.reshape(Vy.shape)
-  Vy = Vy.flatten()
-  Vy[I[0:nout]] = (rand(nout,1)-0.5)*5; # adding outliers
-  Vy = Vy.reshape(Vx.shape)
-  Vsx = smoothn(Vx,isrobust=True)[0];
-  Vsy = smoothn(Vy,isrobust=True)[0];
-  subplot(131);quiver(x,y,Vx,Vy,2.5)
-  title('Noisy')
-  subplot(132); quiver(x,y,Vsx,Vsy)
-  title('Recovered')
-  subplot(133); quiver(x,y,Vx0,Vy0)
-  title('Original')
-
-def sparseSVD(D):
-  import scipy.sparse
-  try:
-    import sparsesvd
-  except:
-    print('bummer ... better get sparsesvd')
-    exit(0)
-  Ds = scipy.sparse.csc_matrix(D)
-  a = sparsesvd.sparsesvd(Ds,Ds.shape[0])
-  return a
-
-def sparseTest(n=1000):
-  I = np.identity(n)
-
-  # define a 'traditional' D1 matrix
-  # which is a right-side difference
-  # and which is *not* symmetric :-(
-  D1 = np.matrix(I - np.roll(I,1))
-  # so define a symemtric version
-  D1a = D1.T - D1
-
-  U, s, Vh = scipy.linalg.svd(D1a)
-
-  # now, get eigenvectors for D1a
-  Ut,eigenvalues,Vt = sparseSVD(D1a)
-  Ut = np.matrix(Ut)
-
-
-  # then, an equivalent 2nd O term would be
-  D2a = D1a**2
-
-  # show we can recover D1a
-  D1a_est = Ut.T * np.diag(eigenvalues) * Ut
-
-
-  # Now, because D2a (& the target D1a) are symmetric:
-  D1a_est = Ut.T * np.diag(eigenvalues**0.5) * Ut
-
-
-  D = 2*I - (np.roll(I,-1) + np.roll(I,1))
-  a = sparseSVD(-D)
-  eigenvalues = np.matrix(a[1])
-  Ut = np.matrix(a[0])
-  Vt = np.matrix(a[2])
-  orig = (Ut.T * np.diag(np.array(eigenvalues).flatten()) * Vt)
-
-  Feigenvalues = np.diag(np.array(np.c_[eigenvalues,0]).flatten())
-  FUt = np.c_[Ut.T,np.zeros(Ut.shape[1])]
-  # confirm: FUt * Feigenvalues * FUt.T ~= D
-
-
-  # m is a 1st O difference matrix
-  # with careful edge conditions
-  # such that m.T * m = D2
-  # D2 being a 2nd O difference matrix
-  m = np.matrix(np.identity(100) - np.roll(np.identity(100),1))
-  m[-1,-1] = 0
-  m[0,0] = 1
-  a = sparseSVD(m)
-  eigenvalues = np.matrix(a[1])
-  Ut = np.matrix(a[0])
-  Vt = np.matrix(a[2])
-  orig = (Ut.T * np.diag(np.array(eigenvalues).flatten()) * Vt)
-  # Vt* Vt.T = I
-  # Ut.T * Ut = I
-  # ((Vt.T * (np.diag(np.array(eigenvalues).flatten())**2)) * Vt)
-  # we see you get the same as m.T * m by squaring the eigenvalues
-
-"""
+def gamma_from_lambda(lambda_, s, smooth_order):
+    return 1.0 / (1 + (s * np.abs(lambda_)) ** smooth_order)
