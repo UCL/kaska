@@ -400,15 +400,32 @@ def smoothn(y, nS0=10, axis=None, smoothOrder=2.0, sd=None, verbose=False,
 
 
 def warning(s1, s2):
-    """
-    Combine warnings.
+    """Combine warnings.
+
+    Parameters
+    ----------
+    s1 : str
+        The first half of the warning.
+    s2 : array-like collection of strings
+        An array of explanations, from which the first is used
     """
     LOG.warning(s1)
     LOG.warning(s2[0])
 
 
 def weights_from_sd(sd):
-    """Take the standard deviation values and produce a set of weights."""
+    """Take the standard deviation values and produce a set of weights.
+
+    Parameters
+    ----------
+    sd : numpy array
+        array of the standard deivations of each data point.
+
+    Returns
+    -------
+    numpy array
+        weighting equivalents of the provide standard deviations.
+    """
     sd = np.array(sd)
     mask = sd > 0.0
     w = np.zeros_like(sd)
@@ -418,9 +435,24 @@ def weights_from_sd(sd):
 
 
 def unmask_array(m, w):
-    """
-    Convert a masked numpy array (m) into an unmasked array, with zero
+    """Convert a masked numpy array (m) into an unmasked array.
+
+    Masked points are dealt with by assigning zero
     weighting on the masked points.
+
+    Parameters
+    ----------
+    m : numpy masked array
+        The data array as a masked array.
+    w : numpy array
+        Current data weights.
+
+    Returns
+    -------
+    numpy array
+        The data as a regular numpy array.
+    numpy array
+        The updated weightings.
     """
     mask = m.mask
     y = np.array(m)
@@ -432,9 +464,26 @@ def unmask_array(m, w):
 
 
 def preprocessing(y, w, sd):
-    """
+    """Condition the algorithm inputs.
+
     Condition the inputs to return data and weight arrays ready to be used
-    by the main algorithm
+    by the main algorithm.
+
+    Parameters
+    ----------
+    y : numpy array
+        The data array.
+    w : numpy array
+        The data weightings.
+    sd : numpy array
+        The standard deviations of data points.
+
+    Returns
+    -------
+    numpy array
+        The updated data array.
+    numpy array
+        The updated data weightings array.
     """
 
     if np.any(sd is not None):
@@ -464,11 +513,22 @@ def preprocessing(y, w, sd):
 
 
 def define_lambda(y, axis):
-    """
-    Creation of the Lambda tensor.
+    """Creation of the Lambda tensor.
 
     Lambda contains the eingenvalues of the difference matrix used in this
     penalized least squares process.
+
+    Parameters
+    ----------
+    y : numpy array
+        The data array.
+    axis : int
+        The index of the axis along with to calculate the tensor.
+
+    Return
+    ------
+    numpy array
+        The lambda tensor derived from the data.
     """
     axis_tuple = tuple(np.array(axis).flatten())
 
@@ -485,14 +545,25 @@ def define_lambda(y, axis):
 
 
 def smoothness_bounds(y):
-    """
-    Upper and lower bound for the smoothness parameter
+    """Upper and lower bound for the smoothness parameter
 
     The average leverage (h) is by definition in [0 1]. Weak smoothing occurs
     if h is close to 1, while over-smoothing appears when h is near 0. Upper
     and lower bounds for h are given to avoid under- or over-smoothing. See
     equation relating h to the smoothness parameter (Equation #12 in the
     referenced CSDA paper).
+
+    Parameters
+    ----------
+    y : numpy array
+        The data array.
+
+    Returns
+    -------
+    float
+        Lower smoothness bound
+    float
+        Upper smoothness bound
     """
     rnk = np.sum(np.array(y.shape) != 1)
     h_min = 1e-6
@@ -509,12 +580,24 @@ def smoothness_bounds(y):
 
 
 def bound_calc(h_limit, rank):
-    """
-    Calculate smooth bound from leverage bound.
+    """Calculate smooth bound from leverage bound.
+
     (h/rnk)**2 = (1 + a)/( 2 a)
     a = 1/(2 (h/rnk)**2 -1)
     where a = sqrt(1 + 16 s)
     (a**2 -1)/16
+
+    Parameters
+    ----------
+    h_limit : float
+        Limit of step size, h.
+    rank : int
+        Rank of the data being smoothed.
+
+    Return
+    ------
+    float
+        Smoothness bound.
     """
     return np.sqrt((
                 ((1 + np.sqrt(1 + 8 * h_limit ** (2.0 / rank))
@@ -523,8 +606,8 @@ def bound_calc(h_limit, rank):
 
 
 def initial_z(y, z0, is_weighted):
-    """
-    An initial conditions for z.
+    """An initial conditions for z.
+
     With weighted/missing data, an initial guess is provided to ensure faster
     convergence. For that purpose, a nearest neighbor interpolation followed
     by a coarse smoothing are performed.
@@ -543,8 +626,23 @@ def initial_z(y, z0, is_weighted):
 
 
 def init_xpost(s, s_min_bnd, s_max_bnd, is_auto):
-    """
-    Calculate xpost based on the smoothing and smoothing bounds values.
+    """Calculate xpost based on the smoothing and smoothing bounds values.
+
+    Parameters
+    ----------
+    s : float
+        Current smoothness.
+    s_min_bnd : float
+        Lower smoothness bound.
+    s_max_bnd : float
+        Upper smoothness bound.
+    is_auto : boolean
+        Auto smoothing is enabled.
+
+    Returns
+    -------
+    numpy array of one element
+        xpost
     """
     if is_auto:
         try:
@@ -560,8 +658,35 @@ def init_xpost(s, s_min_bnd, s_max_bnd, is_auto):
 # ---
 # function GCVscore = gcv(p)
 def gcv(p, lambda_v, aow, dct_y, is_finite, w_tot, y, nof, noe, smooth_order):
-    """
-    Search the smoothing parameter s that minimizes the GCV score
+    """Search the smoothing parameter s that minimizes the GCV score.
+
+    Parameters
+    ----------
+    p : float
+        p value.
+    lambda_v : numpy array
+        Lambda eigenvalue tensor.
+    aow : float
+        Variation in the values of the weights.
+    dct_y : numpy array
+        No clue
+    is_finite : array-like of booleans
+        Array denoting where the data values are finite.
+    w_tot : float
+        Total of all weights.
+    y : numpy array
+        Data array.
+    nof : int
+        Number of fs.
+    noe : int
+        Number of es.
+    smooth_order : int
+        Smoothing order
+
+    Returns
+    -------
+    float
+        gcv score for the current smoothing.
     """
     s = 10 ** p
     gamma = gamma_from_lambda(lambda_v, s, smooth_order)
@@ -583,8 +708,23 @@ def gcv(p, lambda_v, aow, dct_y, is_finite, w_tot, y, nof, noe, smooth_order):
 #  Robust weights
 # function W = robust_weights(r,I,h,wstr)
 def robust_weights(r, i, h, wstr):
-    """
-    Recalculate the weights for robust smoothing.
+    """Recalculate the weights for robust smoothing.
+
+    Parameters
+    ----------
+    r : numpy array
+        r
+    i : int
+        index of r
+    h : numpy array
+        step size
+    wstr : {"bisquare", "cauchy", "talworth"}
+        name of the method used to recalculate the weights
+
+    Returns
+    -------
+    numpy array
+        Recalculated weights
     """
     mad = np.median(np.abs(r[i] - np.median(r[i])))  # median absolute deviation
     u = np.abs(r / (1.4826 * mad) / np.sqrt(1 - h))  # studentized residuals
@@ -605,8 +745,19 @@ def robust_weights(r, i, h, wstr):
 #  Initial Guess with weighted/missing data
 # function z = initial_guess(y,i)
 def initial_guess(y, i):
-    """
-    Generate an initial guess using nearest naighbour interpolation.
+    """Generate an initial guess using nearest neighbour interpolation.
+
+    Parameters
+    ----------
+    y : numpy array
+        Data array.
+    i : numpy boolean array
+        Boolean array indicating finite data values.
+
+    Returns
+    -------
+    numpy array
+        Initial guess for the smoothed data value.
     """
     # -- nearest neighbor interpolation (in case of missing values)
     if np.any(~i):
@@ -640,10 +791,22 @@ def initial_guess(y, i):
 
 
 def dctND(data, f=dct):
-    """
-    One to four dimensional application of the function f.
+    """One to four dimensional application of the function f.
+
     The function f defaults to scipy.fftpack.realtransforms.dct.
     The dimensionality of the function is easy to that of data.
+
+    Parameters
+    ----------
+    data : numpy array
+        The data to apply the function to.
+    f : function-like, optional
+        The function to appply to the data.
+
+    Returns
+    -------
+    numpy array
+        The data post-application of the function.
     """
     nd = len(data.shape)
     if nd == 1:
@@ -662,4 +825,23 @@ def dctND(data, f=dct):
 
 
 def gamma_from_lambda(lambda_, s, smooth_order):
+    """Calculate the gamma value.
+    
+    Calcualte the gamma value from the lambda tensor, the current smoothing
+    parameter and the smoothing order.
+
+    Parameters
+    ----------
+    lambda_ : numpy array
+        The lambda tensor derived from the input data.
+    s : float
+        The current smoothing parameter.
+    smooth_order : int
+        The smoothing order to apply to the data.
+
+    Returns
+    -------
+    float
+        The gamma parameter for the current smoothing.
+    """
     return 1.0 / (1 + (s * np.abs(lambda_)) ** smooth_order)
