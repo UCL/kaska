@@ -827,7 +827,7 @@ def dctND(data, f=dct):
 def gamma_from_lambda(lambda_, s, smooth_order):
     """Calculate the gamma value.
     
-    Calcualte the gamma value from the lambda tensor, the current smoothing
+    Calculate the gamma value from the lambda tensor, the current smoothing
     parameter and the smoothing order.
 
     Parameters
