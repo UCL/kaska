@@ -725,17 +725,31 @@ def robust_weights(r, i, h, wstr):
     -------
     numpy array
         Recalculated weights
+
+    References
+    ----------
+    Peter J. Rousseeuw & Christophe Croux (1993) Alternatives to the Median
+    Absolute Deviation, Journal of the American Statistical Association,
+    88:424, 1273-1283, DOI: 10.1080/01621459.1993.10476408
+
+    Richard M. Heiberger & Richard A. Becker (1992) Design of an S Function
+    for Robust Regression Using Iteratively Reweighted Least Squares, Journal
+    of Computational and Graphical Statistics, 1:3, 181-196,
+    DOI: 10.1080/10618600.1992.10474580
+
+
     """
+    b_stddev = 1.4826 # mad to standard deviation multiplier (Rousseeuw & Croux, 1991)
     mad = np.median(np.abs(r[i] - np.median(r[i])))  # median absolute deviation
-    u = np.abs(r / (1.4826 * mad) / np.sqrt(1 - h))  # studentized residuals
+    u = np.abs(r / (b_stddev * mad) / np.sqrt(1 - h))  # studentized residuals
     if wstr == "cauchy":
-        c = 2.385
+        c = 2.385 # Cauchy weighting coefficient (Heiberger & Becker, 1992)
         w = 1.0 / (1 + (u / c) ** 2)  # Cauchy weights
     elif wstr == "talworth":
-        c = 2.795
+        c = 2.795 # Talworth weighting coefficient (Heiberger & Becker, 1992)
         w = u < c  # Talworth weights
     else:
-        c = 4.685
+        c = 4.685 # Bisquare weighting coefficient (Heiberger & Becker, 1992)
         w = (1 - (u / c) ** 2) ** 2.0 * ((u / c) < 1)  # bisquare weights
 
     w[np.isnan(w)] = 0
