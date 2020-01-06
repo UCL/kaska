@@ -525,7 +525,7 @@ def define_lambda(y, axis):
     axis : int
         The index of the axis along with to calculate the tensor.
 
-    Return
+    Returns
     ------
     numpy array
         The lambda tensor derived from the data.
@@ -594,7 +594,7 @@ def bound_calc(h_limit, rank):
     rank : int
         Rank of the data being smoothed.
 
-    Return
+    Returns
     ------
     float
         Smoothness bound.
@@ -606,13 +606,28 @@ def bound_calc(h_limit, rank):
 
 
 def initial_z(y, z0, is_weighted):
-    """An initial conditions for z.
+    """An initial condition for z.
 
     With weighted/missing data, an initial guess is provided to ensure faster
     convergence. For that purpose, a nearest neighbor interpolation followed
     by a coarse smoothing are performed.
 
     For unweighted data, the initial guess is zero.
+
+    Parameters
+    ----------
+    y : numpy array
+        The data array
+    z0 : numpy array
+        The initial z array optionally provided by the caller of smoothn
+    is_weighted : boolean
+        The data is weighted, or not
+        
+    Returns
+    -------
+    numpy array
+        The inital z array: either the provided array, or zero where y is
+        finite, or all zeros
     """
     if is_weighted:
         if z0 is not None:  # an initial guess (z0) has been provided
