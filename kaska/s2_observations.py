@@ -42,36 +42,47 @@ class Sentinel2Observations():
 
         Parameters
         ----------
-        parent_folder : path of the top folder that contains the data (str)
-        emulator      : the s2 emulator filename (str)
-        state_mask    : an existing spatial raster with the binary mask
-                        detailing which pixels to process (str)
-        band_prob_threshold : threshold for xy pixel to be accepted (optional)
-        chunk         : size of chunk used for parallel processing (optional).
-        time_grid     : list of dates to read (optional). If not given, all the
-                        timesteps will be checked.
+        parent_folder : str
+            path of the top folder that contains the data
+        emulator      : str
+            the s2 emulator filename
+        state_mask    : str
+            an existing spatial raster with the binary mask detailing which
+            pixels to process
+        band_prob_threshold : int, optional
+            threshold for xy pixel to be accepted
+        chunk         : int, optional
+            index of the xy chunk being read/processed. If not given, the whole
+            area will be read in.
+        time_grid     : list, optional
+            list of datetime objects corresponding to the timesteps to be read.
+            If not given, all the timesteps will be read in.
 
         Returns
         -------
         None
 
-        Notes
-        -----
-        Initialises the following Class members:
-        ----------------------------------------
-        parent : the path to the parent folder containing all the data (Path)
-        emulator : the s2 emulator (two_nn emulator object)
-        original_mask : the mask to be applied to the data (tif file)
-                        originally given as input argument.
-        state_mask : the mask to be applied to the data (tif file) after
-                     possible alterations.
-        band_prob_threshold : threshold for xy pixel to be accepted
-        band_map : the list of available bands - hardcoded
-        chunk : the size of the chunk/tile for parallel processing
+        Attributes
+        ----------
+        **Initialised in __init__:**
+        parent        : path
+            the path to the parent folder containing all the data
+        emulator      : two_nn object
+            the s2 emulator
+        original_mask : tif file
+            the mask to be applied to the data without alterations
+        state_mask    : tif file
+            the mask to be applied to the data after possible alterations
+        band_prob_threshold : int
+            threshold for xy pixel to be accepted
+        band_map      : list
+            the list of available bands - hardcoded
+        chunk         : int
+            index of the xy chunk being read/processed
 
-        Class members initialised in _find_granules
-        -------------------------------------------
-        date_data : dictionary of {date:[reflectivity files]}, ordered in date
+        **Initialised in _find_granules:**
+        date_data : dict
+            dictionary of {date:[reflectivity files]}, ordered in date
         """
         parent_folder = Path(parent_folder)
         if not parent_folder.exists():
@@ -108,7 +119,7 @@ class Sentinel2Observations():
         self.chunk = chunk
 
         LOG.debug("Searching for files....")
-        self._find_granules(time_grid)
+        self._find_granules()
 
     def apply_roi(self, ulx, uly, lrx, lry):
         """Applies a region of interest (ROI) window to the state mask, which
@@ -165,13 +176,15 @@ class Sentinel2Observations():
 
         return proj, geo_transform.tolist(), num_x, num_y
 
-    def _find_granules(self, time_grid=None):
+    def _find_granules(self, max_workers=10):
         """Finds granules within the given time grid if given.
 
         Parameters
         ----------
-        time_grid : A list of dates (optional).If not given, all the timestamps
-                    will be checked.
+        max_workers : int, optional
+            the maximum number of worker threads used to read xml files
+            concurrently
+
         Returns
         -------
         None
@@ -180,13 +193,12 @@ class Sentinel2Observations():
         # This is a list of the granule parent folders. The xml file in each
         # of those folders, contains the relative paths to all the reflectivity
         # data files for that granule.
-        folders = sorted([x for f in self.parent.iterdir()
-                          for x in f.rglob("*.SAFE")
-                          if "MSIL1C" in x.name])
+        folders = sorted([x for x in self.parent.rglob("*/*MSIL1C*.SAFE")
+                          if x.is_dir()])
 
         # Apply multithreaded
         date_files = []
-        with ThreadPoolExecutor(max_workers=10) as executor:
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
             for params in executor.map(
                     lambda x: self._process_xml(x/"MTD_MSIL1C.xml"), folders):
                 date_files.append(params)
@@ -213,14 +225,15 @@ class Sentinel2Observations():
 
         Parameters
         ----------
-        metadata_file : The xml file.
+        metadata_file : path
+            the xml file
         Returns
         -------
         tuple
             The first element is the datetime, and the second element is a list
             of the data files for this datetime.
         """
-        tree = ET.parse(metadata_file.as_posix())
+        tree = ET.parse(str(metadata_file))
         root = tree.getroot()
         acq_time = [time.text for time in root.iter("PRODUCT_START_TIME")]
         date = dt.datetime.strptime(acq_time[0], "%Y-%m-%dT%H:%M:%S.%fZ")
@@ -237,10 +250,12 @@ class Sentinel2Observations():
 
         Parameters
         ----------
-        time_grid : A list of dates
+        time_grid : list
+            the list of dates to read
         Returns
         -------
-        A list of S2MSIdata objects
+        list
+            a list of S2MSIdata objects corresponding to the requested dates
         """
         start_time = min(time_grid)
         end_time = max(time_grid)
@@ -270,22 +285,28 @@ class Sentinel2Observations():
 
         Parameters
         ----------
-        timestep : A datetime object.
+        timestep : datetime
+            datetime of granule to read
         Returns
         -------
-        tuple containing the rho_surface, mask, sza, vza, raa, rho_unc
+        tuple
+            contains the rho_surface, mask, sza, vza, raa, rho_unc
 
-        NOTE: Currently reads in sequentially. It's better to gather
+        .. note:: Currently reads in sequentially. It's better to gather
         all the filenames and read them in parallel using parmap.py
         """
-        assert timestep in self.date_data, f"{str(timestep):s} not available!"
+        assert timestep in self.date_data, f"{timestep} not available!"
 
-        # This is the parent folder for this granule
+        # This is the parent folder for this granule: the path from the current
+        # location all the way down to the one containing ".SAFE"
         current_folder = Path()
         for part in self.date_data[timestep][0].parts:
-            current_folder = current_folder / part
+            current_folder /= part
             if ".SAFE" in part:
                 break
+        assert current_folder is not Path(), f"""Parent folder for granule
+         {timestep:%Y-%m-%d} does not follow expected pattern: should end in
+         '.SAFE'"""
 
         # Read in cloud mask and reproject it on state mask.
         # The cloud mask is the probabilty of cloud. OK pixels have
@@ -293,20 +314,18 @@ class Sentinel2Observations():
         # Stop processing if cloud mask file doesn't exist,
         # or if no clear pixels exist.
         try:
-            cloud_mask = next(current_folder.glob("**/cloud.tif"))
+            cloud_mask_file = next(current_folder.glob("**/cloud.tif"))
         except StopIteration:
             LOG.info(f"Cloud file cloud.tif does not exist.")
-            #print(f"Cloud file cloud.tif does not exist.")
-            return None, None, None, None, None, None
+            return (None,) * 6
         cloud_mask = reproject_data(
-            str(cloud_mask), target_img=self.state_mask).ReadAsArray()
+            str(cloud_mask_file), target_img=self.state_mask).ReadAsArray()
         mask = cloud_mask <= self.band_prob_threshold
         # If we have no unmasked pixels, bail out.
         if mask.sum() == 0:
             # No pixels! Pointless to carry on reading!
             LOG.info("No clear observations")
-            #print("No clear observations")
-            return None, None, None, None, None, None
+            return (None,) * 6
 
         # Read in surface reflectance and associated uncertainty per band
         rho_surface = []
@@ -316,14 +335,12 @@ class Sentinel2Observations():
         for the_band in self.band_map:
             rho = self._read_band_data('rho', the_band, s2_files)
             if rho is None:
-                #print("RHO")
-                return None, None, None, None, None, None
+                return (None,) * 6
             rho_surface.append(rho)
 
             unc = self._read_band_data('unc', the_band, s2_files)
             if unc is None:
-                #print("UNC")
-                return None, None, None, None, None, None
+                return (None,) * 6
             rho_unc.append(unc)
         # For reference...
         # bands = ['B01', 'B02', 'B03', 'B04', 'B05', 'B06', 'B07', 'B08',
@@ -341,11 +358,10 @@ class Sentinel2Observations():
         mask = mask1
         if mask.sum() == 0:
             LOG.info(f"{timestep} -> No clear observations")
-            #print(f"{timestep} -> No clear observations")
-            return None, None, None, None, None, None
+            return (None,) * 6
         LOG.info(
             f"{timestep} -> Total of {mask.sum():d} clear pixels "
-            + f"({100.*mask.sum()/np.prod(mask.shape):f}%)"
+            f"({100.*mask.sum()/np.prod(mask.shape):f}%)"
         )
 
         # Rescaling and setting missing pixels to NaN
@@ -359,58 +375,35 @@ class Sentinel2Observations():
         rho_unc = np.nanmean(rho_unc, axis=(1, 2))
 
         # Read in angles
-        #print(next(current_folder.glob("**/SAA_SZA.tif")))
         try:
-            angle_file_S = next(current_folder.glob("**/SAA_SZA.tif"))
-            #print(angle_file_S)
-        except StopIteration:
-            LOG.info(f"Sun angle file SAA_SZA.tif does not exist.")
-            return None, None, None, None, None, None
-        try:
-            angle_file_V = next(current_folder.glob("**/VAA_VZA_B05.tif"))
-        except StopIteration:
-            LOG.info(f"View angle file VAA_VZA_B05.tif does not exist.")
-            return None, None, None, None, None, None
+            sun_angles = self._read_angle_data('SAA_SZA', current_folder)
+            view_angles = self._read_angle_data('VAA_VZA_B05', current_folder)
+        except ValueError as err:
+            LOG.info(f"Sun or View angle {err}")
+            return (None,) *  6
+        raa = np.cos(np.deg2rad(view_angles[1] - sun_angles[1]))
 
-        sun_angles = reproject_data(
-            str(angle_file_S),
-            target_img=self.state_mask,
-            x_res=20,
-            y_res=20,
-            resample=0,
-        ).ReadAsArray()
-        view_angles = reproject_data(
-            str(angle_file_V),
-            target_img=self.state_mask,
-            x_res=20,
-            y_res=20,
-            resample=0,
-        ).ReadAsArray()
-        # zenith angles: 90 - Altitude
-        sza = np.cos(np.deg2rad(sun_angles[1].mean() / 100.0))
-        vza = np.cos(np.deg2rad(view_angles[1].mean() / 100.0))
-        # azimuth
-        saa = sun_angles[0].mean() / 100.0
-        vaa = view_angles[0].mean() / 100.0
-        raa = np.cos(np.deg2rad(vaa - saa))
-        return rho_surface, mask, sza, vza, raa, rho_unc
+        return rho_surface, mask, sun_angles[0], view_angles[0], raa, rho_unc
 
-    def _read_band_data(self, what, band, s2_files):
+    def _read_band_data(self, type_data, band, s2_files):
         """
         Reads different types of data for the given band from the list of
         input files.
 
         Parameters
         ----------
-        what : the type of data to read. Currently 'rho' for reflectivity or
-               'unc' for uncertainty
-        band : the name of the band (str)
-        s2_files : a list of files (paths) containing the data for all bands
-                   of one timestep.
+        type_data : str
+            the type of data to read. Currently 'rho' for reflectivity or
+            'unc' for uncertainty
+        band : str
+            the name of the band
+        s2_files : list
+            a list of files (paths) containing the data for all bands
+            of one timestep.
         Returns
         -------
-        numpy array containing the (reflectivity or uncertainty) data for
-        one band.
+        numpy array
+            contains the (reflectivity or uncertainty) data for one band
         """
 
         meta_dict = {'rho' : ('', ''),
@@ -419,25 +412,63 @@ class Sentinel2Observations():
         try:
             original_s2_file = next(
                 f for f in s2_files
-                if str(f).endswith(f"{band}_sur{meta_dict[what][0]}.tif")
+                if f.name.endswith(f"{band}_sur{meta_dict[type_data][0]}.tif")
             )
         except KeyError:
-            LOG.info(f"""Only reflectivity ('rho') or uncertainty ('unc') data
-             read by _read_band_data. Calling argument {what} not recognised.
-            """)
+            LOG.info(f"Only reflectivity ('rho') or uncertainty ('unc') data "
+                     f"read by _read_band_data. Calling argument {type_data} not "
+                     f"recognised."
+            )
             raise
         except StopIteration:
-            LOG.info(f"""Reflectivity {meta_dict[what][1]} file name for band
-             {band} does not exist in the granule xml file.""")
+            LOG.info(f"Reflectivity {meta_dict[type_data][1]} file name for band "
+                     f"{band} does not exist in the granule xml file.")
             return None
         if not original_s2_file.exists():
-            LOG.info(f"""Reflectivity {meta_dict[what][1]} file for band
-             {band} does not exist.""")
+            LOG.info(f"Reflectivity {meta_dict[type_data][1]} file for band "
+                     f"{band} does not exist.")
             return None
-        LOG.debug(f"""Original {meta_dict[what][1]} file
-         {str(original_s2_file):s}""")
+        LOG.debug(f"Original {meta_dict[type_data][1]} file "
+                  f"{original_s2_file}")
         data = reproject_data(
             str(original_s2_file), target_img=self.state_mask
         ).ReadAsArray()
 
         return data
+
+    def _read_angle_data(self, file_type, current_folder):
+        """
+        Reads different types of angle data contained somewhere in the file tree
+        below current_folder.
+
+        Parameters
+        ----------
+        file_type : str
+            the type of angle data to read. This is the file name without the
+            'tif' extension.
+        current_folder : path
+            the path to where all the data is contained
+        Returns
+        -------
+        numpy arrays
+            two arrays, containing the zenith and azimuth angle data
+        """
+
+        try:
+            angle_file = next(current_folder.glob(f"**/{file_type}.tif"))
+        except StopIteration:
+            raise ValueError(f"file {file_type}.tif does not exist.")
+
+        angles = reproject_data(
+            str(angle_file),
+            target_img=self.state_mask,
+            x_res=20,
+            y_res=20,
+            resample=0,
+        ).ReadAsArray()
+        # zenith (90 - altitude)
+        za = np.cos(np.deg2rad(angles[1].mean() / 100.0))
+        # azimuth
+        aa = angles[0].mean() / 100.0
+
+        return za, aa
