@@ -34,7 +34,6 @@ def test_s2_data():
         assert list(output_data.values()) == [None] * len(output_names)
         shutil.move(filepath.with_suffix(".bac"), filepath)
 
-
     today = dt.datetime(2017, 1, 1)
     time_grid = [today + dt.timedelta(days=n) for n in range(0, 31, 5)]
 
@@ -96,5 +95,3 @@ def test_s2_data():
                            allow_pickle=True)
         for datum in output_names:
             np.testing.assert_equal(ref_data[datum], output_data[datum])
-
-    # assert False

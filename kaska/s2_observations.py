@@ -380,7 +380,7 @@ class Sentinel2Observations():
             view_angles = self._read_angle_data('VAA_VZA_B05', current_folder)
         except ValueError as err:
             LOG.info(f"Sun or View angle {err}")
-            return (None,) *  6
+            return (None,) * 6
         raa = np.cos(np.deg2rad(view_angles[1] - sun_angles[1]))
 
         return rho_surface, mask, sun_angles[0], view_angles[0], raa, rho_unc
@@ -406,8 +406,8 @@ class Sentinel2Observations():
             contains the (reflectivity or uncertainty) data for one band
         """
 
-        meta_dict = {'rho' : ('', ''),
-                     'unc' : ('_unc', 'uncertainty')}
+        meta_dict = {'rho': ('', ''),
+                     'unc': ('_unc', 'uncertainty')}
 
         try:
             original_s2_file = next(
@@ -416,13 +416,12 @@ class Sentinel2Observations():
             )
         except KeyError:
             LOG.info(f"Only reflectivity ('rho') or uncertainty ('unc') data "
-                     f"read by _read_band_data. Calling argument {type_data} not "
-                     f"recognised."
-            )
+                     f"read by _read_band_data. Calling argument {type_data} "
+                     f"not recognised.")
             raise
         except StopIteration:
-            LOG.info(f"Reflectivity {meta_dict[type_data][1]} file name for band "
-                     f"{band} does not exist in the granule xml file.")
+            LOG.info(f"Reflectivity {meta_dict[type_data][1]} file name for "
+                     f"band {band} does not exist in the granule xml file.")
             return None
         if not original_s2_file.exists():
             LOG.info(f"Reflectivity {meta_dict[type_data][1]} file for band "
@@ -438,8 +437,8 @@ class Sentinel2Observations():
 
     def _read_angle_data(self, file_type, current_folder):
         """
-        Reads different types of angle data contained somewhere in the file tree
-        below current_folder.
+        Reads different types of angle data contained somewhere in the file
+        tree below current_folder.
 
         Parameters
         ----------
