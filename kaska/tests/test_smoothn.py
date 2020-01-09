@@ -12,6 +12,7 @@ import numpy.ma as ma
 
 from .. import smoothn
 
+
 @pytest.mark.parametrize("is_robust, target, s, prec", [[False, 0.7503929639274534, None, 1e-5], # 1d unrobust
                                                         [True, 0.18943656067148762, None, 1e-5], # 1d robust
                                                         [False, 0.7503929639274534, 56.93236088601813, 1e-5], # fixed order - unrobust target/order
