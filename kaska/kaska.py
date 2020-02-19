@@ -41,11 +41,11 @@ class KaSKA:
         state_mask = state_mask.astype(np.bool)
         LOG.info("Doing first pass inversion!")
         S = {}
-        for k in self.observations.dates:
-            retval = self.inverter.invert_observations(self.observations, k,
-                                                       state_mask=state_mask)
+        for obs_date in self.observations.date_data:
+            retval = self.inverter.invert_observations(
+                self.observations, obs_date, state_mask=state_mask)
             if retval is not None:
-                S[k] = retval
+                S[obs_date] = retval
         return S
 
     def _process_first_pass(self, first_passer_dict):

@@ -6,6 +6,9 @@ import datetime as dt
 import logging
 from collections import namedtuple
 from pathlib import Path
+import xml.etree.ElementTree as ET
+from concurrent.futures import ThreadPoolExecutor
+import itertools
 
 import gdal
 import numpy as np
@@ -34,11 +37,70 @@ class Sentinel2Observations():
             chunk=None,
             time_grid=None,
     ):
-        self.band_prob_threshold = band_prob_threshold
+        """
+        Initialise the Sentinel2Observations object.
+
+        Parameters
+        ----------
+        parent_folder : str
+            path of the top folder that contains the data
+        emulator      : str
+            the s2 emulator filename
+        state_mask    : str
+            an existing spatial raster with the binary mask detailing which
+            pixels to process
+        band_prob_threshold : int, optional
+            threshold for xy pixel to be accepted
+        chunk         : int, optional
+            index of the xy chunk being read/processed. If not given, the whole
+            area will be read in.
+        time_grid     : list, optional
+            list of datetime objects corresponding to the timesteps to be read.
+            If not given, all the timesteps will be read in.
+
+        Returns
+        -------
+        None
+
+        Attributes
+        ----------
+        **Initialised in __init__:**
+        parent        : path
+            the path to the parent folder containing all the data
+        emulator      : two_nn object
+            the s2 emulator
+        original_mask : tif file
+            the mask to be applied to the data without alterations
+        state_mask    : tif file
+            the mask to be applied to the data after possible alterations
+        band_prob_threshold : int
+            threshold for xy pixel to be accepted
+        band_map      : list
+            the list of available bands - hardcoded
+        chunk         : int
+            index of the xy chunk being read/processed
+
+        **Initialised in _find_granules:**
+        date_data : dict
+            dictionary of {date:[reflectivity files]}, ordered in date
+        """
         parent_folder = Path(parent_folder)
         if not parent_folder.exists():
             LOG.info(f"S2 data folder: {parent_folder}")
             raise IOError("S2 data folder doesn't exist")
+        self.parent = parent_folder
+
+        my_file = np.load(emulator, allow_pickle=True)
+        self.emulator = Two_NN(
+            Hidden_Layers=my_file.f.Hidden_Layers,
+            Output_Layers=my_file.f.Output_Layers
+        )
+        LOG.debug("Read emulator in")
+
+        self.original_mask = state_mask
+        self.state_mask = state_mask
+
+        self.band_prob_threshold = band_prob_threshold
         self.band_map = [
             "B01",
             "B02",
@@ -54,21 +116,10 @@ class Sentinel2Observations():
             "B11",
             "B12",
         ]
-        # self.band_map = ['05', '08']
-
-        self.parent = parent_folder
-        self.original_mask = state_mask
-        self.state_mask = state_mask
-
-        my_file = np.load(emulator, allow_pickle=True)
-        self.emulator = Two_NN(
-            Hidden_Layers=my_file.f.Hidden_Layers,
-            Output_Layers=my_file.f.Output_Layers
-        )
-        LOG.debug("Read emulator in")
-        LOG.debug("Searching for files....")
-        self._find_granules(self.parent, time_grid)
         self.chunk = chunk
+
+        LOG.debug("Searching for files....")
+        self._find_granules()
 
     def apply_roi(self, ulx, uly, lrx, lry):
         """Applies a region of interest (ROI) window to the state mask, which
@@ -90,10 +141,6 @@ class Sentinel2Observations():
         None
         Doesn't return anything, but changes `self.state_mask`
         """
-        # self.ulx = ulx
-        # self.uly = uly
-        # self.lrx = lrx
-        # self.lry = lry
         width = lrx - ulx
         height = uly - lry
 
@@ -126,84 +173,96 @@ class Sentinel2Observations():
             geo_transform = np.array(self.state_mask.GetGeoTransform())
             num_x = self.state_mask.RasterXSize
             num_y = self.state_mask.RasterYSize
-        # new_geoT = geoT*1.
-        # new_geoT[0] = new_geoT[0] + self.ulx*new_geoT[1]
-        # new_geoT[3] = new_geoT[3] + self.uly*new_geoT[5]
-        return proj, geo_transform.tolist(), num_x, num_y  # new_geoT.tolist()
 
-    def _find_granules(self, parent_folder, time_grid=None):
-        """Finds granules. Currently does so by checking for
-        Feng's AOT file."""
-        # this is needed to follow symlinks
-        test_files = [
-            x for f in parent_folder.iterdir() for x in f.rglob("**/*_aot.tif")
-        ]
-        try:
-            dates = [
-                dt.datetime(*(list(map(int, f.parts[-5:-2]))))
-                for f in test_files
-            ]
-        except ValueError:
-            dates = [
-                dt.datetime.strptime(
-                    f.parts[-1].split("_")[1], "%Y%m%dT%H%M%S"
-                )
-                for f in test_files
-            ]
-        # Sort dates by time, as currently S2A/S2B will be part of ordering
+        return proj, geo_transform.tolist(), num_x, num_y
 
-        # test_files
-        #     = sorted(test_files, key=lambda x:dates[test_files.index(x)])
-        # dates = sorted(dates)
-        if time_grid is not None:
-            start_date = time_grid[0]
-            end_date = time_grid[-1]
-            self.dates = [
-                d.replace(hour=0, minute=0, second=0)
-                for d in dates
-                if (start_date <= d <= end_date)
-            ]
-            test_files = [
-                test_files[i]
-                for i, d in enumerate(dates)
-                if (start_date <= d <= end_date)
-            ]
-        else:
-            self.dates = [x.replace(hour=0, minute=0, second=0) for x in dates]
-        temp_dict = dict(zip(self.dates, [f.parent for f in test_files]))
-        dates = sorted(self.dates)
-        self.date_data = {k: temp_dict[k] for k in dates}
-        self.dates = dates
+    def _find_granules(self, max_workers=10):
+        """Finds granules within the given time grid if given.
 
-        # self.date_data = dict(zip(self.dates,
-        #                          [f.parent for f in test_files]))
-        self.bands_per_observation = {}
-        LOG.info(f"Found {len(test_files):d} S2 granules")
+        Parameters
+        ----------
+        max_workers : int, optional
+            the maximum number of worker threads used to read xml files
+            concurrently
+
+        Returns
+        -------
+        None
+        Doesn't return anything, but changes `self.date_data`
+        """
+        # This is a list of the granule parent folders. The xml file in each
+        # of those folders, contains the relative paths to all the reflectivity
+        # data files for that granule.
+        folders = sorted([x for x in self.parent.rglob("*/*MSIL1C*.SAFE")
+                          if x.is_dir()])
+
+        # Apply multithreaded
+        date_files = []
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            for params in executor.map(
+                    lambda x: self._process_xml(x/"MTD_MSIL1C.xml"), folders):
+                date_files.append(params)
+
+        dates = [x[0].replace(hour=0, minute=0, second=0, microsecond=0)
+                 for x in date_files]
+        self.date_data = dict(zip(dates, [x[1] for x in date_files]))
+        # TODO: Could do here instead of in read_granule():
+        # - Check that all refl_files exist
+        # - Figure out where the cloud mask is (e.g. 'cloud.tif'
+        #   one folder up from the tif files)
+        # - Angles are also one folder up in folder ANG_DATA
+
+        LOG.info(f"Found {len(dates):d} S2 granules")
         LOG.info(
-            f"First granule: "
-            + f"{sorted(self.dates)[0].strftime('%Y-%m-%d'):s}"
+            f"First granule: {min(dates):%Y-%m-%d}"
         )
         LOG.info(
-            f"Last granule: "
-            + f"{sorted(self.dates)[-1].strftime('%Y-%m-%d'):s}"
+            f"Last granule: {max(dates):%Y-%m-%d}"
         )
 
-        for the_date in self.dates:
-            self.bands_per_observation[the_date] = len(self.band_map)
+    def _process_xml(self, metadata_file):
+        """Processes the input xml file to fish out time series and file names.
+
+        Parameters
+        ----------
+        metadata_file : path
+            the xml file
+        Returns
+        -------
+        tuple
+            The first element is the datetime, and the second element is a list
+            of the data files for this datetime.
+        """
+        tree = ET.parse(str(metadata_file))
+        root = tree.getroot()
+        acq_time = [time.text for time in root.iter("PRODUCT_START_TIME")]
+        date = dt.datetime.strptime(acq_time[0], "%Y-%m-%dT%H:%M:%S.%fZ")
+        refl_files = [[metadata_file.parent/f"{granule.text:s}_sur.tif",
+                       metadata_file.parent/f"{granule.text:s}_sur_unc.tif"]
+                      for granule in root.iter('IMAGE_FILE')
+                      if not granule.text.endswith("TCI")]
+        refl_files = list(itertools.chain.from_iterable(refl_files))
+
+        return date, refl_files
 
     def read_time_series(self, time_grid):
         """Reads a time series of S2 data
-        Arguments:
-            time_grid  -- A list of dates
-        Returns:
-             A list of S2MSIdata objects
+
+        Parameters
+        ----------
+        time_grid : list
+            the list of dates to read
+        Returns
+        -------
+        list
+            a list of S2MSIdata objects corresponding to the requested dates
         """
         start_time = min(time_grid)
         end_time = max(time_grid)
         obs_dates = [
             date
-            for date in self.dates
-            if ((date >= start_time) & (date <= end_time))
+            for date in self.date_data
+            if (start_time <= date <= end_time)
         ]
         data = [self.read_granule(date) for date in obs_dates]
         observations = [x[0] for x in data if x[1] is not None]
@@ -219,73 +278,78 @@ class Sentinel2Observations():
         return s2_obs
 
     def read_granule(self, timestep):
-        """Reads data granule for a given `timestep`. Returns all relevant
-        bits and bobs (surface reflectrance, angles, cloud mask, uncertainty).
+        """Reads the data for the given timestep. Returns all relevant
+        quantities (surface reflectrance, angles, cloud mask, uncertainty).
         The mask is true for OK pixels. If there are no suitable pixels, the
         returned tuple is a collection of `None`
-
 
         Parameters
         ----------
         timestep : datetime
-            The datetime object
-
+            datetime of granule to read
         Returns
         -------
         tuple
-            rho_surface, mask, sza, vza, raa, rho_unc
-        """
+            contains the rho_surface, mask, sza, vza, raa, rho_unc
 
-        assert timestep in self.date_data, f"{str(timestep):s} not available!"
-        # NOTE: Currently reads in sequentially. It's better to gather
-        # all the filenames and read them in parallel using parmap.py"""
-        current_folder = self.date_data[timestep]
-        fname_prefix = [
-            f.name.split("B02")[0] for f in current_folder.glob("*B02_sur.tif")
-        ][0]
-        # Find cloud mask
-        cloud_mask = current_folder.parent / f"cloud.tif"
+        .. note:: Currently reads in sequentially. It's better to gather
+        all the filenames and read them in parallel using parmap.py
+        """
+        assert timestep in self.date_data, f"{timestep} not available!"
+
+        # This is the parent folder for this granule: the path from the current
+        # location all the way down to the one containing ".SAFE"
+        current_folder = Path()
+        for part in self.date_data[timestep][0].parts:
+            current_folder /= part
+            if ".SAFE" in part:
+                break
+        assert current_folder is not Path(), (f"Parent folder for granule {timestep:%Y-%m-%d} "
+                                              "does not follow expected pattern: "
+                                              "should end in '.SAFE'")
+
+        # Read in cloud mask and reproject it on state mask.
+        # The cloud mask is the probabilty of cloud. OK pixels have
+        # a probability of cloud below `band_prob_threshold`.
+        # Stop processing if cloud mask file doesn't exist,
+        # or if no clear pixels exist.
+        try:
+            cloud_mask_file = next(current_folder.glob("**/cloud.tif"))
+        except StopIteration:
+            LOG.info(f"Cloud file cloud.tif does not exist.")
+            return (None,) * 6
         cloud_mask = reproject_data(
-            str(cloud_mask), target_img=self.state_mask
-        ).ReadAsArray()
-        # cloud mask is probabilty of cloud
-        # OK pixels have a probability of cloud below `band_prob_threshold`
+            str(cloud_mask_file), target_img=self.state_mask).ReadAsArray()
         mask = cloud_mask <= self.band_prob_threshold
         # If we have no unmasked pixels, bail out.
         if mask.sum() == 0:
             # No pixels! Pointless to carry on reading!
             LOG.info("No clear observations")
-            return None, None, None, None, None, None
-        # Read in surface reflectance and associated uncertainty
+            return (None,) * 6
+
+        # Read in surface reflectance and associated uncertainty per band
         rho_surface = []
         rho_unc = []
+        s2_files = self.date_data[timestep]
+        LOG.info(f"Reading data for granule {timestep:%Y-%m-%d}.")
         for the_band in self.band_map:
-            original_s2_file = current_folder / (
-                f"{fname_prefix:s}" + f"{the_band:s}_sur.tif"
-            )
-            LOG.debug(f"Original file {str(original_s2_file):s}")
-            rho = reproject_data(
-                str(original_s2_file), target_img=self.state_mask
-            ).ReadAsArray()
-
+            rho = self._read_band_data('rho', the_band, s2_files)
+            if rho is None:
+                return (None,) * 6
             rho_surface.append(rho)
-            original_s2_file = current_folder / (
-                f"{fname_prefix:s}" + f"{the_band:s}_sur_unc.tif"
-            )
-            # LOG.debug(f"Uncertainty file {str(original_s2_file):s}")
-            # unc = reproject_data(
-            #    str(original_s2_file), target_img=self.state_mask
-            # ).ReadAsArray()
-            rho_unc.append(np.ones_like(rho) * 0.005)
+
+            unc = self._read_band_data('unc', the_band, s2_files)
+            if unc is None:
+                return (None,) * 6
+            rho_unc.append(unc)
         # For reference...
         # bands = ['B01', 'B02', 'B03', 'B04', 'B05', 'B06', 'B07', 'B08',
         #         'B8A', 'B09', 'B10','B11', 'B12']
         # b_ind = np.array([1, 2, 3, 4, 5, 6, 7, 8])
-
         rho_surface = np.array(rho_surface)
-        # Now, ensure all surface reflectance pixels have values above
-        # 0 & aren't cloudy.
-        # So valid pixels if all refl > 0 AND mask is True
+
+        # Ensure all surface reflectance pixels have values above 0 and
+        # aren't cloudy. So pixels are valid if all refl > 0 AND mask is True
         # Array of the desired bands. Not necessarily contiguous.
         sel_bands = np.array([1, 2, 3, 4, 5, 6, 7, 8])
         mask1 = np.logical_and(
@@ -293,59 +357,117 @@ class Sentinel2Observations():
         )
         mask = mask1
         if mask.sum() == 0:
-            LOG.info("%s -> No clear observations", str(timestep))
-            return None, None, None, None, None, None
+            LOG.info(f"{timestep} -> No clear observations")
+            return (None,) * 6
         LOG.info(
-            f"{str(timestep):s} -> Total of {mask.sum():d} clear pixels "
-            + f"({100.*mask.sum()/np.prod(mask.shape):f}%)"
+            f"{timestep} -> Total of {mask.sum():d} clear pixels "
+            f"({100.*mask.sum()/np.prod(mask.shape):f}%)"
         )
 
-        rho_surface = rho_surface / 10000.0  # FIXME: Magic number
-
+        # Rescaling and setting missing pixels to NaN
+        # reflectivity
+        rho_surface = rho_surface / 10000.0 # FIXME: Magic number
+        rho_surface[:, ~mask] = np.nan
+        # uncertainty
         rho_unc = np.array(rho_unc) / 10000.0
         rho_unc[:, ~mask] = np.nan
         # Average uncertainty over the image
         rho_unc = np.nanmean(rho_unc, axis=(1, 2))
-        # Set missing pixels to NaN
-        rho_surface[:, ~mask] = np.nan
-        # Now read angles
-        sun_angles = reproject_data(
-            str(current_folder.parent / "ANG_DATA/SAA_SZA.tif"),
+
+        # Read in angles
+        try:
+            sun_angles = self._read_angle_data('SAA_SZA', current_folder)
+            view_angles = self._read_angle_data('VAA_VZA_B05', current_folder)
+        except ValueError as err:
+            LOG.info(f"Sun or View angle {err}")
+            return (None,) * 6
+        raa = np.cos(np.deg2rad(view_angles[1] - sun_angles[1]))
+
+        return rho_surface, mask, sun_angles[0], view_angles[0], raa, rho_unc
+
+    def _read_band_data(self, type_data, band, s2_files):
+        """
+        Reads different types of data for the given band from the list of
+        input files.
+
+        Parameters
+        ----------
+        type_data : str
+            the type of data to read. Currently 'rho' for reflectivity or
+            'unc' for uncertainty
+        band : str
+            the name of the band
+        s2_files : list
+            a list of files (paths) containing the data for all bands
+            of one timestep.
+        Returns
+        -------
+        numpy array
+            contains the (reflectivity or uncertainty) data for one band
+        """
+
+        meta_dict = {'rho': ('', ''),
+                     'unc': ('_unc', 'uncertainty')}
+
+        try:
+            original_s2_file = next(
+                f for f in s2_files
+                if f.name.endswith(f"{band}_sur{meta_dict[type_data][0]}.tif")
+            )
+        except KeyError:
+            LOG.info(f"Only reflectivity ('rho') or uncertainty ('unc') data "
+                     f"read by _read_band_data. Calling argument {type_data} "
+                     f"not recognised.")
+            raise
+        except StopIteration:
+            LOG.info(f"Reflectivity {meta_dict[type_data][1]} file name for "
+                     f"band {band} does not exist in the granule xml file.")
+            return None
+        if not original_s2_file.exists():
+            LOG.info(f"Reflectivity {meta_dict[type_data][1]} file for band "
+                     f"{band} does not exist.")
+            return None
+        LOG.debug(f"Original {meta_dict[type_data][1]} file "
+                  f"{original_s2_file}")
+        data = reproject_data(
+            str(original_s2_file), target_img=self.state_mask
+        ).ReadAsArray()
+
+        return data
+
+    def _read_angle_data(self, file_type, current_folder):
+        """
+        Reads different types of angle data contained somewhere in the file
+        tree below current_folder.
+
+        Parameters
+        ----------
+        file_type : str
+            the type of angle data to read. This is the file name without the
+            'tif' extension.
+        current_folder : path
+            the path to where all the data is contained
+        Returns
+        -------
+        numpy arrays
+            two arrays, containing the zenith and azimuth angle data
+        """
+
+        try:
+            angle_file = next(current_folder.glob(f"**/{file_type}.tif"))
+        except StopIteration:
+            raise ValueError(f"file {file_type}.tif does not exist.")
+
+        angles = reproject_data(
+            str(angle_file),
             target_img=self.state_mask,
             x_res=20,
             y_res=20,
             resample=0,
         ).ReadAsArray()
-        view_angles = reproject_data(
-            str(current_folder.parent / "ANG_DATA/VAA_VZA_B05.tif"),
-            target_img=self.state_mask,
-            x_res=20,
-            y_res=20,
-            resample=0,
-        ).ReadAsArray()
-        sza = np.cos(np.deg2rad(sun_angles[1].mean() / 100.0))
-        vza = np.cos(np.deg2rad(view_angles[1].mean() / 100.0))
-        saa = sun_angles[0].mean() / 100.0
-        vaa = view_angles[0].mean() / 100.0
-        raa = np.cos(np.deg2rad(vaa - saa))
-        return rho_surface, mask, sza, vza, raa, rho_unc
+        # zenith (90 - altitude)
+        za = np.cos(np.deg2rad(angles[1].mean() / 100.0))
+        # azimuth
+        aa = angles[0].mean() / 100.0
 
-
-if __name__ == "__main__":
-    TIME_GRID = []
-    TODAY = dt.datetime(2017, 1, 1)
-    while TODAY <= dt.datetime(2017, 12, 31):
-        TIME_GRID.append(TODAY)
-        TODAY += dt.timedelta(days=5)
-
-    S2_OBS = Sentinel2Observations(
-        "/home/ucfajlg/Data/python/KaFKA_Validation/LMU/s2_obs/",
-        "/home/ucfafyi/DATA/Prosail/prosail_2NN.npz",
-        "/home/ucfajlg/Data/python/KaFKA_Validation/LMU/carto/ESU.tif",
-        band_prob_threshold=20,
-        chunk=None,
-        time_grid=TIME_GRID,
-    )
-    RET_VAL = S2_OBS.read_time_series(
-        [dt.datetime(2017, 1, 1), dt.datetime(2017, 12, 31)]
-    )
+        return za, aa
