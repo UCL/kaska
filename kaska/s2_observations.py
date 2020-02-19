@@ -304,9 +304,9 @@ class Sentinel2Observations():
             current_folder /= part
             if ".SAFE" in part:
                 break
-        assert current_folder is not Path(), f"""Parent folder for granule
-         {timestep:%Y-%m-%d} does not follow expected pattern: should end in
-         '.SAFE'"""
+        assert current_folder is not Path(), (f"Parent folder for granule {timestep:%Y-%m-%d} "
+                                              "does not follow expected pattern: "
+                                              "should end in '.SAFE'")
 
         # Read in cloud mask and reproject it on state mask.
         # The cloud mask is the probabilty of cloud. OK pixels have
