@@ -27,5 +27,6 @@ def interp1d(newx, oldx, oldy):
         mask = ~np.isnan(my_y)
         if mask.any():
             newy[i] = np.interp(newx, oldx[mask], my_y[mask])
-    newy_t = newy.transpose(1, 0).reshape((new_shape,) + oldy_shape)
+    newy_t = np.ascontiguousarray(newy.transpose(1, 0)).reshape((new_shape,) +
+                                                                oldy_shape)
     return newy_t
