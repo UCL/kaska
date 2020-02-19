@@ -10,13 +10,7 @@ from scipy.interpolate import interp1d
 
 import scipy.optimize
 
-# from .NNParameterInversion import NNParameterInversion
-
-# from .s2_observations import Sentinel2Observations
-
 from .s1_observations import Sentinel1Observations
-
-# from .smoothn import smoothn
 
 from .utils import define_temporal_grid, save_output_parameters
 
@@ -62,7 +56,7 @@ def sar_inversion(s1_obs, s2_data):
         return cost_hess(np.concatenate([my_xx[:6], lai, lai, my_xx[-n_obs:]]),
                          svh, svv, theta)
 
-    avv, bvv, cvv = -12, 0.05, 0.1
+    avv, bvv, cvv = -12, 0.05, 0.1   # FIXME: Magic numbers
     avh, bvh, cvh = -14, 0.01, 0.1
     sigma_soil0 = np.zeros(n_sar_obs)*0.2  # Say
     x0_all = \

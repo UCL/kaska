@@ -17,8 +17,6 @@ import sys
 import os
 import pkgutil
 
-# from io import BytesIO
-
 from enum import Enum
 
 LOG = logging.getLogger(__name__)

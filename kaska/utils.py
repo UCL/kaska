@@ -62,7 +62,7 @@ def reproject_data(source_img,
     projection and resolution of the target image.
 
     """
-
+    
     output_type = (
         gdal.GDT_Unknown if output_type is None else output_type
         )
@@ -105,9 +105,9 @@ def reproject_data(source_img,
         x_size, y_size = dataset.RasterXSize, dataset.RasterYSize
 
         if x_res is None:
-            x_res = abs(geo_t[1])
+            x_res = abs(geo_t[1])  # FIXME: magic number 1
         if y_res is None:
-            y_res = abs(geo_t[5])
+            y_res = abs(geo_t[5])  # FIXME: magic number 5
 
         if x_size is not None:
             x_size = 1.0 * x_size * x_res / abs(geo_t[1])
@@ -186,7 +186,7 @@ def save_output_parameters(time_grid, observations, output_folder,
     assert len(parameter_names) == len(output_data)
     num_t = output_data[0].shape[0]
     assert len(time_grid) == num_t, f"time_grid length = {len(time_grid)}, " \
-        + f"data length = {num_t}. output_data[0].shape = {output_data[0].shape}"
+        + f"data length={num_t}. output_data[0].shape={output_data[0].shape}"
     projection, geo_transform, num_x, num_y = observations.define_output()
     drv = gdal.GetDriverByName(output_format)
     for (param, data) in zip(parameter_names, output_data):
@@ -217,6 +217,7 @@ def save_output_parameters(time_grid, observations, output_folder,
                                 'doy': this_date})
             dst_ds = None
             dataset = gdal.Open(str(outfile))
+            # FIXME: what is magic number 6 in next line?
             dataset.BuildOverviews("average", np.power(2, np.arange(6)))
 
 
@@ -319,7 +320,7 @@ def rasterise_vector(vector_f, sample_f=None, pixel_size=20):
         rows = int((y_max - y_min) / pixel_size)
         geo_transform = [x_min, pixel_size, 0, y_max, 0, -pixel_size]
         target_ds_srs = osr.SpatialReference()
-        target_ds_srs.ImportFromEPSG(4326)
+        target_ds_srs.ImportFromEPSG(4326)  # FIXME: What is this magic number?
         target_ds_srs = target_ds_srs.ExportToWkt()
 
     target_ds = gdal.GetDriverByName("MEM").Create(

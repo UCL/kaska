@@ -366,7 +366,7 @@ class Sentinel2Observations():
 
         # Rescaling and setting missing pixels to NaN
         # reflectivity
-        rho_surface = rho_surface / 10000.0
+        rho_surface = rho_surface / 10000.0 # FIXME: Magic number
         rho_surface[:, ~mask] = np.nan
         # uncertainty
         rho_unc = np.array(rho_unc) / 10000.0

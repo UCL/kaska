@@ -112,7 +112,7 @@ def training(X, targs, epochs=2000):
         outputs.append(layers.Dense(1)(x))
     model = tf.keras.Model(inputs=inputs, outputs=outputs)
     optimizer = tf.keras.optimizers.Adam(
-        lr=0.001,
+        lr=0.001,  # FIXME: Magic numbers.
         beta_1=0.9,
         beta_2=0.999,
         epsilon=None,
