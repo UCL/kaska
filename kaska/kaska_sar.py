@@ -14,6 +14,7 @@ from scipy.optimize import minimize
 from scipy.interpolate import interp1d
 from watercloudmodel import cost_function
 from scipy.ndimage.filters import gaussian_filter1d
+import pdb
 
 def save_to_tif(fname, Array, GeoT):
     if os.path.exists(fname):
@@ -27,7 +28,6 @@ def save_to_tif(fname, Array, GeoT):
         ds.GetRasterBand(i+1).WriteArray( image )
     ds.FlushCache()
     return fname
-
 
 def get_sar(s1_nc_file):
     s1_data = namedtuple('s1_data', 'time lat lon satellite  relorbit orbitdirection ang_name vv_name, vh_name')
@@ -44,15 +44,15 @@ def get_sar(s1_nc_file):
     vh_name = s1_nc_file.replace('.nc', '_vh.tif')
     ang_name = s1_nc_file.replace('.nc', '_ang.tif')
     if not os.path.exists(vv_name):
-        gg = gdal.Open('NETCDF:"%s":sigma0_vv_norm_multi'%s1_nc_file)
+        gg = gdal.Open('NETCDF:"%s":sigma0_vv_multi'%s1_nc_file)
         geo = gg.GetGeoTransform()
-        sigma0_vv_norm_multi = data['sigma0_vv_norm_multi'][:]
+        sigma0_vv_norm_multi = data['sigma0_vv_multi'][:]
         save_to_tif(vv_name, sigma0_vv_norm_multi, geo)
 
     if not os.path.exists(vh_name):
-        gg = gdal.Open('NETCDF:"%s":sigma0_vh_norm_multi'%s1_nc_file)
+        gg = gdal.Open('NETCDF:"%s":sigma0_vh_multi'%s1_nc_file)
         geo = gg.GetGeoTransform()
-        sigma0_vh_norm_multi = data['sigma0_vh_norm_multi'][:]
+        sigma0_vh_norm_multi = data['sigma0_vh_multi'][:]
         save_to_tif(vh_name, sigma0_vh_norm_multi, geo)
 
     if not os.path.exists(ang_name):
@@ -86,7 +86,7 @@ def read_s2_lai(s2_lai, s2_cab, s2_cbrown, state_mask):
     cbrown  = reproject_data(s2_cbrown, output_format="MEM", target_img=state_mask)
     return s2_data(time, lai, cab, cbrown)
 
-def inference_preprocessing(s1_data, s2_data):
+def inference_preprocessing(s1_data, s2_data, state_mask, orbit1=None, orbit2=None):
     """Resample S2 smoothed output to match S1 observations
     times"""
     # Move everything to DoY to simplify interpolation
@@ -98,6 +98,13 @@ def inference_preprocessing(s1_data, s2_data):
     s1_doys = np.array([ int(i.strftime('%j')) for i in s1_data.time])
 
     time_mask = (s1_doys >= s2_doys.min()) & (s1_doys <= s2_doys.max())
+    if orbit1 != None:
+        rel_orbit1 = s1_data.relorbit==orbit1
+        if orbit2 != None:
+            rel_orbit2 = s1_data.relorbit==orbit2
+            xxx = np.logical_and(rel_orbit1,time_mask)
+            yyy = np.logical_and(rel_orbit2,time_mask)
+            time_mask = np.logical_or(xxx,yyy)
 
     f = interp1d(s2_doys, s2_data.lai.ReadAsArray(), axis=0, bounds_error=False)
     lai_s1 = f(s1_doys)
@@ -109,6 +116,10 @@ def inference_preprocessing(s1_data, s2_data):
     lai_max = np.nanmax(s2_data.lai.ReadAsArray(), axis=0)
     patches = sobel(lai_max)>0.001
     fields  = label(patches)[0]
+    g = gdal.Open(state_mask)
+    gg = g.GetRasterBand(1)
+    ggg = gg.ReadAsArray()
+    fields[ggg==0]=0
     sar_inference_data = sar_inference_data(s1_data.time, s1_data.lat, s1_data.lon,
                                             s1_data.satellite, s1_data.relorbit,
                                             s1_data.orbitdirection, s1_data.ang,
@@ -209,8 +220,8 @@ def do_one_pixel_field(sar_inference_data, vv, vh, lai, theta, time, sm, sm_std,
           + [[0,     .03]] * olai.shape[0]
           + [[0,       8]] * olai.shape[0]
           )
-
-        gamma = [1000, 1000]
+        # pdb.set_trace()
+        gamma = [500, 500]
         retval = minimize(cost_function,
                             x0,
                             args=(ovh, ovv, otheta, gamma, prior_mean, prior_unc),
@@ -403,7 +414,7 @@ class KaSKASAR(object):
     """A class to process Sentinel 1 SAR data using S2 data as
     an input"""
 
-    def __init__(self, s1_ncfile, state_mask, s2_lai,  s2_cab, s2_cbrown, sm_prior, sm_std, sr_prior ,sr_std):
+    def __init__(self, s1_ncfile, state_mask, s2_lai,  s2_cab, s2_cbrown, sm_prior, sm_std, sr_prior ,sr_std,orbit1=None,orbit2=None):
         self.s1_ncfile = s1_ncfile
         self.state_mask = state_mask
         self.s2_lai    = s2_lai
@@ -413,18 +424,25 @@ class KaSKASAR(object):
         self.sm_std    = sm_std
         self.sr_prior  = sr_prior
         self.sr_std    = sr_std
+        self.orbit1    = None
+        self.orbit2    = None
+        if orbit1 != None:
+            self.orbit1     = orbit1
+            if orbit2 != None:
+                self.orbit2 = orbit2
 
     def sentinel1_inversion(self, segment=False):
         sar = get_sar(s1_ncfile)
         s1_data = read_sar(sar, self.state_mask)
-        s2_data = s2_data = read_s2_lai(self.s2_lai, self.s2_cab, self.s2_cbrown, self.state_mask)
+        s2_data = read_s2_lai(self.s2_lai, self.s2_cab, self.s2_cbrown, self.state_mask)
         prior   = get_prior(s1_data, self.sm_prior, self.sm_std, self.sr_prior, self.sr_std, self.state_mask)
-        sar_inference_data = inference_preprocessing(s1_data, s2_data)
+        sar_inference_data = inference_preprocessing(s1_data, s2_data, self.state_mask,self.orbit1,self.orbit2)
+
         lai_outputs, sr_outputs, sm_outputs, \
         Avv_outputs, Bvv_outputs, Cvv_outputs, \
         Avh_outputs, Bvh_outputs, Cvh_outputs, uorbits = do_inversion(sar_inference_data, prior, self.state_mask, segment)
 
-        gg = gdal.Open('NETCDF:"%s":sigma0_vh_norm_multi'%self.s1_ncfile)
+        gg = gdal.Open('NETCDF:"%s":sigma0_vv_multi'%self.s1_ncfile)
         geo = gg.GetGeoTransform()
 
         projction = 'GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.01745329251994328,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4326"]]'
@@ -455,7 +473,7 @@ class KaSKASAR(object):
         save_ps_output(Cvh_name, Cvh_outputs, geo, projction, uorbits)
 
 
-# if __name__ == '__main__':
+if __name__ == '__main__':
     # s1_ncfile = '/data/nemesis/kaska-sar_quick/S1_LMU_site_2017_new.nc'
     # state_mask = "/home/ucfajlg/Data/python/KaFKA_Validation/LMU/carto/ESU.tif"
     # s2_folder = "/home/ucfajlg/Data/python/KaFKA_Validation/LMU/s2_obs/"
@@ -470,21 +488,28 @@ class KaSKASAR(object):
     # sarsar = KaSKASAR(s1_ncfile, state_mask, s2_lai,  s2_cab, s2_cbrown, sm_prior, sm_std, sr_prior ,sr_std)
 
     # s1_ncfile = '/media/nas_data/Thomas/S1/processed/MNI_2017/MNI_2017.nc'
-    # s1_ncfile = '/home/tweiss/Desktop/LRZ Sync+Share/Jose/new_backscatter/MNI_2017.nc'
-    # state_mask = "/media/tweiss/Daten/test_kaska/data/ESU.tif"
-    # s2_folder = "/media/tweiss/Daten/test_kaska/data/"
-    # s2_lai = f"{s2_folder:s}/lai.tif"
-    # s2_cab = f"{s2_folder:s}/cab.tif"
-    # s2_cbrown = f"{s2_folder:s}/cbrown.tif"
 
-    # sm_prior = f'{s2_folder:s}/sm_prior.tif'
-    # sm_std   = f'{s2_folder:s}/sm_std.tif'
-    # sr_prior = f'{s2_folder:s}/sr_prior.tif'
-    # sr_std   = f'{s2_folder:s}/sr_std.tif'
-    # sarsar = KaSKASAR(s1_ncfile, state_mask, s2_lai,  s2_cab, s2_cbrown, sm_prior, sm_std, sr_prior ,sr_std)
+    aggregation = '_point'
+    # aggregation = '_Field_buffer_30'
+    # aggregation = '_buffer_100'
+    # aggregation = '_buffer_50'
+    aggregation = '_buffer_30'
+
+    s1_ncfile = '/media/tweiss/Daten/data_AGU/'+aggregation+'/MNI_2017_new_final.nc'
+    state_mask = '/media/tweiss/Work/z_final_mni_data_2017/ESU'+aggregation+'.tif'
+    s2_folder = "/media/tweiss/Daten/test_kaska/data/"
+    s2_lai = f"{s2_folder:s}/lai.tif"
+    s2_cab = f"{s2_folder:s}/cab.tif"
+    s2_cbrown = f"{s2_folder:s}/cbrown.tif"
+
+    sm_prior = f'{s2_folder:s}/sm_prior.tif'
+    sm_std   = f'{s2_folder:s}/sm_std.tif'
+    sr_prior = f'{s2_folder:s}/sr_prior.tif'
+    sr_std   = f'{s2_folder:s}/sr_std.tif'
+    sarsar = KaSKASAR(s1_ncfile, state_mask, s2_lai, s2_cab, s2_cbrown, sm_prior, sm_std, sr_prior ,sr_std)
 
 
 
 
-    # sarsar.sentinel1_inversion(True)
+    sarsar.sentinel1_inversion(True)
 

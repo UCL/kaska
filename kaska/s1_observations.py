@@ -24,15 +24,15 @@ S1data = namedtuple(
 
 
 layers = [
-    "sigma0_vv_norm_multi_db",
-    "sigma0_vh_norm_multi_db",
+    "sigma0_vv_norm_multi",
+    "sigma0_vh_norm_multi",
     "localIncidenceAngle"
     ]
 
 
 def get_s1_dates(s1_file):
     """Gets the dates from a LMU processed netCDF Sentinel 1 file"""
-    times = [float(s1_file.GetRasterBand(b+1).GetMetadata()['NETCDF_DIM_time']) 
+    times = [float(s1_file.GetRasterBand(b+1).GetMetadata()['NETCDF_DIM_time'])
                                 for b in range(s1_file.RasterCount)]
     times = [dt.datetime(1970,1,1) + dt.timedelta(days=x) for x in times ]
     LOG.info(f"Sentinel 1 First obs: {times[0].strftime('%Y-%m-%d'):s}")
@@ -47,8 +47,8 @@ class Sentinel1Observations(object):
         state_mask,
         chunk=None,
         time_grid=None,
-        nc_layers = {"VV": "sigma0_vv_norm_multi_db",
-                    "VH": "sigma0_vh_norm_multi_db",
+        nc_layers = {"VV": "sigma0_vv_norm_multi",
+                    "VH": "sigma0_vh_norm_multi",
                     "theta": "localIncidenceAngle"}
     ):
         self.time_grid = time_grid
@@ -64,10 +64,10 @@ class Sentinel1Observations(object):
         self.lry = lry
         width = lrx - ulx
         height = uly - lry
-        
+
         self.state_mask = gdal.Translate(
             "",
-            self.original_mask,
+            self.state_mask,
             srcWin=[ulx, uly, width, abs(height)],
             format="MEM",
         )
@@ -77,9 +77,9 @@ class Sentinel1Observations(object):
 
     def define_output(self):
         """Define the output array shapes to be consistent with the state
-        mask. You get the projection and geotransform, that should be 
+        mask. You get the projection and geotransform, that should be
         enough to define an ouput dataset that conforms to the state mask.
-        
+
         Returns
         -------
         tuple
@@ -103,32 +103,32 @@ class Sentinel1Observations(object):
         # new_geoT[0] = new_geoT[0] + self.ulx*new_geoT[1]
         # new_geoT[3] = new_geoT[3] + self.uly*new_geoT[5]
         return proj, geoT.tolist(), nx, ny  # new_geoT.tolist()
-        
+
     def _match_to_mask(self):
         """Matches the observations to the state mask.
         """
         self.s1_data_ptr = {}
         for layer, layer_name in self.nc_layers.items():
             fname = f'NETCDF:"{self.nc_file.as_posix():s}":{layer_name:s}'
-            self.s1_data_ptr[layer] = reproject_data(fname, output_format="VRT", 
+            self.s1_data_ptr[layer] = reproject_data(fname, output_format="VRT",
                                                 srcSRS="EPSG:4326",
                                                 target_img=self.state_mask)
         s1_dates = get_s1_dates(self.s1_data_ptr[layer])
-        self.dates = {x:(i+1) 
-                            for i, x in enumerate(s1_dates) 
-                            if ( (x >= self.time_grid[0]) and 
+        self.dates = {x:(i+1)
+                            for i, x in enumerate(s1_dates)
+                            if ( (x >= self.time_grid[0]) and
                             (x <= self.time_grid[-1]))}
 
 
     def read_time_series(self, time_grid):
         """Reads a time series of observations. Uses the time grid to provide
         a min/max times.
-        
+
         Parameters
         ----------
         time_grid : list of datetimes
             List of datetimes
-        
+
         Returns
         -------
         S1data
@@ -137,7 +137,7 @@ class Sentinel1Observations(object):
         """
         early = time_grid[0]
         late = time_grid[-1]
-        
+
         sel_dates = [k for k,v in self.dates.items()
                            if (early <= k <= late)]
         sel_bands = [v for k,v in self.dates.items()
@@ -149,7 +149,7 @@ class Sentinel1Observations(object):
                                          for i in sel_bands])
         the_obs = S1data(sel_dates, obs['VV'], obs['VH'], obs['theta'], 0.5, 0.5)
         return the_obs
-    
+
 if __name__ == "__main__":
     start_date = dt.datetime(2017, 3, 1)
     end_date = dt.datetime(2017, 9, 1)
