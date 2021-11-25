@@ -382,11 +382,11 @@ def cost_obs_vwc(x, svh, svv, theta, unc=0.5, data=0):
     although these are just labels!
     """
     n_obs = svh.shape[0]
-    omega = x[:1]
-    s = x[1 : (1 + n_obs)]
-    mv = x[(1 + n_obs) : (1 + 2*n_obs)]
-    vwc = x[(1 + 2*n_obs) : (1 + 3*n_obs)]
-    b = x[(1 + 3*n_obs) : (1 + 4*n_obs)]
+    omega = x[0]
+    s = x[1]
+    mv = x[(2) : (2 + n_obs)]
+    vwc = x[(2 + n_obs) : (2 + 2*n_obs)]
+    b = x[(2 + 2*n_obs) : (2 + 3*n_obs)]
 
     sigma_vv, dvv = ssrt_jac_vwc(mv, vwc, s, omega, b, theta=theta)
     # sigma_vh, dvh = ssrt_jac_vwc(A_vh, lai, B_vh, lai, C_vh, R, alpha, theta=theta)
@@ -397,22 +397,20 @@ def cost_obs_vwc(x, svh, svv, theta, unc=0.5, data=0):
     #NOTE!!!!! Only fits the VV channel!!!!
     # Soil misture in VH is complicated
     diff_vh = 0.
-    cost = 0.5 * (diff_vv ** 2 + diff_vh ** 2) / (unc ** 2)
+    # cost = 0.5 * (diff_vv ** 2 + diff_vh ** 2) / (unc ** 2)
+    cost = (diff_vv ** 2 + diff_vh ** 2) / (unc ** 2)
 
     jac = np.concatenate(
         [##[der_omega, der_s, der_mv, der_vwc, der_b]
-            np.array(
-                [
-                    np.sum(dvv[0] * diff_vv),  # omega
-                ]),
-                dvv[1] * diff_vv,  # s
-                dvv[2] * diff_vv,  # mv
-                dvv[3] * diff_vv,  # vwc
-                dvv[4] * diff_vv,  # b
+            np.array([np.sum(dvv[0] * diff_vv)]),  # omega
+            np.array([np.sum(dvv[1] * diff_vv)]),  # s
+            dvv[2] * diff_vv,  # mv
+            dvv[3] * diff_vv,  # vwc
+            dvv[4] * diff_vv,  # b
 
         ]
     )
-    # pdb.set_trace()
+
     return np.nansum(cost), -jac / (unc ** 2)
 
 
@@ -524,6 +522,8 @@ def cost_prior_vwc(x, svh, svv, theta, prior_mean, prior_unc):
     # pppp[(2) : (2 + n_obs)]  = x[(2) : (2 + n_obs)] - mean_x
 
     prior_cost = 0.5 * (prior_mean - x) ** 2 / prior_unc ** 2
+    prior_cost = (prior_mean - x) ** 2 / prior_unc ** 2
+
     # prior_cost = 0.5 * (ppp - pppp) ** 2 / prior_unc ** 2
 
 
@@ -533,16 +533,29 @@ def cost_prior_vwc(x, svh, svv, theta, prior_mean, prior_unc):
     # dprior_cost = -(prior_mean/mean_prior*mean_x - x) / prior_unc ** 2
 
 
-    dprior_cost[:1] = 0.0
+    y = x[1:] - x[:-1]
+    yy = prior_mean[1:] - prior_mean[:-1]
+
+    prior_cost1 = (y-yy)**2 / prior_unc[:-1]**2
+    cost1 =  prior_cost1[(2 ) : (2 + n_obs-1)].sum()
+
+    dprior_cost1 = -(y - yy) / prior_unc[:-1] ** 2
+    dprior_cost1 = np.append(dprior_cost1,0)
+    dprior_cost1[0:3] = 0
+    dprior_cost1[(2 + n_obs) : (2 + 2*n_obs)] = 0. # vwc
+    dprior_cost1[(2 + 2*n_obs) : (2 + 3*n_obs)] = 0. # b
+
+    dprior_cost[0] = 0.0
     # Ruff->No prior!
-    dprior_cost[(1) : (1 + n_obs)] = 0. # rms
-    # dprior_cost[(1 + n_obs) : (1 + 2*n_obs)] = 0. # mv
-    dprior_cost[(1 + 2*n_obs) : (1 + 3*n_obs)] = 0. # vwc
-    dprior_cost[(1 + 3*n_obs) : (1 + 4*n_obs)] = 0. # b
-    cost0 = prior_cost[(1 + n_obs) : (1 + 2*n_obs)].sum() # mv cost
-    # pdb.set_trace()
+    dprior_cost[1] = 0. # rms
+    # dprior_cost[(2 ) : (2 + n_obs)] = 0. # mv
+    dprior_cost[(2 + n_obs) : (2 + 2*n_obs)] = 0. # vwc
+    dprior_cost[(2 + 2*n_obs) : (2 + 3*n_obs)] = 0. # b
+    cost0 = prior_cost[(2 ) : (2 + n_obs)].sum() # mv cost
+    # cost1 = prior_cost[(2 + n_obs) : (2 + 2*n_obs)].sum() #vwc cost
+
     # print(cost0)
-    return cost0 , dprior_cost
+    return cost0+cost1 , dprior_cost + dprior_cost1
 
 # def cost_prior_ssrt(x, svh, svv, theta, prior_mean, prior_unc):
 #     """A Gaussian cost function prior. We assume no correlations
@@ -612,15 +625,15 @@ def cost_function_vwc(x, svh, svv, theta, gamma, prior_mean, prior_unc, unc=0.8,
     cost1, dcost1 = cost_obs_vwc(x, svh, svv, theta, unc=unc, data=data)
     # Fit to the prior
     cost2, dcost2 = cost_prior_vwc(x, svh, svv, theta, prior_mean, prior_unc)
-    # print(cost1)
-    # print(cost2)
+    print(cost1)
+    print(cost2)
     # print(x)
     # cost2 = 0
     # dcost2=0
     cost3 = 0
     cost4 = 0
     tmp = 0
-    # Smooth evolution of sm
+    ###Smooth evolution of sm
     # n_obs = len(svv)
     # lai = x[2 : (2 + n_obs)]
     # cost3, dcost3 = cost_smooth_(lai, gamma[1])

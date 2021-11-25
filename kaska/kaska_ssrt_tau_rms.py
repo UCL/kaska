@@ -61,17 +61,17 @@ def do_one_pixel_field(data_field, vv, vh, vwc, theta, time, sm, sm_std, b, b_st
     for orbit in uorbits:
     # for jj in range(len(vv)):
         # pdb.set_trace()
-        orbit_mask = orbits == orbit
+        # orbit_mask = orbits == orbit
         # orbit_mask = (orbits == 44) | (orbits == 168)
         # orbit_mask = (orbits == 95) | (orbits == 117)
         orbit_mask = (orbits == 44) | (orbits == 95) | (orbits == 117) | (orbits == 168)
         # orbit_mask = (orbits == 168)
         # orbit_mask = (orbits == 44) | (orbits == 95) | (orbits == 117)
         ovv, ovh, ovwc, otheta, otime = vv[orbit_mask], vh[orbit_mask], vwc[orbit_mask], theta[orbit_mask], time[orbit_mask]
-        osm, osm_std, osb, osb_std, orms, orms_std = sm[orbit_mask], sm_std[orbit_mask], b[orbit_mask], b_std[orbit_mask], rms[orbit_mask], rms_std[orbit_mask]
+        osm, osm_std, osb, osb_std = sm[orbit_mask], sm_std[orbit_mask], b[orbit_mask], b_std[orbit_mask]
 
 
-        ovwc_std = np.ones_like(osb)*0.5
+        ovwc_std = np.ones_like(osb)*0.05
 
         # alpha     = _calc_eps(osm)
         # alpha = osm
@@ -95,18 +95,18 @@ def do_one_pixel_field(data_field, vv, vh, vwc, theta, time, sm, sm_std, b, b_st
         #   + [[0.01,       0.6]] * osb.shape[0] # b
         #   )
 
-
-        prior_mean = np.concatenate([[0,   ], orms, osm,     ovwc,     osb])
-        prior_unc  = np.concatenate([[10., ], orms_std, osm_std, ovwc_std, osb_std])
+        # pdb.set_trace()
+        prior_mean = np.concatenate([[0,   ], [rms], osm,     ovwc,     osb])
+        prior_unc  = np.concatenate([[10., ], [rms_std], osm_std, ovwc_std, osb_std])
 
         xvv = np.array([omega])
 
 
-        x0 = np.concatenate([xvv, orms, osm, ovwc, osb])
+        x0 = np.concatenate([xvv, np.array([rms]), osm, ovwc, osb])
 
         bounds = (
             [[0.027, 0.027]] # omega
-          + [[0.005, 0.03]] * osb.shape[0] # s=rms
+          + [[0.005, 0.03]]  # s=rms
           + [[0.01,   0.7]] * osb.shape[0] # mv
           + [[0,     7.5]] * osb.shape[0] # vwc
           + [[0.01,       0.6]] * osb.shape[0] # b
@@ -116,7 +116,7 @@ def do_one_pixel_field(data_field, vv, vh, vwc, theta, time, sm, sm_std, b, b_st
 
         data = osb
 
-        gamma = [5, 5]
+        gamma = [10, 10]
 
         retval = minimize(cost_function_vwc,
                             x0,
@@ -125,10 +125,10 @@ def do_one_pixel_field(data_field, vv, vh, vwc, theta, time, sm, sm_std, b, b_st
                             bounds = bounds,
                             options={"disp": True})
 
-        posterious_rms   = retval.x[1 : 1+len(osb)]
-        posterious_sm   = retval.x[1+len(osb) : 1+2*len(osb)]
-        posterious_vwc    = retval.x[1+2*len(osb)   : 1+3*len(osb)]
-        posterious_b = retval.x[1+3*len(osb)   : 1+4*len(osb)]
+        posterious_rms   = retval.x[1]
+        posterious_sm   = retval.x[2 : 2+len(osb)]
+        posterious_vwc    = retval.x[2+len(osb)   : 2+2*len(osb)]
+        posterious_b = retval.x[2+2*len(osb)   : 2+3*len(osb)]
 
         srms.append(posterious_rms)
         sms.append(posterious_sm)
@@ -142,9 +142,9 @@ def do_one_pixel_field(data_field, vv, vh, vwc, theta, time, sm, sm_std, b, b_st
     vwcs   = np.hstack(vwcs  )[order]
     bs    = np.hstack(bs   )[order]
     sms    = np.hstack(sms   )[order].real
-
-    srms = np.hstack(srms)[order]
-    return times, vwcs, bs, sms, srms, np.array(ps), orbit_mask
+    # pdb.set_trace()
+    # srms = np.hstack(srms)[order]
+    return times, vwcs, bs, sms, np.array(srms), np.array(ps), orbit_mask
 
 
 def _simple_ew():
@@ -267,16 +267,16 @@ for zzz in numbers:
                 # ver2 = ['','','117','168','168','95','95','168','117','117','95','95']
                 # ver3 = ['','','','','','','','','95','168','168','168']
 
-                versions = ['','everything']
-                ver = ['','']
-                ver2 = ['','']
-                ver3 = ['','']
+                # versions = ['','everything']
+                # ver = ['','']
+                # ver2 = ['','']
+                # ver3 = ['','']
 
 
-                # versions = ['everything']
-                # ver = ['']
-                # ver2 = ['']
-                # ver3 = ['']
+                versions = ['everything']
+                ver = ['']
+                ver2 = ['']
+                ver3 = ['']
 
                 # versions = ['44_168']
                 # ver = ['44']
@@ -433,8 +433,8 @@ for zzz in numbers:
                                     # ooo = np.abs(sm[1:]-sm[:-1])*20
                                     # sm_std[0] = ooo[-1]
                                     # sm_std[1:] = ooo
-                                    sm_std[:] = 0.25
-                                    sm_std[:] = 0.5
+                                    sm_std[:] = 0.3
+                                    # sm_std[:] = 0.5
 
                                     b = data_field.filter(like='coef').values.flatten()
                                     b_old = data_field.filter(like='coef').values.flatten()
@@ -448,7 +448,8 @@ for zzz in numbers:
 
 
                                     # b=b-0.1
-                                    b_std[:] = 10.1
+                                    b_std[:] = 0.4
+                                    b[:] = 0.4
                                     # height = data_field.filter(like='height').values.flatten()
                                     orbits = data_field.filter(like='relativeorbit').values.flatten()
                                     orbits95 = orbits==95
@@ -456,39 +457,42 @@ for zzz in numbers:
                                     orbits44 = orbits==44
                                     orbits117 = orbits==117
                                     orbits44_168 = (orbits == 44) | (orbits == 168)
-
+                                    # b[:] = 0.4
                                     b[orbits95] = 0.4
                                     b[orbits117] = 0.4
                                     b[orbits44] = 0.6
                                     b[orbits168] = 0.6
-                                    # orbits95[0:30] = False
-                                    # orbits117[0:30] = False
-                                    # orbits44[0:30] = False
-                                    # orbits168[0:30] = False
 
-                                    # b[orbits95] = 0.1
-                                    # b[orbits117] = 0.1
-                                    # b[orbits44] = 0.2
-                                    # b[orbits168] = 0.15
 
 
                                     # pdb.set_trace()
 
                                     omega = 0.027
-                                    unc = 1.9
+                                    unc = 0.7
                                     vwc_insitu = data_field.filter(like='VWC').values.flatten()
                                     vwc = vwc_sentinel_2.values.flatten()
                                     vwc[vwc < 0.01] = 0.02
                                     # vwc = vwc_insitu
                                     # pdb.set_trace()
 
-                                    rms = 0.0115
-                                    rms = 0.027
+                                    orbits95[0:np.argmax(vwc)] = False
+                                    orbits117[0:np.argmax(vwc)] = False
+                                    orbits44[0:np.argmax(vwc)] = False
+                                    orbits168[0:np.argmax(vwc)] = False
 
-                                    rms = data_field.filter(like='SM_insitu').values.flatten()
-                                    rms[:] = 0.027
-                                    rms_std = data_field.filter(like='SM_insitu').values.flatten()
-                                    rms_std[:] = 0.01
+                                    b[orbits95] = 0.1
+                                    b[orbits117] = 0.1
+                                    b[orbits44] = 0.2
+                                    b[orbits168] = 0.2
+
+
+                                    rms = 0.0115
+                                    rms = 0.02
+
+                                    # rms = data_field.filter(like='SM_insitu').values.flatten()
+                                    # rms[:] = 0.027
+                                    # rms_std = data_field.filter(like='SM_insitu').values.flatten()
+                                    rms_std = 0.01
 
                                     # unc_array = np.arange(0,2,0.1)
                                     # coef_array = np.arange(0,2,0.1)
@@ -510,121 +514,146 @@ for zzz in numbers:
                                     # pdb.set_trace()
                                     # min(hm, key=hm.get)
                                     # hm[min(hm, key=hm.get)]
-
+                                    uncs = np.arange(0.1,2,0.3)
+                                    b_stds = np.arange(0.1,1,0.4)
+                                    b_stds = np.array([0.5])
+                                    sm_stds = np.arange(0.1,0.5,0.1)
+                                    # sm_stds = np.array([0.3])
+                                    # uncs = np.array([1.9])
                                     vv = 10 ** (vv/10)
-
                                     # pdb.set_trace()
-                                    times, vwcs, bs, sms, srms, ps, orbit_mask = do_one_pixel_field(data_field, vv, vh, vwc, theta, time, sm, sm_std, b, b_std, omega, rms, rms_std, orbits,unc=unc)
+                                    for unc in uncs:
+                                        for t in b_stds:
+                                            for tt in sm_stds:
 
-                                    fig, ax = plt.subplots(figsize=(17, 13))
-                                    gs = gridspec.GridSpec(5, 1, height_ratios=[5, 5, 5, 5, 5])
-                                    ax = plt.subplot(gs[0])
+                                                b_std[:] = t
+                                                sm_std[:] = tt
 
+                                                # pdb.set_trace()
 
-                                    # sm_insitu = sm_insitu[orbit_mask]
-                                    # api_sm = api_sm[orbit_mask]
-                                    # vwc = vwc[orbit_mask]
-                                    # b = b[orbit_mask]
-                                    # b_old = b_old[orbit_mask]
-                                    # vv = vv[orbit_mask]
-                                    # theta = theta[orbit_mask]
-                                    # sm = sm[orbit_mask]
+                                                # pdb.set_trace()
+                                                times, vwcs, bs, sms, srms, ps, orbit_mask = do_one_pixel_field(data_field, vv, vh, vwc, theta, time, sm, sm_std, b, b_std, omega, rms, rms_std, orbits,unc=unc)
 
 
+                                                uorbits = np.unique(orbits)
+                                                rms_2 = np.ones_like(orbits)*rms
+                                                srms_2 = np.ones_like(orbits)
+                                                for hh, hhh in enumerate(uorbits):
+                                                    if len(srms) == 1:
+                                                        srms_2[:] = srms[0]
+                                                    else:
+                                                        srms_2[orbits == hhh] = srms[hh]
+
+                                                # pdb.set_trace()
+                                                fig, ax = plt.subplots(figsize=(17, 13))
+                                                gs = gridspec.GridSpec(5, 1, height_ratios=[5, 5, 5, 5, 5])
+                                                ax = plt.subplot(gs[0])
 
 
-                                    ax.plot(times,sm_insitu, label='insitu')
-
-
-
-
-                                    rmse_vv = rmse_prediction(sm_insitu,api_sm)
-                                    bias_vv = bias_prediction(sm_insitu,api_sm)
-                                    ubrmse_vv = ubrmse_prediction(rmse_vv,bias_vv)
-                                    ax.plot(times,api_sm, label='prior RMSE:'+str(rmse_vv)[0:6]+' ubRMSE:'+str(ubrmse_vv)[0:6])
-
-                                    rmse_vv = rmse_prediction(sm_insitu,sms)
-                                    bias_vv = bias_prediction(sm_insitu,sms)
-                                    ubrmse_vv = ubrmse_prediction(rmse_vv,bias_vv)
-                                    ax.plot(times,sms, label='model RMSE:'+str(rmse_vv)[0:6]+' ubRMSE:'+str(ubrmse_vv)[0:6])
-                                    plt.ylabel('Soil moisture', fontsize=18)
-                                    plt.ylim(0.05,0.45)
-                                    plt.grid(linestyle='dotted')
-                                    plt.legend()
-                                    plt.subplots_adjust(hspace=.0)
-                                    plt.setp(ax.get_xticklabels(), visible=False)
-
-                                    ax1 = plt.subplot(gs[1])
-
-                                    ax1.plot(times,vwc_insitu,label='insitu')
-                                    ax1.plot(times,vwc,label='input vwc')
-                                    ax1.plot(times,vwcs,label='model vwc')
-                                    plt.ylabel('VWC', fontsize=18)
-                                    plt.ylim(0,6)
-                                    plt.grid(linestyle='dotted')
-                                    plt.legend()
-                                    plt.subplots_adjust(hspace=.0)
-                                    plt.setp(ax1.get_xticklabels(), visible=False)
-
-                                    ax2 = plt.subplot(gs[2])
-
-                                    ax2.plot(times,b,label='input b')
-                                    ax2.plot(times,bs,label='model b')
-                                    ax2.plot(times,b_old,label='b calibrated')
-
-                                    plt.ylabel('b', fontsize=18)
-                                    plt.ylim(0,1)
-                                    plt.grid(linestyle='dotted')
-                                    plt.legend()
-                                    plt.subplots_adjust(hspace=.0)
-                                    plt.setp(ax1.get_xticklabels(), visible=False)
-
-                                    ax3 = plt.subplot(gs[4])
-
-                                    sigma_vv, vv_g, vv_c = ssrt_vwc(sms, vwc, rms, omega, bs, theta)
-
-                                    ax3.plot(times,10*np.log10(vv),label='S1')
-                                    ax3.plot(times,10*np.log10(sigma_vv),label='model')
-                                    ax3.plot(times,10*np.log10(vv_g),label='ground')
-                                    ax3.plot(times,10*np.log10(vv_c),label='canopy')
-                                    plt.ylabel('VV [dB]', fontsize=18)
-                                    plt.ylim(-30,-5)
-                                    plt.grid(linestyle='dotted')
-                                    plt.legend()
-                                    # plt.setp(ax1.get_xticklabels(), visible=False)
-
-                                    ax4 = plt.subplot(gs[3])
-
-                                    ax4.plot(times,rms,label='input b')
-                                    ax4.plot(times,srms,label='model b')
-                                    # ax4.plot(times,b_old,label='b calibrated')
-
-                                    plt.ylabel('rms', fontsize=18)
-                                    plt.ylim(0.005,0.03)
-                                    plt.grid(linestyle='dotted')
-                                    plt.legend()
-                                    plt.subplots_adjust(hspace=.0)
-                                    plt.setp(ax4.get_xticklabels(), visible=False)
-
-                                    ax3.set_xlabel('Date', fontsize=18)
-                                    # plt.tick_params(labelsize=17)
-                                    plt.subplots_adjust(hspace=.0)
-                                    rmse_vv = rmse_prediction(sm_insitu,sm)
-                                    bias_vv = bias_prediction(sm_insitu,sm)
-                                    ubrmse_vv = ubrmse_prediction(rmse_vv,bias_vv)
+                                                # sm_insitu = sm_insitu[orbit_mask]
+                                                # api_sm = api_sm[orbit_mask]
+                                                # vwc = vwc[orbit_mask]
+                                                # b = b[orbit_mask]
+                                                # b_old = b_old[orbit_mask]
+                                                # vv = vv[orbit_mask]
+                                                # theta = theta[orbit_mask]
+                                                # sm = sm[orbit_mask]
 
 
 
-                                    ax.set_title('omega: 0.0107, omega model:'+str(ps[0,0]))
+
+                                                ax.plot(times,sm_insitu, label='insitu')
 
 
-                                    # plt.show()
-                                    plt.savefig('/media/tweiss/Work/paper3/plot/'+year[1:]+'/vwc/'+kkkk+ii, bbox_inches = 'tight')
-                                    # pdb.set_trace()
 
 
-                                    # noprior/bmean_s/oh04_unc10_apism025_'+kkkk, bbox_inches = 'tight')
-                                    plt.close()
+                                                rmse_vv = rmse_prediction(sm_insitu,api_sm)
+                                                bias_vv = bias_prediction(sm_insitu,api_sm)
+                                                ubrmse_vv = ubrmse_prediction(rmse_vv,bias_vv)
+                                                ax.plot(times,api_sm, label='prior RMSE:'+str(rmse_vv)[0:6]+' ubRMSE:'+str(ubrmse_vv)[0:6])
+
+                                                rmse_vv = rmse_prediction(sm_insitu,sms)
+                                                bias_vv = bias_prediction(sm_insitu,sms)
+                                                ubrmse_vv = ubrmse_prediction(rmse_vv,bias_vv)
+                                                ax.plot(times,sms, label='model RMSE:'+str(rmse_vv)[0:6]+' ubRMSE:'+str(ubrmse_vv)[0:6])
+                                                plt.ylabel('Soil moisture', fontsize=18)
+                                                plt.ylim(0.05,0.45)
+                                                plt.grid(linestyle='dotted')
+                                                plt.legend()
+                                                plt.subplots_adjust(hspace=.0)
+                                                plt.setp(ax.get_xticklabels(), visible=False)
+
+                                                ax1 = plt.subplot(gs[1])
+
+                                                ax1.plot(times,vwc_insitu,label='insitu')
+                                                ax1.plot(times,vwc,label='input vwc')
+                                                ax1.plot(times,vwcs,label='model vwc')
+                                                plt.ylabel('VWC', fontsize=18)
+                                                plt.ylim(0,6)
+                                                plt.grid(linestyle='dotted')
+                                                plt.legend()
+                                                plt.subplots_adjust(hspace=.0)
+                                                plt.setp(ax1.get_xticklabels(), visible=False)
+
+                                                ax2 = plt.subplot(gs[2])
+
+                                                ax2.plot(times,b,label='input b')
+                                                ax2.plot(times,bs,label='model b')
+                                                ax2.plot(times,b_old,label='b calibrated')
+
+                                                plt.ylabel('b', fontsize=18)
+                                                plt.ylim(0,1)
+                                                plt.grid(linestyle='dotted')
+                                                plt.legend()
+                                                plt.subplots_adjust(hspace=.0)
+                                                plt.setp(ax1.get_xticklabels(), visible=False)
+
+                                                ax3 = plt.subplot(gs[4])
+
+                                                sigma_vv, vv_g, vv_c = ssrt_vwc(sms, vwc, rms, omega, bs, theta)
+
+                                                ax3.plot(times,10*np.log10(vv),label='S1')
+                                                ax3.plot(times,10*np.log10(sigma_vv),label='model')
+                                                ax3.plot(times,10*np.log10(vv_g),label='ground')
+                                                ax3.plot(times,10*np.log10(vv_c),label='canopy')
+                                                plt.ylabel('VV [dB]', fontsize=18)
+                                                plt.ylim(-30,-5)
+                                                plt.grid(linestyle='dotted')
+                                                plt.legend()
+                                                # plt.setp(ax1.get_xticklabels(), visible=False)
+
+                                                ax4 = plt.subplot(gs[3])
+
+                                                ax4.plot(times,rms_2,label='input rms')
+                                                ax4.plot(times,srms_2,label='model rms')
+                                                # ax4.plot(times,b_old,label='b calibrated')
+
+                                                plt.ylabel('rms'+str(rms), fontsize=18)
+                                                plt.ylim(0.005,0.03)
+                                                plt.grid(linestyle='dotted')
+                                                plt.legend()
+                                                plt.subplots_adjust(hspace=.0)
+                                                plt.setp(ax4.get_xticklabels(), visible=False)
+
+                                                ax3.set_xlabel('Date', fontsize=18)
+                                                # plt.tick_params(labelsize=17)
+                                                plt.subplots_adjust(hspace=.0)
+                                                rmse_vv = rmse_prediction(sm_insitu,sm)
+                                                bias_vv = bias_prediction(sm_insitu,sm)
+                                                ubrmse_vv = ubrmse_prediction(rmse_vv,bias_vv)
+
+
+
+                                                ax.set_title('omega: 0.027, omega model:'+str(ps[0,0]))
+
+
+                                                # plt.show()
+                                                plt.savefig('/media/tweiss/Work/paper3/plot/'+year[1:]+'/vwc/'+kkkk+ii+'unc:'+str(unc)+'_b_std'+str(t)+'_sm_std'+str(tt)[:3]+'.png', bbox_inches = 'tight')
+                                                # pdb.set_trace()
+
+
+                                                # noprior/bmean_s/oh04_unc10_apism025_'+kkkk, bbox_inches = 'tight')
+                                                plt.close()
 pdb.set_trace()
 
 
