@@ -117,7 +117,7 @@ def do_one_pixel_field(data_field, vv, vh, vwc, theta, time, sm, sm_std, b, b_st
         data = osb
 
         gamma = [10, 10]
-
+        # pdb.set_trace()
         retval = minimize(cost_function_vwc,
                             x0,
                             args=(ovh, ovv, otheta, gamma, prior_mean, prior_unc, unc, data),
@@ -447,10 +447,10 @@ for zzz in numbers:
                                     # b = mean_b.values.flatten()
 
 
-                                    # b=b-0.1
-                                    b_std[:] = 0.4
-                                    b[:] = 0.4
-                                    # height = data_field.filter(like='height').values.flatten()
+                                    # # b=b-0.1
+                                    # b_std[:] = 0.4
+                                    # b[:] = 0.4
+                                    # # height = data_field.filter(like='height').values.flatten()
                                     orbits = data_field.filter(like='relativeorbit').values.flatten()
                                     orbits95 = orbits==95
                                     orbits168 = orbits==168
@@ -515,10 +515,11 @@ for zzz in numbers:
                                     # min(hm, key=hm.get)
                                     # hm[min(hm, key=hm.get)]
                                     uncs = np.arange(0.1,2,0.3)
+                                    uncs = np.array([0.9,1.9,2.5])
                                     b_stds = np.arange(0.1,1,0.4)
                                     b_stds = np.array([0.5])
                                     sm_stds = np.arange(0.1,0.5,0.1)
-                                    # sm_stds = np.array([0.3])
+                                    sm_stds = np.array([0.1,0.2,0.3,0.7])
                                     # uncs = np.array([1.9])
                                     vv = 10 ** (vv/10)
                                     # pdb.set_trace()
@@ -648,7 +649,7 @@ for zzz in numbers:
 
 
                                                 # plt.show()
-                                                plt.savefig('/media/tweiss/Work/paper3/plot/'+year[1:]+'/vwc/'+kkkk+ii+'unc:'+str(unc)+'_b_std'+str(t)+'_sm_std'+str(tt)[:3]+'.png', bbox_inches = 'tight')
+                                                plt.savefig('/media/tweiss/Work/paper3/plot/v3/'+year[1:]+'/'+kkkk+ii+'unc:'+str(unc)+'_sm_std'+str(tt)[:3]+'.png', bbox_inches = 'tight')
                                                 # pdb.set_trace()
 
 
