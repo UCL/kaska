@@ -75,14 +75,17 @@ def filter_relativorbit(data, field, orbit1, orbit2=None, orbit3=None, orbit4=No
     output = data[[(check == orbit1 or check == orbit2 or check == orbit3 or check == orbit4) for check in data[(field,'relativeorbit')]]]
     return output
 
-def read_data(path, file_name, extension, field, path_agro, file_name_agro, extension_agro, pol, orbit1=None, orbit2=None, orbit3=None, orbit4=None):
+def read_data(path, file_name, extension, field, path_agro=None, file_name_agro=None, extension_agro=None, pol=None, orbit1=None, orbit2=None, orbit3=None, orbit4=None):
     """ return all in-situ data """
 
     # Read MNI data
     df = read_mni_data(path, file_name, extension, field)
 
     # Read agro-meteorological station
-    df_agro = read_agrometeo(path_agro, file_name_agro, extension_agro)
+    try:
+        df_agro = read_agrometeo(path_agro, file_name_agro, extension_agro)
+    except FileNotFoundError:
+        df_agro = 0
 
     # filter for field
     field_data = df.filter(like=field)
@@ -130,4 +133,15 @@ def smooth(x,window_len=11,window='hanning'):
                 w=eval('np.'+window+'(window_len)')
         y=np.convolve(w/w.sum(),s,mode='same')
         return y[window_len:-window_len+1]
+
+
+# Paper 3
+# calculation per pixel
+
+def calc_pix(x, axis=0):
+    value_mean = np.nanmean(x,axis=axis)
+    value_std = np.nanstd(x,axis=axis)
+    value_var = scipy.stats.variation(x,axis=axis)
+
+    return value_mean, value_std, value_var
 

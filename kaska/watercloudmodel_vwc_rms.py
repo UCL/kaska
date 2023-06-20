@@ -621,12 +621,13 @@ def cost_smooth_(x, gamma):
 def cost_function_vwc(x, svh, svv, theta, gamma, prior_mean, prior_unc, unc=0.8, data=0):
     """A combined cost function that calls the prior, fit to the observations
     """
+
     # Fit to the observations
     cost1, dcost1 = cost_obs_vwc(x, svh, svv, theta, unc=unc, data=data)
     # Fit to the prior
     cost2, dcost2 = cost_prior_vwc(x, svh, svv, theta, prior_mean, prior_unc)
-    print(cost1)
-    print(cost2)
+    # print(cost1)
+    # print(cost2)
     # print(x)
     # cost2 = 0
     # dcost2=0

@@ -106,6 +106,8 @@ def inference_preprocessing(s1_data, s2_data, state_mask, orbit1=None, orbit2=No
             yyy = np.logical_and(rel_orbit2,time_mask)
             time_mask = np.logical_or(xxx,yyy)
 
+
+    pdb.set_trace()
     f = interp1d(s2_doys, s2_data.lai.ReadAsArray(), axis=0, bounds_error=False)
     lai_s1 = f(s1_doys)
     f = interp1d(s2_doys, s2_data.cab.ReadAsArray(), axis=0, bounds_error=False)

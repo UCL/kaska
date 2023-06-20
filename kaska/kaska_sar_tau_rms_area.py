@@ -19,139 +19,14 @@ import pdb
 from z_helper import *
 import matplotlib.pyplot as plt
 from netCDF4 import date2num
-
-# def reproject_data2(source_img,
-#         target_img=None,
-#         dstSRS=None,
-#         srcSRS=None,
-#         srcNodata=np.nan,
-#         dstNodata=np.nan,
-#         outputType=None,
-#         output_format="MEM",
-#         verbose=False,
-#         xmin=None,
-#         xmax=None,
-#         ymin=None,
-#         ymax=None,
-#         xRes=None,
-#         yRes=None,
-#         xSize=None,
-#         ySize=None,
-#         resample=1,
-#     ):
-
-#     """
-#     A method that uses a source and a target images to
-#     reproject & clip the source image to match the extent,
-#     projection and resolution of the target image.
-#     """
-
-#     outputType = (
-#         gdal.GDT_Unknown if outputType is None else outputType
-#         )
-#     if srcNodata is None:
-#             try:
-#                 srcNodata = " ".join(
-#                     [
-#                         i.split("=")[1]
-#                         for i in gdal.Info(source_img).split("\n")
-#                         if " NoData" in i
-#                     ]
-#                 )
-#             except RuntimeError:
-#                 srcNodata = None
-#     # If the output type is intenger and destination nodata is nan
-#     # set it to 0 to avoid warnings
-#     if outputType <= 5 and np.isnan(dstNodata):
-#         dstNodata = 0
-
-#     if srcSRS is not None:
-#         _srcSRS = osr.SpatialReference()
-#         try:
-#             _srcSRS.ImportFromEPSG(int(srcSRS.split(":")[1]))
-#         except:
-#             _srcSRS.ImportFromWkt(srcSRS)
-#     else:
-#         _srcSRS = None
-
-
-#     if (target_img is None) & (dstSRS is None):
-#             raise IOError(
-#                 "Projection should be specified ether from "
-#                 + "a file or a projection code."
-#             )
-#     elif target_img is not None:
-#             try:
-#                 g = gdal.Open(target_img)
-#             except RuntimeError:
-#                 g = target_img
-#             geo_t = g.GetGeoTransform()
-#             x_size, y_size = g.RasterXSize, g.RasterYSize
-
-#             if xRes is None:
-#                 xRes = abs(geo_t[1])
-#             if yRes is None:
-#                 yRes = abs(geo_t[5])
-
-#             if xSize is not None:
-#                 x_size = 1.0 * xSize * xRes / abs(geo_t[1])
-#             if ySize is not None:
-#                 y_size = 1.0 * ySize * yRes / abs(geo_t[5])
-
-#             xmin, xmax = (
-#                 min(geo_t[0], geo_t[0] + x_size * geo_t[1]),
-#                 max(geo_t[0], geo_t[0] + x_size * geo_t[1]),
-#             )
-#             ymin, ymax = (
-#                 min(geo_t[3], geo_t[3] + y_size * geo_t[5]),
-#                 max(geo_t[3], geo_t[3] + y_size * geo_t[5]),
-#             )
-#             dstSRS = osr.SpatialReference()
-#             raster_wkt = g.GetProjection()
-#             dstSRS.ImportFromWkt(raster_wkt)
-#             pdb.set_trace()
-#             gg = gdal.Warp(
-#                 "",
-#                 source_img,
-#                 format=output_format,
-#                 outputBounds=[xmin, ymin, xmax, ymax],
-#                 dstNodata=dstNodata,
-#                 warpOptions=["NUM_THREADS=ALL_CPUS"],
-#                 xRes=xRes,
-#                 yRes=yRes,
-#                 dstSRS=dstSRS,
-#                 outputType=outputType,
-#                 srcNodata=srcNodata,
-#                 resampleAlg=resample,
-#                 srcSRS=_srcSRS
-#             )
-
-#     else:
-#             gg = gdal.Warp(
-#                 "",
-#                 source_img,
-#                 format=output_format,
-#                 outputBounds=[xmin, ymin, xmax, ymax],
-#                 xRes=xRes,
-#                 yRes=yRes,
-#                 dstSRS=dstSRS,
-#                 warpOptions=["NUM_THREADS=ALL_CPUS"],
-#                 copyMetadata=True,
-#                 outputType=outputType,
-#                 dstNodata=dstNodata,
-#                 srcNodata=srcNodata,
-#                 resampleAlg=resample,
-#                 srcSRS=_srcSRS
-#             )
-#     if verbose:
-#         LOG.debug("There are %d bands in this file, use "
-#                 + "g.GetRasterBand(<band>) to avoid reading the whole file."
-#                 % gg.RasterCount
-#             )
-#     return gg
+import glob
 
 def ndwi1_mag(ndwi1):
     vwc = 13.2*ndwi1**2+1.62*ndwi1
+    return vwc
+
+def ndwi1_cos_maize(ndwi1):
+    vwc = 9.39*ndwi1+1.26
     return vwc
 
 def save_to_tif(fname, Array, GeoT):
@@ -167,70 +42,70 @@ def save_to_tif(fname, Array, GeoT):
     ds.FlushCache()
     return fname
 
-def get_sar(s1_nc_file):
+def get_sar(s1_nc_file, version):
     s1_data = namedtuple('s1_data', 'time lat lon satellite  relorbit orbitdirection ang_name vv_name, vh_name')
     data = Dataset(s1_nc_file)
     relorbit            = data['relorbit'][:]
-    localIncidenceAngle = data['localIncidenceAngle'][:]
+    localIncidenceAngle = data['theta'][:]
     satellite           = data['satellite'][:]
     orbitdirection      = data['orbitdirection'][:]
     time                = data['time'][:]
     lat = data['lat'][:]
     lon = data['lon'][:]
 
-    vv_name = s1_nc_file.replace('.nc', '_vv.tif')
-    vh_name = s1_nc_file.replace('.nc', '_vh.tif')
-    ang_name = s1_nc_file.replace('.nc', '_ang.tif')
+    vv_name = s1_nc_file.replace('.nc', '_vv'+version+'.tif')
+    vh_name = s1_nc_file.replace('.nc', '_vh'+version+'.tif')
+    ang_name = s1_nc_file.replace('.nc', '_ang'+version+'.tif')
 
     if not os.path.exists(vv_name):
-        gg = gdal.Open('NETCDF:"%s":sigma0_vv_multi'%s1_nc_file)
+        gg = gdal.Open('NETCDF:"%s":sigma0_vv"%s"'%(s1_nc_file,version))
         geo = gg.GetGeoTransform()
-        sigma0_vv_norm_multi = data['sigma0_vv_multi'][:]
-        save_to_tif(vv_name, sigma0_vv_norm_multi, geo)
+        sigma0_vv = data['sigma0_vv'+version][:]
+        save_to_tif(vv_name, sigma0_vv, geo)
 
     if not os.path.exists(vh_name):
-        gg = gdal.Open('NETCDF:"%s":sigma0_vh_multi'%s1_nc_file)
+        gg = gdal.Open('NETCDF:"%s":sigma0_vh"%s"'%(s1_nc_file,version))
         geo = gg.GetGeoTransform()
-        sigma0_vh_norm_multi = data['sigma0_vh_multi'][:]
-        save_to_tif(vh_name, sigma0_vh_norm_multi, geo)
+        sigma0_vh = data['sigma0_vh'+version][:]
+        save_to_tif(vh_name, sigma0_vh, geo)
 
     if not os.path.exists(ang_name):
-        gg = gdal.Open('NETCDF:"%s":localIncidenceAngle'%s1_nc_file)
+        gg = gdal.Open('NETCDF:"%s":theta'%s1_nc_file)
         geo = gg.GetGeoTransform()
-        localIncidenceAngle = data['localIncidenceAngle'][:]
+        localIncidenceAngle = data['theta'][:]
         save_to_tif(ang_name, localIncidenceAngle, geo)
 
     return s1_data(time, lat, lon, satellite, relorbit, orbitdirection, ang_name, vv_name, vh_name)
 
-def get_vwc(vwc_nc_file):
-    s1_data = namedtuple('vwc_data', 'time lat lon vwc')
-    data = Dataset(vwc_nc_file)
+# def get_vwc(vwc_nc_file):
+#     s1_data = namedtuple('vwc_data', 'time lat lon vwc')
+#     data = Dataset(vwc_nc_file)
 
-    time = data['time'][:12]
-    lat = data['lat'][:]
-    lon = data['lon'][:]
+#     time = data['time'][:]
+#     lat = data['lat'][:]
+#     lon = data['lon'][:]
 
-    vwc_name = vwc_nc_file.replace('.nc', '_vwc.tif')
+#     vwc_name = vwc_nc_file.replace('.nc', '_vwc.tif')
 
-    if not os.path.exists(vwc_name):
-        gg = gdal.Open('NETCDF:"%s":newBand'%vwc_nc_file)
-        geo = gg.GetGeoTransform()
-        save_to_tif(vwc_name, data['newBand'][:12,:,:], geo)
+#     if not os.path.exists(vwc_name):
+#         gg = gdal.Open('NETCDF:"%s":newBand'%vwc_nc_file)
+#         geo = gg.GetGeoTransform()
+#         save_to_tif(vwc_name, data['newBand'][:,:,:], geo)
 
-    return s1_data(time, lat, lon, vwc_name)
+#     return s1_data(time, lat, lon, vwc_name)
 
-def get_api(api_nc_file):
+def get_api(api_nc_file,year):
     api_data = namedtuple('api_data', 'time lat lon api')
     data = Dataset(api_nc_file)
 
-    xxx = date2num(datetime.datetime.strptime('20170301', '%Y%m%d'), units ='hours since 2000-01-01 00:00:00', calendar='gregorian')
-    yyy = date2num(datetime.datetime.strptime('20170801', '%Y%m%d'), units ='hours since 2000-01-01 00:00:00', calendar='gregorian')
+    xxx = date2num(datetime.datetime.strptime(year+'0201', '%Y%m%d'), units ='hours since 2000-01-01 00:00:00', calendar='gregorian')
+    yyy = date2num(datetime.datetime.strptime(year+'1001', '%Y%m%d'), units ='hours since 2000-01-01 00:00:00', calendar='gregorian')
 
     time = data['time'][np.where(data['time'][:]==xxx)[0][0]:np.where(data['time'][:]==yyy)[0][0]]
     lat = data['lat'][:]
     lon = data['lon'][:]
 
-    api_name = api_nc_file.replace('.nc', '_api.tif')
+    api_name = api_nc_file.replace('.nc', '_api'+year+'.tif')
 
     if not os.path.exists(api_name):
         gg = gdal.Open('NETCDF:"%s":api'%api_nc_file)
@@ -249,14 +124,23 @@ def read_sar(sar_data, state_mask):
 
     return s1_data(time, sar_data.lat, sar_data.lon, sar_data.satellite, sar_data.relorbit, sar_data.orbitdirection, ang, vv, vh)
 
-
 def read_vwc(vwc_data, state_mask):
-    s1_data = namedtuple('vwc_data', 'time lat lon vwc')
-    vwc = reproject_data(vwc_data.vwc, output_format="MEM", target_img=state_mask)
-    time = [datetime.datetime(1970,1,1) + datetime.timedelta(days=float(i)) for i in  vwc_data.time]
+    s2_data = namedtuple('s2_vwc', 'time vwc ndwi')
+    filelist = glob.glob(vwc_data+'*.tif')
+    filelist.sort()
+    time = []
+    vwc = []
+    ndwi = []
+    for file in filelist:
+        g = gdal.Open(file)
+        ndwi_array = reproject_data(file, output_format="MEM", target_img=state_mask)
+        ndwi_array = ndwi_array.ReadAsArray()
+        vwc_array = ndwi1_mag(ndwi_array)
+        time.append(datetime.datetime.strptime(file.split('/')[-1][14:22], '%Y%m%d'))
+        vwc.append(vwc_array)
+        ndwi.append(ndwi_array)
 
-    return s1_data(time, vwc_data.lat, vwc_data.lon, vwc)
-
+    return s2_data(time, vwc, ndwi)
 
 def read_api(api_data, state_mask):
     s1_data = namedtuple('api_data', 'time lat lon api')
@@ -266,25 +150,13 @@ def read_api(api_data, state_mask):
 
     return s1_data(time, api_data.lat, api_data.lon, api)
 
-# def read_s2_lai(s2_lai, s2_cab, s2_cbrown, state_mask):
-#     s2_data = namedtuple('s2_lai', 'time lai cab cbrown')
-#     g = gdal.Open(s2_lai)
-#     time = []
-#     for i in range(g.RasterCount):
-#         gg = g.GetRasterBand(i+1)
-#         meta = gg.GetMetadata()
-#         time.append(datetime.datetime.strptime(meta['DoY'], '%Y%j'))
-#     lai  = reproject_data(s2_lai, output_format="MEM", target_img=state_mask)
-#     cab  = reproject_data(s2_cab, output_format="MEM", target_img=state_mask)
-#     cbrown  = reproject_data(s2_cbrown, output_format="MEM", target_img=state_mask)
-#     return s2_data(time, lai, cab, cbrown)
 
 def inference_preprocessing(s1_data, vwc_data, api_data, state_mask, orbit1=None, orbit2=None):
     """Resample S2 smoothed output to match S1 observations
     times"""
     # Move everything to DoY to simplify interpolation
 
-    sar_inference_data = namedtuple('sar_inference_data', 'time lat lon satellite  relorbit orbitdirection ang vv vh vwc api time_mask')
+    sar_inference_data = namedtuple('sar_inference_data', 'time lat lon satellite  relorbit orbitdirection ang vv vh vwc api time_mask ndwi')
 
 
     vwc_doys = np.array([ int(i.strftime('%j')) for i in vwc_data.time])
@@ -306,18 +178,20 @@ def inference_preprocessing(s1_data, vwc_data, api_data, state_mask, orbit1=None
             pass
     api_doys = np.array([ int(i.strftime('%j')) for i in np.array(api_data.time)[index]])
 
-
-    f = interp1d(vwc_doys, vwc_data.vwc.ReadAsArray(), axis=0, bounds_error=False)
+    f = interp1d(vwc_doys, np.array(vwc_data.vwc), axis=0, bounds_error=False)
     vwc_s1 = f(s1_doys)
+
+    f = interp1d(vwc_doys, np.array(vwc_data.ndwi), axis=0, bounds_error=False)
+    ndwi_s1 = f(s1_doys)
 
     api_s1 = api_data.api.ReadAsArray()[index]
     f = interp1d(api_doys, api_s1, axis=0, bounds_error=False)
     api_s1 = f(s1_doys)
 
     if s1_data.time[0].year == 2017:
-        time_mask = (s1_doys >= 80) & (s1_doys <= 199)
+        time_mask = (s1_doys >= 80) & (s1_doys <= 273)
     elif s1_data.time[0].year == 2018:
-        print('time mask need to be changed')
+        time_mask = (s1_doys >= 80) & (s1_doys <= 273)
     else:
         print('no time mask')
 
@@ -332,7 +206,7 @@ def inference_preprocessing(s1_data, vwc_data, api_data, state_mask, orbit1=None
     sar_inference_data = sar_inference_data(s1_data.time, s1_data.lat, s1_data.lon,
                                             s1_data.satellite, s1_data.relorbit,
                                             s1_data.orbitdirection, s1_data.ang,
-                                            s1_data.vv, s1_data.vh, vwc_s1, api_s1, time_mask)
+                                            s1_data.vv, s1_data.vh, vwc_s1, api_s1, time_mask, ndwi_s1)
 
     return sar_inference_data
 
@@ -384,7 +258,6 @@ def inference_preprocessing(s1_data, vwc_data, api_data, state_mask, orbit1=None
 #     uorbits = np.array([95])
 #     for orbit in uorbits:
 #     # for jj in range(len(vv)):
-#         # pdb.set_trace()
 #         # orbit_mask = orbits == orbit
 #         # orbit_mask = (orbits == 44) | (orbits == 168)
 #         orbit_mask = (orbits == 44) | (orbits == 95) | (orbits == 117) | (orbits == 168)
@@ -400,7 +273,7 @@ def inference_preprocessing(s1_data, vwc_data, api_data, state_mask, orbit1=None
 #         # alpha = osm
 #         # alpha_std = np.ones_like(alpha)*10
 #         # alpha_std = osm_std
-#         # pdb.set_trace()
+
 
 #         prior_mean = np.concatenate([[0,   ]*2, osm,     ovwc,     osb])
 #         prior_unc  = np.concatenate([[10., ]*2, osm_std, ovwc_std, osb_std])
@@ -459,7 +332,6 @@ def do_one_pixel_field(vv, vh, vwc, vwc_std, theta, time, sm, sm_std, b, b_std, 
     uorbits = np.array([95])
     for orbit in uorbits:
     # for jj in range(len(vv)):
-        # pdb.set_trace()
         # orbit_mask = orbits == orbit
         # orbit_mask = (orbits == 44) | (orbits == 168)
         # orbit_mask = (orbits == 95) | (orbits == 117)
@@ -476,7 +348,6 @@ def do_one_pixel_field(vv, vh, vwc, vwc_std, theta, time, sm, sm_std, b, b_std, 
         # alpha = osm
         # alpha_std = np.ones_like(alpha)*10
         # alpha_std = osm_std
-        # pdb.set_trace()
 
         # prior_mean = np.concatenate([[0,   ]*2, osm,     ovwc,     osb])
         # prior_unc  = np.concatenate([[10., ]*2, osm_std, ovwc_std, osb_std])
@@ -501,15 +372,20 @@ def do_one_pixel_field(vv, vh, vwc, vwc_std, theta, time, sm, sm_std, b, b_std, 
 
         x0 = np.concatenate([np.array([omega]), np.array([rms]), osm, ovwc, osb])
 
+        xxx = []
+        for jj in osb:
+            if jj <= 0.2:
+                xxx.append([0.01,osb[0]+0.2])
+            else:
+                xxx.append([osb[0]-0.2,osb[0]+0.2])
+
         bounds = (
             [[0.027, 0.027]] # omega
           + [[0.005, 0.03]]  # s=rms
           + [[0.01,   0.7]] * osb.shape[0] # mv
           + [[0,     7.5]] * osb.shape[0] # vwc
-          + [[0.01,       0.6]] * osb.shape[0] # b
+          + xxx #[[0.01,       0.6]] * osb.shape[0] # b
           )
-
-
 
         data = osb
 
@@ -520,7 +396,7 @@ def do_one_pixel_field(vv, vh, vwc, vwc_std, theta, time, sm, sm_std, b, b_std, 
                             args=(ovh, ovv, otheta, gamma, prior_mean, prior_unc, unc, data),
                             jac=True,
                             bounds = bounds,
-                            options={"disp": True})
+                            options={"disp": False})
 
         posterious_rms   = retval.x[1]
         posterious_sm   = retval.x[2 : 2+len(osb)]
@@ -539,14 +415,13 @@ def do_one_pixel_field(vv, vh, vwc, vwc_std, theta, time, sm, sm_std, b, b_std, 
     vwcs   = np.hstack(vwcs  )[order]
     bs    = np.hstack(bs   )[order]
     sms    = np.hstack(sms   )[order].real
-    # pdb.set_trace()
     # srms = np.hstack(srms)[order]
     return times, vwcs, bs, sms, np.array(srms), np.array(ps), orbit_mask
 
 
 
 
-def do_inversion(sar_inference_data, state_mask, segment=False):
+def do_inversion(sar_inference_data, state_mask, segment=False, year=None, version=None):
 
     orbits = sar_inference_data.relorbit[sar_inference_data.time_mask]
     uorbits = np.unique(orbits)
@@ -561,7 +436,7 @@ def do_inversion(sar_inference_data, state_mask, segment=False):
         pixel = ['_Field_buffer_30','','_buffer_30','_buffer_50','_buffer_100']
         pixel = ['_Field_buffer_30']
         fields = ['301','508','542']
-        # fields = ['508']
+        fields = ['all']
         # ESU names
         esus = ['high', 'low', 'med', 'mean']
         esus = ['mean']
@@ -574,8 +449,13 @@ def do_inversion(sar_inference_data, state_mask, segment=False):
             for esu in esus:
                 for field in fields:
                     field2 = field + '_' + esu
-                    g = gdal.Open(os.path.join(path_ESU, name_ESU))
-                    state_mask = g.ReadAsArray().astype(np.int)
+
+                    if field == 'all':
+                        g = gdal.Open(state_mask)
+                        state_mask = g.ReadAsArray().astype(np.int)
+                    else:
+                        g = gdal.Open(os.path.join(path_ESU, name_ESU))
+                        state_mask = g.ReadAsArray().astype(np.int)
 
                     if pixels == '_Field_buffer_30':
                         if field == '515':
@@ -593,17 +473,21 @@ def do_inversion(sar_inference_data, state_mask, segment=False):
                         elif field == '301':
                             mask_value = 87
                             state_mask = state_mask==mask_value
+                        elif field == 'all':
+                            mask_value = 0
+                            state_mask = state_mask > mask_value
                     else:
                         pass
 
                     field_mask = state_mask
-
+                    pdb.set_trace()
                     vv_all = sar_inference_data.vv.ReadAsArray()[sar_inference_data.time_mask]
                     vh_all    = sar_inference_data.vh.ReadAsArray()[sar_inference_data.time_mask]
                     theta_all = sar_inference_data.ang.ReadAsArray()[sar_inference_data.time_mask]
                     time_all = np.array(sar_inference_data.time)[sar_inference_data.time_mask]
 
                     vwc_all = sar_inference_data.vwc[sar_inference_data.time_mask]
+                    ndwi_all = sar_inference_data.ndwi[sar_inference_data.time_mask]
                     ### vwc needs to be changed!!!! NDWI1!!!
                     vwc_std = vwc_all[:,0,0]
                     vwc_std[:] = 0.1
@@ -625,15 +509,23 @@ def do_inversion(sar_inference_data, state_mask, segment=False):
 
                     sm_retrieved = sm_all * np.nan
 
+                    np.save('/media/tweiss/Work/Paper3_plot/b_input_vv'+year+version+'.npy', vv_all)
+                    np.save('/media/tweiss/Work/Paper3_plot/b_input_vwc'+year+version+'.npy', vwc_all)
+                    np.save('/media/tweiss/Work/Paper3_plot/b_input_sm_api'+year+version+'.npy', sm_all)
+                    np.save('/media/tweiss/Work/Paper3_plot/b_input_ndwi'+year+version+'.npy', ndwi_all)
+
                     for z in range(len(state_mask)):
+                        print(z)
                         for zz in range(len(state_mask[0])):
                             if state_mask[z,zz] == False:
                                 pass
+                            # elif z < 232:
+                            #     pass
                             else:
                                 vv = vv_all[:,z,zz]
                                 vh = vh_all[:,z,zz]
                                 theta = theta_all[:,z,zz]
-                                vwc = ndwi1_mag(vwc_all[:,z,zz])
+                                vwc = vwc_all[:,z,zz]
                                 vwc[vwc < 0.01] = 0.02
 
                                 orbits95 = orbits==95
@@ -668,36 +560,78 @@ def do_inversion(sar_inference_data, state_mask, segment=False):
                                 b_outputs[:,z,zz]  = sb
                                 rms_outputs[:,z,zz]  = srms
 
-                    np.save('/media/tweiss/Work/Paper3_plot/'+field+'_sm'+'.npy', sm_outputs)
-                    np.save('/media/tweiss/Work/Paper3_plot/'+field+'_vwc'+'.npy', vwc_outputs)
-                    np.save('/media/tweiss/Work/Paper3_plot/'+field+'_b'+'.npy', b_outputs)
-                    np.save('/media/tweiss/Work/Paper3_plot/'+field+'_rms'+'.npy', rms_outputs)
+                                # np.save('/media/tweiss/Work/Paper3_plot/npy/2017/sm'+str(int(z))+'_'+str(int(zz))+'.npy', sms)
+                                # np.save('/media/tweiss/Work/Paper3_plot/npy/2017/vwc'+str(int(z))+'_'+str(int(zz))+'.npy', svwc)
+                                # np.save('/media/tweiss/Work/Paper3_plot/npy/2017/b'+str(int(z))+'_'+str(int(zz))+'.npy', sb)
+                                # np.save('/media/tweiss/Work/Paper3_plot/npy/2017/rms'+str(int(z))+'_'+str(int(zz))+'.npy', srms)
 
+                    np.save('/media/tweiss/Work/Paper3_plot/b_'+field+year+version+'_sm'+'.npy', sm_outputs)
+                    np.save('/media/tweiss/Work/Paper3_plot/b_'+field+year+version+'_vwc'+'.npy', vwc_outputs)
+                    np.save('/media/tweiss/Work/Paper3_plot/b_'+field+year+version+'_b'+'.npy', b_outputs)
+                    np.save('/media/tweiss/Work/Paper3_plot/b_'+field+year+version+'_rms'+'.npy', rms_outputs)
+                    np.save('/media/tweiss/Work/Paper3_down/2017/b_'+year+version+'times.npy',times)
 
                     for u in range(len(sm_retrieved)):
 
-                        fig = plt.gcf()
-                        ax = fig.add_subplot(111)
+                        fig, ax = plt.subplots(figsize=(15, 10))
 
-                        if field == '508':
-                            quadmesh = ax.imshow(sm_outputs[u,650:750,400:500])
-                        elif field == '301':
-                            quadmesh = ax.imshow(sm_outputs[u,0:100,200:250])
-                        elif field == '542':
-                            quadmesh = ax.imshow(sm_outputs[u,250:350,580:630])
-                        else:
-                            pass
+
+                        quadmesh = ax.imshow(sm_outputs[u])
                         plt.colorbar(quadmesh)
                         quadmesh.set_clim(vmin=0.15, vmax=0.35)
-
-                        plt.savefig('/media/tweiss/Daten/data_AGU/test_kaska/down3/'+field+'_'+times[u].strftime("%Y%m%d"), bbox_inches = 'tight')
+                        plt.savefig('/media/tweiss/Work/Paper3_plot/npy/sm_2017/'+year+version+field+'_'+times[u].strftime("%Y%m%d"), bbox_inches = 'tight')
                         plt.close()
 
-                    # pdb.set_trace()
+                        fig, ax = plt.subplots(figsize=(15, 10))
+
+
+                        quadmesh = ax.imshow(b_outputs[u])
+                        plt.colorbar(quadmesh)
+                        quadmesh.set_clim(vmin=0.01, vmax=0.7)
+                        plt.savefig('/media/tweiss/Work/Paper3_plot/npy/b_2017/'+year+version+field+'_'+times[u].strftime("%Y%m%d"), bbox_inches = 'tight')
+                        plt.close()
+
+                        fig, ax = plt.subplots(figsize=(15, 10))
+
+
+                        quadmesh = ax.imshow(vwc_outputs[u])
+                        plt.colorbar(quadmesh)
+                        quadmesh.set_clim(vmin=0.1, vmax=6)
+                        plt.savefig('/media/tweiss/Work/Paper3_plot/npy/vwc_2017/'+year+version+field+'_'+times[u].strftime("%Y%m%d"), bbox_inches = 'tight')
+                        plt.close()
+
+                        fig, ax = plt.subplots(figsize=(15, 10))
+
+
+                        quadmesh = ax.imshow(rms_outputs[u])
+                        plt.colorbar(quadmesh)
+                        quadmesh.set_clim(vmin=0.005, vmax=0.03)
+                        plt.savefig('/media/tweiss/Work/Paper3_plot/npy/rms_2017/'+year+version+field+'_'+times[u].strftime("%Y%m%d"), bbox_inches = 'tight')
+                        plt.close()
 
 
 
-        pdb.set_trace()
+
+
+
+
+                        # if field == '508':
+                        #     quadmesh = ax.imshow(sm_outputs[u,650:750,400:500])
+                        # elif field == '301':
+                        #     quadmesh = ax.imshow(sm_outputs[u,0:100,200:250])
+                        # elif field == '542':
+                        #     quadmesh = ax.imshow(sm_outputs[u,250:350,580:630])
+                        # else:
+                        #     pass
+                        # plt.colorbar(quadmesh)
+                        # quadmesh.set_clim(vmin=0.15, vmax=0.35)
+
+                        # plt.savefig('/media/tweiss/Daten/data_AGU/test_kaska/down3/'+field+'_'+times[u].strftime("%Y%m%d"), bbox_inches = 'tight')
+                        # plt.close()
+
+
+
+
 
     else:
         mask = gdal.Open(state_mask).ReadAsArray()
@@ -757,7 +691,7 @@ def do_inversion(sar_inference_data, state_mask, segment=False):
             coef_outputs[:, indx, indy]  = coefs
             sm_outputs[:, indx, indy]  = sms
 
-    return lai_outputs, coef_outputs, sm_outputs, uorbits
+    return 'done'
 
 def save_output(fname, Array, GeoT, projction, time):
     if os.path.exists(fname):
@@ -789,11 +723,13 @@ class KaSKASAR(object):
     """A class to process Sentinel 1 SAR data using S2 data as
     an input"""
 
-    def __init__(self, s1_ncfile, state_mask, s2_wvc, orbit1=None,orbit2=None):
+    def __init__(self, s1_ncfile, state_mask, s2_wvc, rad_api, year, vv_version, orbit1=None,orbit2=None):
         self.s1_ncfile = s1_ncfile
         self.state_mask = state_mask
         self.s2_wvc    = s2_vwc
         self.rad_api = rad_api
+        self.year = year
+        self.version = version
 
         self.orbit1     = None
         self.orbit2    = None
@@ -803,72 +739,53 @@ class KaSKASAR(object):
                 self.orbit2 = orbit2
 
     def sentinel1_inversion(self, segment=False):
-        sar = get_sar(s1_ncfile)
+        sar = get_sar(s1_ncfile, version)
         s1_data = read_sar(sar, self.state_mask)
 
-        vwc_ = get_vwc(s2_vwc)
-        vwc_data = read_vwc(vwc_, self.state_mask)
+        vwc_data = read_vwc(s2_vwc, self.state_mask)
 
-        api = get_api(rad_api)
+        api = get_api(rad_api,year)
         api_data = read_api(api, self.state_mask)
 
-        # prior   = get_prior(s1_data, self.sm_prior, self.sm_std, self.sr_prior, self.sr_std, self.state_mask)
         sar_inference_data = inference_preprocessing(s1_data, vwc_data, api_data, self.state_mask,self.orbit1,self.orbit2)
 
 
-        lai_outputs, sr_outputs, sm_outputs, uorbits = do_inversion(sar_inference_data, self.state_mask, segment)
-        pdb.set_trace()
-        gg = gdal.Open('NETCDF:"%s":sigma0_vv_multi'%self.s1_ncfile)
-        geo = gg.GetGeoTransform()
+        xxx = do_inversion(sar_inference_data, self.state_mask, segment, year, version)
 
-        projction = 'GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.01745329251994328,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4326"]]'
+        # gg = gdal.Open('NETCDF:"%s":sigma0_vv_multi'%self.s1_ncfile)
+        # geo = gg.GetGeoTransform()
 
-        time = [i.strftime('%Y-%m-%d') for i in np.array(sar_inference_data.time)[sar_inference_data.time_mask]]
+        # projction = 'GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.01745329251994328,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4326"]]'
 
-        sm_name  = self.s1_ncfile.replace('.nc', '_sar_sm.tif')
-        sr_name  = self.s1_ncfile.replace('.nc', '_sar_sr.tif')
-        lai_name = self.s1_ncfile.replace('.nc', '_sar_lai.tif')
+        # time = [i.strftime('%Y-%m-%d') for i in np.array(sar_inference_data.time)[sar_inference_data.time_mask]]
 
-        save_output(sm_name,  sm_outputs,  geo, projction, time)
-        save_output(sr_name,  sr_outputs,  geo, projction, time)
-        save_output(lai_name, lai_outputs, geo, projction, time)
+        # sm_name  = self.s1_ncfile.replace('.nc', '_sar_sm.tif')
+        # sr_name  = self.s1_ncfile.replace('.nc', '_sar_sr.tif')
+        # lai_name = self.s1_ncfile.replace('.nc', '_sar_lai.tif')
+
+        # save_output(sm_name,  sm_outputs,  geo, projction, time)
+        # save_output(sr_name,  sr_outputs,  geo, projction, time)
+        # save_output(lai_name, lai_outputs, geo, projction, time)
 
 
 
 
 if __name__ == '__main__':
-    # s1_ncfile = '/data/nemesis/kaska-sar_quick/S1_LMU_site_2017_new.nc'
-    # state_mask = "/home/ucfajlg/Data/python/KaFKA_Validation/LMU/carto/ESU.tif"
-    # s2_folder = "/home/ucfajlg/Data/python/KaFKA_Validation/LMU/s2_obs/"
-    # s2_lai = f"{s2_folder:s}/outputs/lai.tif"
-    # s2_cab = f"{s2_folder:s}/outputs/cab.tif"
-    # s2_cbrown = f"{s2_folder:s}/outputs/cbrown.tif"
-
-    # sm_prior = '/data/nemesis/kaska-sar_quick/sm_prior.tif'
-    # sm_std   = '/data/nemesis/kaska-sar_quick/sm_std.tif'
-    # sr_prior = '/data/nemesis/kaska-sar_quick/sr_prior.tif'
-    # sr_std   = '/data/nemesis/kaska-sar_quick/sr_std.tif'
-    # sarsar = KaSKASAR(s1_ncfile, state_mask, s2_lai,  s2_cab, s2_cbrown, sm_prior, sm_std, sr_prior ,sr_std)
-
-    # s1_ncfile = '/media/nas_data/Thomas/S1/processed/MNI_2017/MNI_2017.nc'
-
-    # aggregation = '_point'
-    aggregation = '_Field_buffer_30'
-    # aggregation = '_buffer_100'
-    aggregation = '_buffer_100'
 
 
-    s1_ncfile = '/media/tweiss/Daten/data_AGU/old/'+aggregation+'/MNI_2017_new_final.nc'
-    state_mask = '/media/tweiss/Work/z_final_mni_data_2017/ESU'+aggregation+'.tif'
+    years = ['2017','2018']
+    # years = ['2018']
+    versions = ['_multi', '_single']
+    versions = ['_multi']
+    for year in years:
+        for version in versions:
+            s1_ncfile = '/media/tweiss/Work/Paper3_down/data/MNI_'+year+'_new_final_paper3.nc'
+            state_mask = '/media/tweiss/Work/Paper3_down/GIS/clc_class2.tif'
+            rad_api = '/media/tweiss/Work/Paper3_down/data/RADOLAN_API_v1.0.0.nc'
 
-    s2_vwc = "/media/tweiss/Daten/NDWI1/sentinel_2_2017/NDWI1.nc"
-    rad_api = '/media/tweiss/Daten/RADOLAN_API_v1.0.0.nc'
+            s2_vwc = '/media/tweiss/Work/Paper3_down/data/'+year+'/tif1/'
 
-    sarsar = KaSKASAR(s1_ncfile, state_mask, s2_vwc, rad_api)
+            sarsar = KaSKASAR(s1_ncfile, state_mask, s2_vwc, rad_api, year, version)
 
-    csv_output_path = '/media/tweiss/Work/paper2/z_dense_s1_time_series_n7multi_Field_buffer_30/csv/'
-
-    add_data = pd.read_csv(csv_output_path+'all_50.csv',header=[0,1,2,3,4,5],index_col=0)
-
-    sarsar.sentinel1_inversion(True)
+            sarsar.sentinel1_inversion(True)
 

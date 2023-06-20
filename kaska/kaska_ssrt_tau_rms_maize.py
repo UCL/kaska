@@ -245,6 +245,7 @@ opt_mod = ['time_variant']
 #---------------------------
 
 years = ['_2017','_2018']
+years = ['_2017']
 numbers = [1,3,5,7,9]
 numbers = [1]
 
@@ -257,6 +258,7 @@ for zzz in numbers:
             for year in years:
                 if year == '_2017':
                     field_list = ['508_high','508_low','508_med','301_high','301_low','301_med','542_high','542_low','542_med']
+                    field_list = ['319_high','319_low','319_med','515_high','515_low','515_med']
                 elif year == '_2018':
                     field_list = ['525_high','525_low','525_med','317_high','317_low','317_med']
                 else:
@@ -533,7 +535,7 @@ for zzz in numbers:
 
                                                 # pdb.set_trace()
 
-                                                # pdb.set_trace()
+                                                pdb.set_trace()
                                                 times, vwcs, bs, sms, srms, ps, orbit_mask = do_one_pixel_field(data_field, vv, vh, vwc, theta, time, sm, sm_std, b, b_std, omega, rms, rms_std, orbits,unc=unc)
 
 
@@ -650,7 +652,7 @@ for zzz in numbers:
 
 
                                                 # plt.show()
-                                                plt.savefig('/media/tweiss/Work/paper3/plot/v4/'+year[1:]+'/'+kkkk+ii+'unc:'+str(unc)+'_sm_std'+str(tt)[:3]+'.png', bbox_inches = 'tight')
+                                                plt.savefig('/media/tweiss/Work/paper3/plot/maize/'+year[1:]+'/'+kkkk+ii+'unc:'+str(unc)+'_sm_std'+str(tt)[:3]+'.png', bbox_inches = 'tight')
                                                 # pdb.set_trace()
 
 
