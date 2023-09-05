@@ -23,6 +23,18 @@ class plot_scatter(object):
         self.plot(years, esus, passes, esu_size_tiff)
         self.plot(years, esus, passes, esu_size_tiff, 'wheat')
         self.plot(years, esus, passes, esu_size_tiff, 'maize')
+
+        if '2017' in years:
+            self.plot(['2017'], esus, passes, esu_size_tiff, '301')
+            self.plot(['2017'], esus, passes, esu_size_tiff, '542')
+            self.plot(['2017'], esus, passes, esu_size_tiff, '508')
+            self.plot(['2017'], esus, passes, esu_size_tiff, '319')
+            self.plot(['2017'], esus, passes, esu_size_tiff, '515')
+        if '2018' in years:
+            self.plot(['2018'], esus, passes, esu_size_tiff, '508')
+            self.plot(['2018'], esus, passes, esu_size_tiff, '317')
+            self.plot(['2018'], esus, passes, esu_size_tiff, '410')
+            self.plot(['2018'], esus, passes, esu_size_tiff, '525')
         self.plot2(years, esus, passes, esu_size_tiff)
 
     def plot(self, years, esus, passes, esu_size_tiff,crop=None):
@@ -60,6 +72,16 @@ class plot_scatter(object):
                     fields = ['301','542','508']
                 elif crop == 'maize':
                     fields = ['319','515']
+                elif crop == '301':
+                    fields = ['301']
+                elif crop == '542':
+                    fields = ['542']
+                elif crop == '508':
+                    fields = ['508']
+                elif crop == '319':
+                    fields = ['319']
+                elif crop == '515':
+                    fields = ['515']
                 else:
                     fields = ['301','319','542','508','515']
                     crop=''
@@ -68,6 +90,14 @@ class plot_scatter(object):
                     fields = ['317','525']
                 elif crop == 'maize':
                     fields = ['410','508']
+                elif crop == '508':
+                    fields = ['508']
+                elif crop == '317':
+                    fields = ['317']
+                elif crop == '410':
+                    fields = ['410']
+                elif crop == '525':
+                    fields = ['525']
                 else:
                     fields = ['317','410','525','508']
                     crop=''
@@ -170,6 +200,7 @@ class plot_scatter(object):
                 ubrmse_field = ubrmse_prediction(rmse_field,bias_field)
 
                 stats = sm.taylor_statistics(mean_field+bias_field,insitu_field,'data')
+                r_value = stats['ccoef'][0]
 
                 if pppp == 0:
                     ccoef_field = np.append(ccoef_field,stats['ccoef'][0])
@@ -188,7 +219,8 @@ class plot_scatter(object):
 
                 yy = yy + 0.02
 
-                plt.text(0.4,yy,field+' rmse:'+str(rmse_field)[0:4]+' ubrmse:'+str(ubrmse_field)[0:4], color=color)
+                plt.text(0.4,yy,field+' rmse:'+str(rmse_field)[0:5]+' ubrmse:'+str(ubrmse_field)[0:5], color=color)
+
 
 
                 rf.append(rmse_field)
@@ -215,7 +247,7 @@ class plot_scatter(object):
 
             yy = yy +0.02
 
-            plt.text(0.4,yy,'rmse all:'+str(rmse_field)[0:4]+' ubrmse all:'+str(ubrmse_field)[0:4], color='black')
+            plt.text(0.4,yy,'rmse all:'+str(rmse_field)[0:5]+' ubrmse all:'+str(ubrmse_field)[0:5], color='black')
 
             if not os.path.exists('/media/tweiss/Work/Paper3_down/'+passes+'/scatterplot'):
                 os.makedirs('/media/tweiss/Work/Paper3_down/'+passes+'/scatterplot')
@@ -227,8 +259,8 @@ class plot_scatter(object):
 
             # self.plot_taylor(ccoef, crmsd, sdev, labels, passes, year)
             # pdb.set_trace()
-        if crop == '':
-            self.plot_taylor(ccoef_field, crmsd_field, sdev_field, labels_field, passes, year)
+        # if crop == '':
+        #     self.plot_taylor(ccoef_field, crmsd_field, sdev_field, labels_field, passes, year)
 
         # self.plot_scat(insitu_all_years, mean_all_bias_years, '2017-2018', passes, mean_all, bin_a=40,bin_b=30)
 
@@ -424,7 +456,7 @@ class plot_scatter(object):
 
             yy = yy +0.02
 
-            plt.text(0.4,yy,'rmse all:'+str(rmse_field)[0:4]+' ubrmse all:'+str(ubrmse_field)[0:4], color='black')
+            plt.text(0.4,yy,'rmse all:'+str(rmse_field)[0:5]+' ubrmse all:'+str(ubrmse_field)[0:5], color='black')
 
             if not os.path.exists('/media/tweiss/Work/Paper3_down/'+passes+'/scatterplot'):
                 os.makedirs('/media/tweiss/Work/Paper3_down/'+passes+'/scatterplot')
@@ -434,8 +466,8 @@ class plot_scatter(object):
 
             # self.plot_taylor(ccoef, crmsd, sdev, labels, passes, year)
         # self.plot_taylor(ccoef_field, crmsd_field, sdev_field, labels_field, passes, year, name_ex='_v4_lower'+str(bbch_value))
-        self.plot_taylor(ccoef_field, crmsd_field, sdev_field, labels_field, passes, year, name_ex='_v4_higher'+str(bbch_value))
-        pdb.set_trace()
+        # self.plot_taylor(ccoef_field, crmsd_field, sdev_field, labels_field, passes, year, name_ex='_v4_higher'+str(bbch_value))
+        # pdb.set_trace()
         # self.plot_taylor(ccoef_field, crmsd_field, sdev_field, labels_field, passes, year, name_ex='_v4')
 
 
@@ -598,12 +630,14 @@ class plot_scatter(object):
         rmse_field = rmse_prediction(a,c)
         # bias_field = bias_prediction(a,c)
         ubrmse_field = rmse_prediction(a,b)
+        slope, intercept, r_value, p_value, std_err = linregress (a,c)
 
         plt.text(0.02,0.48,'RMSE: '+str(rmse_field)[0:5]+' m³/m³', fontsize=20)
         plt.text(0.02,0.46,'ubRMSE: '+str(ubrmse_field)[0:5]+' m³/m³', fontsize=20)
         plt.text(0.02,0.44,'Min bias: '+str(np.min(d))[0:5]+' m³/m³'+'; Max bias: '+str(np.max(d))[0:4]+' m³/m³', fontsize=20)
         plt.text(0.02,0.42,'Min model: '+str(min(b))[0:4]+' m³/m³'+'; Max model: '+str(max(b))[0:4]+' m³/m³', fontsize=20)
         plt.text(0.02,0.4,'Min insitu: '+str(min(a))[0:4]+' m³/m³'+'; Max insitu: '+str(max(a))[0:4]+' m³/m³', fontsize=20)
+        plt.text(0.02,0.38,'R²: '+str(r_value)[0:5], fontsize=20)
 
         plt.savefig('/media/tweiss/Work/Paper3_down/'+passes+'/scatterplot/scatterplot_bias_'+year+crop,bbox_inches='tight')
         plt.close()
@@ -695,7 +729,7 @@ class plot_scatter(object):
 
                     # y=y+1
 
-
+        pdb.set_trace()
         legend_elements = [Line2D([0], [0], color='w', lw=4, label=labels[1]+' wheat', marker='P',markerfacecolor='r', markerSize=12), Line2D([0], [0], color='w', lw=4, label=labels[2]+' maize', marker='o',markerfacecolor='r', markerSize=12), Line2D([0], [0], color='w', lw=4, label=labels[3]+' wheat', marker='X',markerfacecolor='r', markerSize=12), Line2D([0], [0], color='w', lw=4, label=labels[4]+' wheat', marker='s',markerfacecolor='r', markerSize=12), Line2D([0], [0], color='w', lw=4, label=labels[5]+' maize', marker='d',markerfacecolor='r', markerSize=12), Line2D([0], [0], color='w', lw=4, label=labels[6]+' wheat', marker='P',markerfacecolor='b', markerSize=12), Line2D([0], [0], color='w', lw=4, label=labels[7]+' maize', marker='o',markerfacecolor='b', markerSize=12), Line2D([0], [0], color='w', lw=4, label=labels[8]+' wheat', marker='X',markerfacecolor='b', markerSize=12), Line2D([0], [0], color='w', lw=4, label=labels[9]+' maize', marker='s',markerfacecolor='b', markerSize=12)]
 
         # legend_elements2 = [mpatches.Patch(color=colors[0], label=surface_list[0]),mpatches.Patch(color=colors[1], label=surface_list[1]),mpatches.Patch(color=colors[2], label=surface_list[2]),mpatches.Patch(color=colors[3], label=surface_list[3]),mpatches.Patch(color=colors[4], label='IEM_B')]

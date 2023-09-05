@@ -9,6 +9,7 @@ from matplotlib.colors import ListedColormap
 from watercloudmodel_vwc_rms import cost_function_vwc, ssrt_jac_vwc, ssrt_vwc
 from matplotlib import gridspec
 from pandas.plotting import register_matplotlib_converters
+import matplotlib.dates as mdates
 
 class plot_esu(object):
     """Plotting scatterplots"""
@@ -574,7 +575,8 @@ class plot_esu(object):
         plt.close()
 
         if year == '2017':
-            time_invest = pd.date_range(start="2017-05-29",end="2017-06-06")
+            # time_invest = pd.date_range(start="2017-05-29",end="2017-06-06")
+            time_invest = pd.date_range(start="2017-03-28",end="2017-07-31")
             time_mask_invest = np.isin(time_final,time_invest)
             data_invest = new_array[time_mask_invest]
 
@@ -582,7 +584,7 @@ class plot_esu(object):
             df_invest = pd.DataFrame({'id':id_invest,'value':data_invest.flatten()},columns=['id','value'])
 
 
-            f, ax = plt.subplots(figsize=(20, 15))
+            f, ax = plt.subplots(figsize=(30, 10))
 
             gs = gridspec.GridSpec(2, 1, height_ratios=[5,5])
             ax = plt.subplot(gs[0])
@@ -607,14 +609,19 @@ class plot_esu(object):
             hm = meteo2[mask_time3]
             # hm = meteo2.iloc[145:160]
             ax0 = hm.plot.bar(ax=ax1,rot=0, fontsize=16)
-            ax0.set_xticklabels([pd_datetime.strftime("%Y-%m-%d") for pd_datetime in hm.index])
+            xxx = [pd_datetime.strftime("%Y-%m-%d") for pd_datetime in hm.index]
+            # ax0.set_xticklabels([pd_datetime.strftime("%Y-%m-%d") for pd_datetime in hm.index])
+            ax0.set_xticklabels(xxx)
             ax0.set_ylabel('Precipitation [mm]',fontsize=16)
             ax0.set_xlabel('Date')
+            plt.xticks([4, 34, 65, 95])
+            ax0.set_xticklabels([xxx[4],xxx[34],xxx[65],xxx[95]])
             plt.savefig('/media/tweiss/Work/Paper3_down/'+passes+'/boxplot/'+'precip_2017', bbox_inches='tight')
             plt.close()
 
         if year == '2018':
-            time_invest = pd.date_range(start="2018-07-16",end="2018-07-26")
+            # time_invest = pd.date_range(start="2018-07-16",end="2018-07-26")
+            time_invest = pd.date_range(start="2018-03-28",end="2018-07-31")
             time_mask_invest = np.isin(time_final,time_invest)
             data_invest = new_array[time_mask_invest]
 
@@ -622,7 +629,7 @@ class plot_esu(object):
             df_invest = pd.DataFrame({'id':id_invest,'value':data_invest.flatten()},columns=['id','value'])
 
 
-            f, ax = plt.subplots(figsize=(20, 15))
+            f, ax = plt.subplots(figsize=(30, 10))
 
             gs = gridspec.GridSpec(2, 1, height_ratios=[5,5])
             ax = plt.subplot(gs[0])
@@ -647,9 +654,12 @@ class plot_esu(object):
             hm = meteo2[mask_time3]
             # hm = meteo2.iloc[145:160]
             ax0 = hm.plot.bar(ax=ax1,rot=0, fontsize=16)
-            ax0.set_xticklabels([pd_datetime.strftime("%Y-%m-%d") for pd_datetime in hm.index])
+            xxx = [pd_datetime.strftime("%Y-%m-%d") for pd_datetime in hm.index]
+            # ax0.set_xticklabels([pd_datetime.strftime("%Y-%m-%d") for pd_datetime in hm.index])
             ax0.set_ylabel('Precipitation [mm]',fontsize=16)
             ax0.set_xlabel('Date')
+            plt.xticks([4, 34, 65, 95])
+            ax0.set_xticklabels([xxx[4],xxx[34],xxx[65],xxx[95]])
             plt.savefig('/media/tweiss/Work/Paper3_down/'+passes+'/boxplot/'+'precip_2018', bbox_inches='tight')
             plt.close()
 

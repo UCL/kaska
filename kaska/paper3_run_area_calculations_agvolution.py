@@ -138,6 +138,8 @@ def read_api(api_data, state_mask):
 
     return s1_data(time, api_data.lat, api_data.lon, api)
 
+def read_api_2(api_data, state_mask):
+    s1_data = namedtuple('api_data', 'time lat lon api')
 
 def inference_preprocessing(s1_data, vwc_data, api_data, state_mask, orbit1=None, orbit2=None):
     """Resample S2 smoothed output to match S1 observations
