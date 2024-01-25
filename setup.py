@@ -10,7 +10,7 @@ setup(name="kaska",
       author_email = "j.gomez-dans@ucl.ac.uk",
       license = "GNU General Public License v3",
 #      packages = find_packages(include=['kaska']),
-      packages = ['kaska'], # , 'kaska.TwoNN', 'kaska.NNParameterInversion'],
+      packages = ['kaska' , 'kaska.TwoNN', 'kaska.NNParameterInversion', 'kaska.inverters'],
       scripts= ['scripts/run_kaska'],
       zip_safe=False
       )

@@ -21,7 +21,7 @@ from .utils import get_chunks, define_temporal_grid
 from .s2_observations import Sentinel2Observations
 from .kaska import KaSKA
 from .s1_observations import Sentinel1Observations
-from .kaska_sar import sar_inversion, save_s1_output
+from .kaska_sar import save_output, KaSKASAR
 
 Config = namedtuple(
     "Config", "s2_obs s1_obs temporal_grid state_mask" + \
@@ -166,14 +166,14 @@ def process_tile(the_chunk, config):
     s2_obs.apply_roi(ulx, uly, lrx, lry)
     chunk_mask = s2_obs.state_mask.ReadAsArray()
     n_unmasked_pxls = np.sum(chunk_mask)
-    
-    
+
+
     if n_unmasked_pxls == 0:
         LOG.info(f"No pixels in chunk {hex(chunk_no):s}")
         return None
     else:
         # Define KaSKA object with windowed observations.
-        
+
         LOG.info(f"Unmasked pixels in {hex(chunk_no):s}: {n_unmasked_pxls:d}")
         kaska = KaSKA(
             s2_obs,
@@ -194,8 +194,8 @@ def process_tile(the_chunk, config):
 
         s1_obs = copy.copy(config.s1_obs)
         s1_obs.apply_roi(ulx, uly, lrx, lry)
-
-        s1_inversion = KasKASAR(config.temporal_grid, config.state_mask,
+        print(config.s1_obs)
+        s1_inversion = KaSKASAR(config.temporal_grid, config.state_mask,
                                 s2_parameter_data, config.prior,
                                 chunk=hex(chunk))
         s1_inversion.sentinel1_inversion()
@@ -308,9 +308,9 @@ def kaska_runner(
     else:
         # Do the splitting
         LOG.info(f"Doing chunk {chunk:d}")
-        the_chunk = [the_chunk 
+        the_chunk = [the_chunk
                      for the_chunk in get_chunks(
-                        nx, ny, block_size=block_size) 
+                        nx, ny, block_size=block_size)
                      if the_chunk[-1] == chunk]
         LOG.info("Single chunk!")
         wrapper(the_chunk[0])

@@ -9,16 +9,20 @@ $$
 \sigma_{pp}^{0} = A\cdot V_{1}\left[1 - \exp\left(-\frac{-2B\cdot V_{2}}{\cos\theta}\right)\right] + \exp\left(-\frac{-2B\cdot V_{2}}{\cos\theta}\right)\cdot\left(C + D\cdot M_{v}\right).
 $$
 
-`A*V_1` is basically the backscattering coefficient, whereas 
+`A*V_1` is basically the backscattering coefficient, whereas
 `B*V_2` is the extinction coefficient. `C` relates `VSM` (volumetric
-soil moisture in [%]) to backscatter. In general, all the "constants" 
+soil moisture in [%]) to backscatter. In general, all the "constants"
 (`A`, `B`, `C`, `D`) are polarisation dependent. `V1` and `V2` have to do with
 the scatterers within the turbid medium, and are usually related to LAI.
 """
 
 import numpy as np
 import scipy.stats as SS_vh
+import pdb
 
+from sense.canopy import OneLayer
+from sense.soil import Soil
+from sense import model
 
 def wcm_jac_(A, V1, B, V2, R, alpha, C, theta=23):
     """WCM model and jacobian calculations. The main
@@ -55,16 +59,173 @@ def wcm_jac_(A, V1, B, V2, R, alpha, C, theta=23):
         [der_dA, der_dB, der_dC, der_dR, der_dalpha, der_dV1, der_dV2]
     )
 
-def fwd_model_(x, svh, svv, theta):
-    """Running the model forward to predict backscatter"""
-    n_obs = len(svv)
-    A_vv, B_vv, C_vv, A_vh, B_vh, C_vh = x[:6]
-    alpha = x[6 : (6 + n_obs)]
-    R = x[(6 + n_obs):(6 + 2*n_obs)]
-    lai = x[(6 + 2*n_obs) :]
-    sigma_vv, dvv = wcm_jac_(A_vv, lai, B_vv, lai, C_vv, R, alpha, theta=theta)
-    sigma_vh, dvh = wcm_jac_(A_vh, lai, B_vh, lai, C_vh, R, alpha, theta=theta)
-    return sigma_vv, sigma_vh
+
+def fresnel(e):
+    return np.abs( (1.-np.sqrt(e))/(1.+np.sqrt(e))   )**2.
+
+def refelctivity(eps, theta):
+    """
+    table 2.5 Ulaby (2014)
+    assumes specular surface
+    Parameters
+    ----------
+    eps : complex
+        relative dielectric permitivity
+    theta : float, ndarray
+        incidence angle [rad]
+        can be specified
+    """
+    co = np.cos(theta)
+    si2 = np.sin(theta)**2.
+    rho_v = (eps*co-np.sqrt(eps-si2))/(eps*co+np.sqrt(eps-si2))
+    rho_h = (co-np.sqrt(eps-si2))/(co+np.sqrt(eps-si2))
+
+    v = np.abs(rho_v)**2.
+    h = np.abs(rho_h)**2.
+
+    return v, h
+
+def ssrt_jac_oh92_(eps, coef, LAI, H, theta):
+    theta = np.deg2rad(theta)
+    mu = np.cos(theta)
+    omega = 0.027
+    freq = 5.405
+    k = 2.*np.pi / f2lam(freq)
+    s = 0.0115
+
+    ks = k * s
+
+    c = 1./(3.*fresnel(eps))
+    p = (1. - (2.*theta/np.pi)**c * np.exp(-ks))**2.
+
+    v, h = refelctivity(eps,theta)
+    a = 0.7*(1.-np.exp(-0.65*ks**1.8)) * np.cos(theta)**3.
+    b = (v+h) / np.sqrt(p)
+
+    sigma_soil = a*b
+
+    tau = np.exp(-coef * np.sqrt(LAI) * H / mu)**2
+
+    soil = tau * sigma_soil
+    veg = omega * mu / 2 * (1 - tau)
+
+    co = np.cos(theta)
+    si = np.sin(theta)
+    si2 = np.sin(theta)**2.
+    hoch = (np.sqrt(eps)+1)**2./(3*(1-np.sqrt(eps))**2.)
+    d = np.exp(-ks)
+    f = 2.*theta/np.pi
+
+    k = sigma_soil
+    m = np.sqrt(LAI) * H / mu
+    l = omega * mu / 2
+
+
+    part_one = (2*a*(co-1/2*np.sqrt(eps-si2))*(eps*co-np.sqrt(eps-si2))) / (p * (eps*co+np.sqrt(eps-si2))**2)
+    part_two = (2*a*(co+1/2*np.sqrt(eps-si2))*(eps*co-np.sqrt(eps-si2))**2) / (p * (eps*co+np.sqrt(eps-si2))**3)
+    part_three = (2*a*d*( (np.sqrt(eps)+1)**2)/(3*(1-np.sqrt(eps))**3*np.sqrt(eps)) + (np.sqrt(eps)+1)/(3*(1-np.sqrt(eps))**2*np.sqrt(eps)) * f**c * np.log(f) * (eps*co-np.sqrt(eps-si2))**2) / ((1-d*f**c)**3*(np.sqrt(eps-si2)+eps*co)**2)
+    p1 = part_one-part_two+part_three
+
+    part_four = (-a*co-np.sqrt(eps-si2)) / (2*(1-d*f**c)**2 * np.sqrt(eps-si2) * (np.sqrt(eps-si2)+co)**2)
+    part_five = (2*d*((np.sqrt(eps)+1)**2 / (3*(1-np.sqrt(eps))**3*np.sqrt(eps)) + (np.sqrt(eps)+1)/(3*(1-np.sqrt(eps))**2*np.sqrt(eps))) *f**c * np.log(f) * (a*co-np.sqrt(eps-si2))) / ((1-d*f**c)**3 * (np.sqrt(eps-si2)+co))
+    part_six = 1/ (2*(1-d*f**c)**2 * np.sqrt(eps-si2) * (np.sqrt(eps*si2)+co))
+    p2 = part_four + part_five - part_six
+
+    der_mv = p1 + p2
+    # pdb.set_trace()
+    # part_one = (a*( ((co-1/2*np.sqrt(eps-si2))/(eps*co+np.sqrt(eps-si2))) - (1/(2*np.sqrt(eps-si2)*(co+np.sqrt(eps-si2)))) - ((1/2*np.sqrt(eps-si2)+co)*(eps*co-np.sqrt(eps-si2))/(eps*co+np.sqrt(eps-si2))**2) )) / p
+    # part_two = (2*a*d*((((np.sqrt(eps)+1)**2)/(3*(1-np.sqrt(eps))**3 * np.sqrt(eps))) + (np.sqrt(eps)+1)/(3*(1-np.sqrt(eps))**2 * np.sqrt(eps))) * f**c * np.log(f) * (v+h)) / (1-d*f**c)**3
+
+    # der_mv = part_one + part_two
+    der_coef = -2*l*(k-m)*np.exp(-2*l-coef)
+
+    return (
+        veg + soil,
+        [der_mv, der_coef]
+    )
+
+
+
+def f2lam(f):
+    """
+    given the frequency in GHz,
+    return the wavelength [m]
+    """
+    c0=299792458.  # speed of light [m/s]
+
+    return c0/(f*1.E9)
+
+
+def ssrt_jac_(mv, coef, LAI, H, theta):
+    """"""
+
+    omega = 0.027
+    freq = 5.405
+    k = 2.*np.pi / f2lam(freq)
+    s = 0.0115
+
+    clay = 0.0738
+    sand = 0.2408
+    bulk = 1.45
+
+    ks = k * s
+
+    mu = np.cos(np.deg2rad(theta))
+    sin = np.sin(1.5*np.deg2rad(theta))
+    a = 0.11 * mv**0.7 * mu**2.2
+    b = 1 - np.exp(-0.32 * ks**1.8)
+    q = 0.095 * (0.13 + sin)**1.4 * (1-np.exp(-1.3 * ks**0.9))
+    sigma_soil = a * b / q
+
+    tau = np.exp(-coef * LAI * H / mu)**2
+
+    soil2 = tau * sigma_soil
+    veg = omega * mu / 2 * (1 - tau)
+    # pdb.set_trace()
+    # Sense
+    models = {'surface': 'Oh04', 'canopy': 'turbid_isotropic'}
+    can = 'turbid_isotropic'
+    ke = coef * LAI
+    theta = np.deg2rad(theta)
+    # soil
+    soil = Soil(mv=mv, s=s, f=freq, clay=clay, sand=sand, bulk=bulk)
+
+    # canopy
+    can = OneLayer(canopy=can, ke_h=ke, ke_v=ke, d=H, ks_h = omega * ke, ks_v = omega*ke)
+
+    S = model.RTModel(surface=soil, canopy=can, models=models, theta=theta, freq=freq)
+    S.sigma0()
+    S.__dict__['stot']['vv'[::-1]], S.__dict__['stot']['vh'[::-1]]
+
+    s0g = S.__dict__['s0g']['vv']
+    s0c = S.__dict__['s0c']['vv']
+    s0cgt = S.__dict__['s0cgt']['vv']
+    s0gcg = S.__dict__['s0gcg']['vv']
+    stot = S.__dict__['stot']['vv']
+
+
+    der_coef = (-2 * np.sqrt(LAI) * H / mu) * tau + omega * mu / 2 * -1 * (-2 * np.sqrt(LAI) * H / mu) * tau
+    der_mv = tau * 0.077 * mv**(-0.3) * mu**2.2 * b / q
+    der_lai = (-2 * coef * H / mu / 2 / np.sqrt(LAI)) * tau + omega * mu / 2 * -1 * (-2 * coef * H / mu / 2 / np.sqrt(LAI)) * tau
+    der_height = (-2 * coef * H / mu / 2 / np.sqrt(LAI)) * tau + omega * mu / 2 * -1 * (-2 * coef * H / mu / 2 / np.sqrt(LAI)) * tau
+
+    # pdb.set_trace()
+    # Also returns der_dV1 and der_dV2
+    return (
+        stot ,
+        [der_mv, der_coef, der_lai, der_height]
+    )
+
+# def fwd_model_(x, svh, svv, theta):
+#     """Running the model forward to predict backscatter"""
+#     n_obs = len(svv)
+#     A_vv, B_vv, C_vv, A_vh, B_vh, C_vh = x[:6]
+#     alpha = x[6 : (6 + n_obs)]
+#     R = x[(6 + n_obs):(6 + 2*n_obs)]
+#     lai = x[(6 + 2*n_obs) :]
+#     sigma_vv, dvv = wcm_jac_(A_vv, lai, B_vv, lai, C_vv, R, alpha, theta=theta)
+#     sigma_vh, dvh = wcm_jac_(A_vh, lai, B_vh, lai, C_vh, R, alpha, theta=theta)
+#     return sigma_vv, sigma_vh
 
 def cost_obs_(x, svh, svv, theta, unc=0.5):
     """Cost function. Order of parameters is
@@ -106,7 +267,71 @@ def cost_obs_(x, svh, svv, theta, unc=0.5):
             (dvv[5] + dvv[6]) * diff_vv + (dvh[5] + dvh[6]) * diff_vh,  # LAI
         ]
     )
+
     return np.nansum(cost), -jac / (unc ** 2)
+
+def cost_obs_ssrt(x, svh, svv, theta, data, unc=0.3):
+    """
+    """
+    n_obs = svh.shape[0]
+    mv = x[:n_obs]
+    coef = x[n_obs:2*n_obs]
+    lai = data[1:(2*n_obs)]
+    h = data[0]
+
+    sigma_vv, dvv = ssrt_jac_(mv, coef, lai, h, theta=theta)
+
+    diff_vv = 10*np.log10(svv) - 10*np.log10(sigma_vv)
+    # diff_vv = svv - sigma_vv
+    # diff_vv = 10 ** (svv/10) - sigma_vv
+    # pdb.set_trace()
+    cost = 0.5 * (diff_vv ** 2) / (unc ** 2)
+
+    jac = np.concatenate(
+        ##[der_dA, der_dB, der_dC, der_dR, der_dalpha, der_dV1, der_dV2]
+            np.array(
+                [
+                    (dvv[0] * diff_vv),  # mv
+                    (dvv[1] * diff_vv),  # coef
+                    # (dvv[2] * diff_vv),  # lai
+                    # (dvv[3] * diff_vv),  # height
+                ]
+            )
+
+    )
+    # pdb.set_trace()
+    return np.nansum(cost), -jac / (unc ** 2)
+
+def cost_obs_ssrt_oh92_(x, svh, svv, theta, data, unc=0.3):
+    """
+    """
+    n_obs = svh.shape[0]
+    mv = x[:n_obs]
+    coef = x[n_obs:2*n_obs]
+    lai = data[n_obs:(2*n_obs)]
+    h = data[:n_obs]
+
+    sigma_vv, dvv = ssrt_jac_oh92_(mv, coef, lai, h, theta=theta)
+
+    diff_vv = svv - 10*np.log10(sigma_vv)
+
+    cost = 0.5 * (diff_vv ** 2) / (unc ** 2)
+
+    jac = np.concatenate(
+        ##[der_dA, der_dB, der_dC, der_dR, der_dalpha, der_dV1, der_dV2]
+            np.array(
+                [
+                    (dvv[0] * diff_vv),  # mv
+                    (dvv[1] * diff_vv),  # coef
+                    # (dvv[2] * diff_vv),  # lai
+                    # (dvv[3] * diff_vv),  # height
+                ]
+            )
+
+    )
+    # pdb.set_trace()
+    return np.nansum(cost), -jac / (unc ** 2)
+
 
 
 def cost_prior_(x, svh, svv, theta, prior_mean, prior_unc):
@@ -127,6 +352,29 @@ def cost_prior_(x, svh, svv, theta, prior_mean, prior_unc):
     dprior_cost[(6 + n_obs):(6 + 2*n_obs)] = 0.
     cost0 = prior_cost[6:(6+n_obs)].sum() # alpha cost
     cost1 = prior_cost[(6+2*n_obs):].sum() # LAI cost
+    return cost0 + cost1, dprior_cost
+
+def cost_prior_ssrt(x, svh, svv, theta, prior_mean, prior_unc):
+    """A Gaussian cost function prior. We assume no correlations
+    between parameters, only mean and standard deviation.
+    Cost function. Order of parameters is
+    A_vv, B_vv, C_vv, A_vh, B_vh, C_vh,
+    alpha_0, ..., alpha_N,
+    ruff_0, ..., ruff_N,
+    LAI_0, ..., LAI_N
+    We assume that len(svh) == N
+    """
+    # pdb.set_trace()
+    n_obs = len(svh)
+    prior_cost = 0.5 * (prior_mean - x) ** 2 / prior_unc ** 2
+    dprior_cost = -(prior_mean - x) / prior_unc ** 2
+    # coef->No prior!
+    # dprior_cost[(n_obs):(2*n_obs)] = 0.
+    # dprior_cost[:n_obs] = 0.
+    cost0 = prior_cost[:(n_obs)].sum() # mv cost
+    cost1 = prior_cost[n_obs:2*n_obs].sum() # coef cost
+    # cost0=0
+
     return cost0 + cost1, dprior_cost
 
 
@@ -164,4 +412,32 @@ def cost_function(x, svh, svv, theta, gamma, prior_mean, prior_unc, unc=0.8):
     R = x[(6 + n_obs):(6 + 2*n_obs)]
     cost4, dcost4 = cost_smooth_(R, gamma[0])
     tmp[(7 + n_obs) : (5 + 2*n_obs)] = dcost4
+    # pdb.set_trace()
     return cost1 + cost2 + cost3 + cost4, dcost1 + dcost2 + tmp
+
+def cost_function2(x, svh, svv, theta, gamma, prior_mean, prior_unc, data, unc=0.3):
+    """A combined cost function that calls the prior, fit to the observations
+    """
+    # Fit to the observations
+    cost1, dcost1 = cost_obs_ssrt(x, svh, svv, theta, data, unc=unc)
+    # cost1, dcost1 = cost_obs_ssrt_oh92_(x, svh, svv, theta, data, unc=unc)
+    # pdb.set_trace()
+    # Fit to the prior
+    cost2, dcost2 = cost_prior_ssrt(x, svh, svv, theta, prior_mean, prior_unc)
+    # pdb.set_trace()
+    # Smooth evolution of LAI
+    # n_obs = len(svv)
+    # lai = x[2*n_obs:3*n_obs]
+    # cost3, dcost3 = cost_smooth_(lai, gamma[1])
+    # tmp = np.zeros_like(dcost1)
+    # tmp[2*n_obs+1:-1] = dcost3
+    tmp=0
+    cost3=0
+
+    # # Smooth evolution of ruffness
+    # R = x[(6 + n_obs):(6 + 2*n_obs)]
+    # cost4, dcost4 = cost_smooth_(R, gamma[0])
+    # tmp[(7 + n_obs) : (5 + 2*n_obs)] = dcost4
+    # return cost1 + cost2 + cost3 + cost4, dcost1 + dcost2 + tmp
+    # pdb.set_trace()
+    return cost1 + cost2 + cost3, dcost1 + dcost2 + tmp

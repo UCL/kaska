@@ -1,0 +1,1239 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"box",
+				"boxplot_sm_area"
+			],
+			[
+				"tick",
+				"tick_params"
+			],
+			[
+				"insit_all",
+				"insitu_all_years"
+			],
+			[
+				"spat",
+				"plot_spatial"
+			],
+			[
+				"unc",
+				"unc_19"
+			],
+			[
+				"time_con",
+				"time_contrainst"
+			],
+			[
+				"state",
+				"state_mask_3"
+			],
+			[
+				"sat",
+				"state_mask_3"
+			],
+			[
+				"ndwi",
+				"ndwi1_cos_maize"
+			],
+			[
+				"exept",
+				"except"
+			],
+			[
+				"vv",
+				"vv_version"
+			],
+			[
+				"set",
+				"set_xlim"
+			],
+			[
+				"v",
+				"vwc_sentinel_2"
+			],
+			[
+				"rmse_",
+				"rmse_prediction(predictions, targets)"
+			],
+			[
+				"rm",
+				"rmse_prediction(predictions, targets)"
+			],
+			[
+				"plot",
+				"plot_dir"
+			],
+			[
+				"sentinel",
+				"df_sentinel2"
+			],
+			[
+				"to",
+				"to_datetime"
+			],
+			[
+				"height",
+				"height_field"
+			],
+			[
+				"pyplo",
+				"pyplot as plt"
+			],
+			[
+				"op",
+				"opt_mod"
+			],
+			[
+				"canopy",
+				"canopy_list"
+			],
+			[
+				"_",
+				"_Field_buffer_30"
+			],
+			[
+				"_buff",
+				"_buffer_100"
+			],
+			[
+				"_buffer",
+				"_buffer_50"
+			],
+			[
+				"x",
+				"x_44"
+			],
+			[
+				"lookup",
+				"lookup_sm"
+			],
+			[
+				"se",
+				"sentinel_vv"
+			],
+			[
+				"df_vali",
+				"df_vali_statistic"
+			],
+			[
+				"df_va",
+				"df_vali_statistic"
+			],
+			[
+				"la",
+				"lai_mean"
+			],
+			[
+				"bbch",
+				"bbch_508"
+			],
+			[
+				"index",
+				"indexing3\tint ⟠"
+			],
+			[
+				"b",
+				"bulk"
+			],
+			[
+				"surface",
+				"surface_list"
+			],
+			[
+				"markercolor",
+				"markerColor"
+			],
+			[
+				"marker",
+				"markerSize"
+			],
+			[
+				"pat",
+				"patch5\tunknown ⟠"
+			],
+			[
+				"path",
+				"patch4\tunknown ⟠"
+			],
+			[
+				"patch",
+				"patch2\tunknown ⟠"
+			],
+			[
+				"sea",
+				"seaborn as sns\tmodule ⟠"
+			],
+			[
+				"vwc",
+				"vwcpro_field"
+			],
+			[
+				"Water",
+				"WaterCloud"
+			],
+			[
+				"vv_model",
+				"vv_model_used"
+			],
+			[
+				"vv_s1",
+				"vv_s1_used"
+			],
+			[
+				"Data",
+				"DataFrame"
+			],
+			[
+				"rmse",
+				"rmse_prediction"
+			],
+			[
+				"read",
+				"read_csv"
+			],
+			[
+				"df_",
+				"df_auswertung"
+			],
+			[
+				"pol",
+				"pol_value"
+			],
+			[
+				"field",
+				"field_data"
+			],
+			[
+				"y",
+				"set_ylim"
+			],
+			[
+				"vv_po",
+				"vv_point_old"
+			],
+			[
+				"poin",
+				"df_point_17"
+			],
+			[
+				"vv_poin",
+				"vv_point_11"
+			],
+			[
+				"vv_p",
+				"vv_point_old"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"contents": "\n  REPO: /media/tweiss/Work/GIT/GitHub/UCL/kaska\n  [a]ll: true\n\n● c826075 (HEAD -> sar_quick, McWhity/sar_quick) move to UniRo                      ​ 5 minutes ago, Thomas Weiß\n● ce17c5f version v3                                                                ​ Dec 8 2021, Thomas Weiß\n● 3477616 maybe good solution                                                       ​ Nov 25 2021, Thomas Weiß\n● dd7630b start again                                                               ​ Nov 18 2021, Thomas Weiß\n● 5f2353a (McWhity/sar_quick_lmu, sar_quick_lmu) change of hard coded file names,.. ​ Dec 2 2019, Thomas Weiß\n● 01776ba (origin/sar_quick) Update watercloudmodel.py                              ​ Nov 22 2019, MarcYin\n● 191358b SAR optical coupling                                                      ​ Nov 22 2019, MarcYin\n● 98d9d5a updated entry to take prior                                               ​ Nov 21 2019, José Gómez-Dans\n● bea78a7 Added missing retrieval bit                                               ​ Nov 21 2019, José Gómez-Dans\n● 67e65f6 Quickly updated SAR files                                                 ​ Nov 21 2019, José Gómez-Dans\n| ● 2dc1165 (McWhity/lintfix2) Fixed pylint complaint about logging.                ​ Dec 2 2019, Matthew Gillman\n| ● c84128d Added basic docstrings and remnoved unused variables from kaska_sar.py  ​ Dec 2 2019, Matthew Gillman\n| ● 6348129 Fixed constant names in __main__ function of kaska_sar.py               ​ Dec 2 2019, Matthew Gillman\n| ● 4737298 Fixed pylint import errors in kaska_sar.py                              ​ Dec 2 2019, Matthew Gillman\n| ● 0eec714 Fixed indentation erros in kaska_sar.py                                 ​ Dec 2 2019, Matthew Gillman\n| ● 533f047 Changed variable names to keep pylint happy.                            ​ Dec 2 2019, Matthew Gillman\n| ● 6cc2044 Fixed _txtbar() function for pylint.                                    ​ Dec 2 2019, Matthew Gillman\n| ● 597609e Removed superfluous imports and renamed some variables.                 ​ Dec 2 2019, Matthew Gillman\n| ● 892054e Fixed the remaining pylint errors that I can do at this stage.          ​ Dec 2 2019, Matthew Gillman\n| ● 87745fa Fix pylint argument passing errors.                                     ​ Dec 2 2019, Matthew Gillman\n| ● 7972daf Change constants in __main__ to UPPER_CASE naming style                 ​ Dec 2 2019, Matthew Gillman\n| ● d52cb48 Fix indentation errors in s2_observations.py                            ​ Dec 2 2019, Matthew Gillman\n| ● ef9040d Changed variable names etc to satisfy pylint.                           ​ Dec 2 2019, Matthew Gillman\n| ● d70a40f Fixed some variable names.                                              ​ Dec 2 2019, Matthew Gillman\n| ● f5067a3 Remove extraneous brackets and fixed logger strings.                    ​ Dec 2 2019, Matthew Gillman\n| ● aeff1fa Fixed indentation errors.                                               ​ Dec 2 2019, Matthew Gillman\n| ● b773b21 Changing variable names to snake_case naming style in watercloudmodel.. ​ Dec 2 2019, Matthew Gillman\n| ● 6953d57 Fixed some unused variable etc pylint errors.                           ​ Dec 2 2019, Matthew Gillman\n| ● e1121a2 Fixed pylint indentation errors in watercloudmodel.py                   ​ Dec 2 2019, Matthew Gillman\n| ● 82a4971 Fix weird pytest seg fault                                              ​ Dec 2 2019, Matthew Gillman\n| ● 698813f Fixed some more pylint complaints in utils.py                           ​ Dec 2 2019, Matthew Gillman\n| ● f19062e Fixed some pylint complaints in utils.py                                ​ Nov 28 2019, Matthew Gillman\n| ● 3e28bc2 Fixed some pylint errors in inference_runner.py                         ​ Nov 28 2019, Matthew Gillman\n| ● 7ea8e6b Fix pylint complaints about logger.py                                   ​ Nov 28 2019, Matthew Gillman\n| ● 8599f8d Fixing pylint complaints for entry.py                                   ​ Nov 28 2019, Matthew Gillman\n| ● cab32cc (McWhity/master) Merge pull request #103 from UCL/config                ​ Nov 27 2019, mattgillucl\n| ●   29b9cca Merge branch 'master' into config                                     ​ Nov 27 2019, mattgillucl\n| |\\  \n| | ● c15c702 Merge pull request #102 from UCL/lintfix                              ​ Nov 26 2019, mattgillucl\n| | ● 22743a9 Fix typo                                                              ​ Nov 26 2019, Matthew Gillman\n| | ● 77a4139 Fix typos inadvertently introduced when fixing lint errors.           ​ Nov 26 2019, Matthew Gillman\n| | ● f2af683 Fixing some typos etc in test code.                                   ​ Nov 26 2019, Matthew Gillman\n| | ● dac6f6a Incorporating Tim's smoothn3 changes into lintfix.                    ​ Nov 26 2019, Matthew Gillman\n| | ● df4c285 Revert 9cae73d                                                        ​ Nov 26 2019, Matthew Gillman\n| | ● c2dce5b Fixing more pycodestyle errors in smoothn.py                          ​ Nov 26 2019, Matthew Gillman\n| | ● 1a9909a Fixed most remaining pycodestyle errors in watercloudmodel.py         ​ Nov 26 2019, Matthew Gillman\n| | ● d3cc47c Fixed most of the remaining pycodestyle errors.                       ​ Nov 26 2019, Matthew Gillman\n| | ● e7ff9e2 Fixed remaining pycodestyle errors in /tests                          ​ Nov 26 2019, Matthew Gillman\n| | ● f31ca18 Fixed pycodestyle errors in test_smoothn.py                           ​ Nov 26 2019, Matthew Gillman\n| | ● 0b44fed Fixed most pycodestyle errors in test_reproject.py                    ​ Nov 26 2019, Matthew Gillman\n| | ● 139faac Fixed most pycodestyle errors in test_nn_library.py                   ​ Nov 26 2019, Matthew Gillman\n| | ● 772b5df Fixed utils.py syntax error                                           ​ Nov 26 2019, Matthew Gillman\n| | ● 021cbf7 Fixed pycodestyle errors in test_interp.py                            ​ Nov 26 2019, Matthew Gillman\n| | ● 62d8bc8 Fixed pycodestyle errors in test_wcm.py                               ​ Nov 26 2019, Matthew Gillman\n| | ● c5647fc Fixed pycodestyle errors in /inverters                                ​ Nov 26 2019, Matthew Gillman\n| | ● 99d9996 Fixed most pycodestyle errors in two_nn.py                            ​ Nov 26 2019, Matthew Gillman\n| | ● 6afc976 Fixed pycodestyle errors in NNParameterInversion.py                   ​ Nov 26 2019, Matthew Gillman\n| | ● de89d48 Fixed most of the pycodestyle errors in watercloudmodel.py            ​ Nov 26 2019, Matthew Gillman\n| | ● 79271f8 Fixed some pycodestyle errors in utils.py and smoothn.py              ​ Nov 26 2019, Matthew Gillman\n| | ● 8f48aff Fixed more of the pycodestyle errors in smoothn.py                    ​ Nov 25 2019, Matthew Gillman\n| | ● 9cae73d Fixed pycodestyle indentation complaints for smoothn.py               ​ Nov 25 2019, Matthew Gillman\n| | ● f0febbc Fixed pycodestyle errors in s2_observations.py                        ​ Nov 25 2019, Matthew Gillman\n| | ● e686518 Fixed pycodestyle errors in s1_observations.py                        ​ Nov 25 2019, Matthew Gillman\n| | ● 9c31bd2 (origin/lintfix) Fixed pycodestyle E113 errors in kaska_sar.py        ​ Nov 25 2019, Matthew Gillman\n| | ● 2212d73 Fixed pycodestyle errors in parmap.py.                                ​ Nov 25 2019, Matthew Gillman\n| | ● b92a9ff Fixed pycodestyle errors in logger.py                                 ​ Nov 25 2019, Matthew Gillman\n| | ● 4dcde97 Fixed pycodestyle errors (except E113) in kaska_sar.py                ​ Nov 25 2019, Matthew Gillman\n| | ● 205ec2c Fixed pycodestyle errors in kaska_cost.py                             ​ Nov 25 2019, Matthew Gillman\n| | ● 8bb3fae Fixed some of the pylint errors for kaska.py                          ​ Nov 25 2019, Matthew Gillman\n| | ● 58eb932 Fixed pycodestyle errors in kaska.py                                  ​ Nov 25 2019, Matthew Gillman\n| | ● a8a2b94 Fixed pycodestyle errors in interp_fix.py                             ​ Nov 25 2019, Matthew Gillman\n| | ● 33c9c2a Fixed pycodestyle errors in inference_runner.py                       ​ Nov 25 2019, Matthew Gillman\n| | ● dfce48d Fixed pycodestyle errors in inference_runner.py                       ​ Nov 25 2019, Matthew Gillman\n| | ● 10c1b8a Fixed some (not all) pylint complaints for setup.py                   ​ Nov 25 2019, Matthew Gillman\n| | | ● 21daa87 (McWhity/config) Hopefully really fixing it this time               ​ Nov 27 2019, Matthew Gillman\n| | |/  \n| |/|   \n| ● | b05dd16 Fixing an args error in kaska.py                                      ​ Nov 27 2019, Matthew Gillman\n| | | ● 5b17e07 (McWhity/smoothn3) Some more linting                                ​ Nov 26 2019, Tim Spain\n| | | ● 57b5b1e Comment typo                                                        ​ Nov 26 2019, Tim Spain\n| | | ● 7de2819 Remove the unused peaks() function                                  ​ Nov 26 2019, Tim Spain\n| | | ● 4e878d9 Get rid of the unknown error() call, replaced by ValueError.        ​ Nov 26 2019, Tim Spain\n| | | ● 879a2be Take selected formatting changes from Black.                        ​ Nov 26 2019, Tim Spain\n| | | ● e665bad Pylinting                                                           ​ Nov 26 2019, Tim Spain\n| | | ● c0af82c DRY error message                                                   ​ Nov 25 2019, Tim Spain\n| | | ● 67b5516 Remove the redundant H() function.                                  ​ Nov 25 2019, Tim Spain\n| | | ● 00c85e5 (origin/smoothn3) Not needing sys.path.append, we don't need to i.. ​ Nov 25 2019, Tim Spain\n| | | ●   e76882b Merge pull request #97 from UCL/smoothn3_parametrizes             ​ Nov 25 2019, Tim Spain\n| | | |\\  \n| | | | ● a728312 tests functions can't have default values - or so it seems!       ​ Nov 22 2019, David Perez-Suarez\n| | | | ● e821350 :pencil2: fixing parametrize typo name and argument of function   ​ Nov 22 2019, David Perez-Suarez\n| | | | ● 79b9012 :pencil2: missing commas                                          ​ Nov 22 2019, David Perez-Suarez\n| | | | ● 31c8e84 (origin/testsmoothn_more, McWhity/testsmoothn_more) parametrize.. ​ Nov 22 2019, David Perez-Suarez\n| | | | ● 4573228 parametrize general robustness                                    ​ Nov 22 2019, David Perez-Suarez\n| | | ● | 2816be7 Make mostly PEP8 compliant                                        ​ Nov 22 2019, Tim Spain\n| | | ● | abbb5a5 Whitespace                                                        ​ Nov 22 2019, Tim Spain\n| | | ● | 81cee19 dct and idct are imported in the preamble                         ​ Nov 22 2019, Tim Spain\n| | | |/  \n| | | ● 847373f How much more does Travis need the test constraints loosening?      ​ Nov 22 2019, Tim Spain\n| | | ●   73f525c Merge branch 'smoothn3' of https://github.com/UCL/kaska into sm.. ​ Nov 22 2019, Tim Spain\n| | | |\\  \n| | | | ● 64a4fe9 xrange() -> range() in python 3                                   ​ Nov 22 2019, Tim Spain\n| | | | ● dd4211e Make numpy members explicit.                                      ​ Nov 22 2019, Tim Spain\n| | | | ● 430bf70 Remove redundant imports.                                         ​ Nov 22 2019, Tim Spain\n| | | | ● 7e174f5 Revert \"Remove redundant imports\"                                 ​ Nov 22 2019, Tim Spain\n| | | | ● 035e140 Remove redundant imports                                          ​ Nov 22 2019, Tim Spain\n| | | | ● 3679807 Indentation                                                       ​ Nov 22 2019, Tim Spain\n| | | | ● 240308e Factor out the initialization of xpost                            ​ Jul 26 2019, Tim Spain\n| | | | ● 2530003 Factor out the initialization of z                                ​ Jul 26 2019, Tim Spain\n| | | | ● 804ffc8 Factor out calculation of the smoothness bounds                   ​ Jul 26 2019, Tim Spain\n| | | | ● 8ef894d Break out the definition of the lambda tensor                     ​ Jul 26 2019, Tim Spain\n| | | | ● 1ad3bb8 Remove 'MATLAB' from the error messages                           ​ Jul 26 2019, Tim Spain\n| | | | ● 2dce68d Make things more PEP 8 compliant                                  ​ Jul 26 2019, Tim Spain\n| | | | ● 01a87c9 Tidy up exit cases, remove magic numbers                          ​ Jul 26 2019, Tim Spain\n| | | | ● 5e4a20c Remove semicolons;                                                ​ Jul 25 2019, Tim Spain\n| | | | ● fafbb15 Preprocessing of data moved to a function                         ​ Jul 25 2019, Tim Spain\n| | | | ● 8c1f460 Refactor weight prep into functions                               ​ Jul 25 2019, Tim Spain\n| | | | ● a6f9bb2 Comment spelling                                                  ​ Jul 11 2019, Tim Spain\n| | | | ● 54648bc Factor out the conversion of standard deviations to weights       ​ Jul 11 2019, Tim Spain\n| | | | ● d3096fc Really loosen constraints for the tests to pass in Travis.        ​ Nov 21 2019, Tim Spain\n| | | | ● 35fd810 Revert \"Loosen constraints for Travis\"                            ​ Nov 21 2019, Tim Spain\n| | | | ● 92c717f Loosen constraints for Travis                                     ​ Nov 21 2019, Tim Spain\n| | | | ● 84abe40 Revert \"Loosen constraints for Travis\"                            ​ Nov 21 2019, Tim Spain\n| | | | ● b9217b8 Loosen constraints for Travis                                     ​ Nov 21 2019, Tim Spain\n| | | | ● bab68c0 Precalculate the values to be compared                            ​ Nov 21 2019, Tim Spain\n| | | | ● 03b7a37 Revert \"Loosen test criteria until Travis passes\"                 ​ Nov 21 2019, Tim Spain\n| | | | ● 724ed23 Loosen test criteria until Travis passes                          ​ Nov 21 2019, Tim Spain\n| | | | ● 2f08fab Perform the addition before the assert                            ​ Nov 21 2019, Tim Spain\n| | | | ● eb86b7f Add tests for masked data arrays, and the cauchy and talworth w.. ​ Nov 21 2019, Tim Spain\n| | | | ● fcb68e7 Test for sd versus weights. Copied from smoothn branch.           ​ Nov 21 2019, Tim Spain\n| | | | ● 534d65d Explain magic numbers in the test                                 ​ Nov 20 2019, Tim Spain\n| | | | ● b237c2b Placating PEP8 speaks                                             ​ Nov 19 2019, Tim Spain\n| | | | ● ba1f968 Test smoothn with fixed smoothing order                           ​ Nov 19 2019, Tim Spain\n| | | ● | 0d464f7 xrange() -> range() in python 3                                   ​ Nov 22 2019, Tim Spain\n| | | ● | d321969 Make numpy members explicit.                                      ​ Nov 22 2019, Tim Spain\n| | | ● | d33fe33 Remove redundant imports.                                         ​ Nov 22 2019, Tim Spain\n| | | ● | e3644de Revert \"Remove redundant imports\"                                 ​ Nov 22 2019, Tim Spain\n| | | ● | 8417f10 Remove redundant imports                                          ​ Nov 22 2019, Tim Spain\n| | | ● | f9fc58a Indentation                                                       ​ Nov 22 2019, Tim Spain\n| | | ● | e572e1d Factor out the initialization of xpost                            ​ Jul 26 2019, Tim Spain\n| | | ● | 60d0ad0 Factor out the initialization of z                                ​ Jul 26 2019, Tim Spain\n| | | ● | 91d37b3 Factor out calculation of the smoothness bounds                   ​ Jul 26 2019, Tim Spain\n| | | ● | 11a6f2a Break out the definition of the lambda tensor                     ​ Jul 26 2019, Tim Spain\n| | | ● | 443a923 Remove 'MATLAB' from the error messages                           ​ Jul 26 2019, Tim Spain\n| | | ● | f3a3a47 Make things more PEP 8 compliant                                  ​ Jul 26 2019, Tim Spain\n| | | ● | 50a8429 Tidy up exit cases, remove magic numbers                          ​ Jul 26 2019, Tim Spain\n| | | ● | 2e70ed6 Remove semicolons;                                                ​ Jul 25 2019, Tim Spain\n| | | ● | 55a3188 Preprocessing of data moved to a function                         ​ Jul 25 2019, Tim Spain\n| | | ● | 1a74dc7 Refactor weight prep into functions                               ​ Jul 25 2019, Tim Spain\n| | | ● | 9dd8487 Comment spelling                                                  ​ Jul 11 2019, Tim Spain\n| | | ● | e4a7c1c Factor out the conversion of standard deviations to weights       ​ Jul 11 2019, Tim Spain\n| | | ● | 8ac1afb Really loosen constraints for the tests to pass in Travis.        ​ Nov 21 2019, Tim Spain\n| | | ● | 59efc61 Revert \"Loosen constraints for Travis\"                            ​ Nov 21 2019, Tim Spain\n| | | ● | 02dd29b Loosen constraints for Travis                                     ​ Nov 21 2019, Tim Spain\n| | | ● | 7098796 Revert \"Loosen constraints for Travis\"                            ​ Nov 21 2019, Tim Spain\n| | | ● | 9e5b5ed Loosen constraints for Travis                                     ​ Nov 21 2019, Tim Spain\n| | | ● | 0f4ec37 Precalculate the values to be compared                            ​ Nov 21 2019, Tim Spain\n| | | ● | f22be22 Revert \"Loosen test criteria until Travis passes\"                 ​ Nov 21 2019, Tim Spain\n| | | ● | 71153b9 Loosen test criteria until Travis passes                          ​ Nov 21 2019, Tim Spain\n| | | ● | 6cf7534 Perform the addition before the assert                            ​ Nov 21 2019, Tim Spain\n| | | ● | 38349f6 Add tests for masked data arrays, and the cauchy and talworth w.. ​ Nov 21 2019, Tim Spain\n| | | ● | 90562e2 Test for sd versus weights. Copied from smoothn branch.           ​ Nov 21 2019, Tim Spain\n| | | ● | cf88a81 Explain magic numbers in the test                                 ​ Nov 20 2019, Tim Spain\n| | | ● | f64a79f Placating PEP8 speaks                                             ​ Nov 19 2019, Tim Spain\n| | | ● | 1427503 Test smoothn with fixed smoothing order                           ​ Nov 19 2019, Tim Spain\n| | | | | ● 1fc89e9 (origin/rtd, McWhity/rtd) Adds numpydoc extension and depende.. ​ Nov 22 2019, David Perez-Suarez\n| | | | | ● 7f2f03e Adds readthedocs config and fix setuptools installation         ​ Nov 22 2019, David Perez-Suarez\n| | | |_|/  \n| | |/| |   \n| | ● | | 4e43706 (origin/master, master) Merge pull request #74 from UCL/s2s1combo ​ Nov 22 2019, David Pérez-Suárez\n| | ● | | 2ed1584 :pencil2: typo on path                                            ​ Nov 22 2019, David Perez-Suarez\n| | ● | | c49f032 Merge branch 'master' into s2s1combo                              ​ Nov 22 2019, David Pérez-Suárez\n| | |\\| | \n| | | ● |   e12cd39 Merge pull request #83 from UCL/installation_instructions       ​ Nov 22 2019, David Pérez-Suárez\n| | | |\\ \\  \n| | | | ● | 7ccd799 Adds gdal dependency to the installation instructions           ​ Nov 19 2019, David Perez-Suarez\n| | | | ● | 5decc1e Pins gdal version for the creation of environments              ​ Nov 19 2019, David Perez-Suarez\n| | | | ● | 7d6cf94 Adds uptodate installation to documentation                     ​ Nov 4 2019, David Perez-Suarez\n| | | | ● | 32a5623 Changes tox and Travis files to keep all within tox config      ​ Nov 2 2019, David Perez-Suarez\n| | | | ● | 5a46be3 adds warning message if gdal is no available                    ​ Nov 1 2019, David Perez-Suarez\n| | | | ● | 576174e Sorts metadata and set dependencies based on use cases          ​ Nov 1 2019, David Perez-Suarez\n| | | | ● | dd20880 Updates metadata and dependencies of package                    ​ Nov 1 2019, David Perez-Suarez\n| | | | |/  \n| | | ● |   3143718 Merge pull request #93 from UCL/config                          ​ Nov 21 2019, mattgillucl\n| | | |\\ \\  \n| | |_|/ /  \n| |/| | /   \n| | | |/    \n| ● | | b3535ec Removing PEP8 complaints                                            ​ Nov 21 2019, Matthew Gillman\n| ● | | d9bfd8e Added doc strings                                                   ​ Nov 21 2019, Matthew Gillman\n| ● | | 9e7c425 Fixed handling of start and stop date args                          ​ Nov 21 2019, Matthew Gillman\n| ● | | 9b0f307 Fixed faulty handling of --disable_debug_log option.                ​ Nov 21 2019, Matthew Gillman\n| ● | | d3a5f0a We have now removed the option of using command-line args.          ​ Nov 20 2019, Matthew Gillman\n| ● | | e368dc9 Dealing with special case (optional) of block_size.                 ​ Nov 20 2019, Matthew Gillman\n| ● | | bddce79 Adding checks for more params in config file.                       ​ Nov 19 2019, Matthew Gillman\n| ● | | 7333ba9 Using config dictionary as non-global                               ​ Nov 19 2019, Matthew Gillman\n| ● | | 785e9f3 Started adding robust checking for keys being present               ​ Nov 19 2019, Matthew Gillman\n| ● | | bb70a82 Initial version with config file                                    ​ Nov 19 2019, Matthew Gillman\n| | | ● 639606e (origin/smoothnorder, McWhity/smoothnorder) Merge pull request #9.. ​ Nov 18 2019, Tim Spain\n| | | ● d2d66dc Add a maximum version of GDAL                                       ​ Nov 15 2019, Tim Spain\n| | |/  \n| |/|   \n| | ● 86e80f7 slashes using pathlib                                                 ​ Nov 22 2019, David Pérez-Suárez\n| |/  \n|/|   \n● | 9d5d159 Comment on the assignment of bands as a list.                           ​ Nov 20 2019, Tim Spain\n● | 952d651 No, that slash needs to be in the quotes                                ​ Nov 19 2019, Tim Spain\n● | 87eaf4a Changes based on David's comments                                       ​ Nov 19 2019, Tim Spain\n● | cc3a4a0 Add a maximum version of GDAL                                           ​ Nov 15 2019, Tim Spain\n● | 4be8075 Dictionary translation between the two sets of names                    ​ Nov 15 2019, Tim Spain\n● |   7c92bf3 Merge pull request #86 from UCL/massage_interp_fix                    ​ Nov 14 2019, Tim Spain\n|\\ \\  \n| ● | a42051e Use boolean functions, rather than casting and summing.               ​ Nov 14 2019, Tim Spain\n| ● | 8f1e58a Use np.full() to fill the array                                       ​ Nov 14 2019, Tim Spain\n| ● | 4c58ee6 Revert \"Avoid multiplying by NaN and automatically extract the y ar.. ​ Nov 14 2019, Tim Spain\n| ● | 25d94c6 Avoid multiplying by NaN and automatically extract the y array.       ​ Nov 14 2019, Tim Spain\n| |/  \n● | 4a714d8 Replace the extract_parameters function with a list comprehension.      ​ Nov 14 2019, Tim Spain\n● | 2b170fe Rationalize if statements and format strings.                           ​ Nov 14 2019, Tim Spain\n● | 9ff8fad Get the array dimensions from the projection or state mask.             ​ Nov 13 2019, Tim Spain\n● | 3e189d0 Revert \"Add ROI width and height to the output definition\"              ​ Nov 13 2019, Tim Spain\n● | 68a76af Add ROI width and height to the output definition                       ​ Nov 13 2019, Tim Spain\n● | 6b1ab19 Handle the S1 time grid correctly                                       ​ Nov 13 2019, Tim Spain\n● | fa7bd4d The end of the time series can be valid, too                            ​ Nov 13 2019, Tim Spain\n● | 6eaaa7b A slightly more informative message for the assert                      ​ Nov 13 2019, Tim Spain\n● | c52cb04 Named tuples as ad-hoc objects for the S2 results                       ​ Nov 8 2019, Tim Spain\n● | e9bcbb1 Function name typo                                                      ​ Nov 8 2019, Tim Spain\n● | cdeeb96 Change the output of the S2 retrieval                                   ​ Nov 8 2019, Tim Spain\n● | fcfdf9e Match the form of the imports to that used by every other module        ​ Nov 8 2019, Tim Spain\n● | ff711b2 Move the assert out of the loops.                                       ​ Nov 6 2019, Tim Spain\n● | a31aa6d Swap the order of the if statement clauses to be more logical           ​ Nov 6 2019, Tim Spain\n● | 28bef15 Rename tests and remove redundant assignment                            ​ Nov 6 2019, Tim Spain\n● | d64a083 Refactor the output path creation                                       ​ Nov 6 2019, Tim Spain\n● | 7eee297 (multiply-org/s2s1combo) Add the S1 inversion and output the parameters ​ Oct 30 2019, Tim Spain\n● |   4a75870 Merge branch 's2s1combo' of https://github.com/UCL/kaska into s2s1c.. ​ Oct 29 2019, Tim Spain\n|\\ \\  \n| ● | 4d123cc Make PEP8 happy                                                       ​ Oct 28 2019, Tim Spain\n| ● | bc405c1 Get Sentinel 1 observations into the process_tile config              ​ Oct 28 2019, Tim Spain\n● | | fc7e48e Make PEP8 happy                                                       ​ Oct 28 2019, Tim Spain\n● | | aa77947 Get Sentinel 1 observations into the process_tile config              ​ Oct 28 2019, Tim Spain\n| |/  \n|/|   \n● |   a76261c (tag: v0.9, multiply-org/master) Merge pull request #81 from UCL/te.. ​ Oct 28 2019, José Gómez-Dans\n|\\ \\  \n| ● | 63f0619 Moves interp_fix tests to tests folder                                ​ Oct 28 2019, José Gómez-Dans\n● | | 5b3bb31 Merge pull request #79 from UCL/issue78                               ​ Oct 28 2019, José Gómez-Dans\n|/ /  \n● | c4193af Added missing docstring                                                 ​ Oct 28 2019, José Gómez-Dans\n● | 5b9932e Process single chunks                                                   ​ Oct 28 2019, José Gómez-Dans\n| | ● f59fb7a (origin/remove-mains, McWhity/remove-mains) More review comments, a.. ​ Nov 22 2019, Ilektra Christidi\n| | ● ffb9283 Fix a bunch of code review comments.                                  ​ Nov 12 2019, Ilektra Christidi\n| | ● d1f0614 Simplify file existence checks per Jose's requirements. Add tests f.. ​ Nov 11 2019, Ilektra Christidi\n| | ● 946b364 Uncomment if condition commented out for debugging. Fix PEP8 whinni.. ​ Nov 8 2019, Ilektra Christidi\n| | ● 55f2137 Check for file existence in read_granule                              ​ Nov 8 2019, Ilektra Christidi\n| | ● 04f6f3f Simplify folder navigation in read_granule.                           ​ Nov 6 2019, Ilektra Christidi\n| | ● 5128a5d Simplify self.date_data.                                              ​ Nov 4 2019, Ilektra Christidi\n| | ● 5b91d36 Pack all date, folder and file paths in self.date_data dictionary.    ​ Nov 4 2019, Ilektra Christidi\n| | ● 81c75cd (multiply-org/remove-mains) use filenames from the xml, instead of .. ​ Oct 28 2019, Ilektra Christidi\n| | ● 6553ddf Satisfy PEP8. Remove __main__ with hardcoded paths.                   ​ Oct 28 2019, Ilektra Christidi\n| | ● aa1e2de Add tests and reference data for read_granule. Remove a bunch of te.. ​ Oct 28 2019, Ilektra Christidi\n| | ● 78b22f5 Add angle test data, read_granule call in test now runs.              ​ Oct 25 2019, Ilektra Christidi\n| | ● 3123a5a Add more test data files and adjust tests.                            ​ Oct 25 2019, Ilektra Christidi\n| | ● 0d53943 More beautifying and documentation.                                   ​ Oct 24 2019, Ilektra Christidi\n| | ● 8f4c5ce Add Jose's reading of dates and files from xml, and relevant test d.. ​ Oct 24 2019, Ilektra Christidi\n| | ● 3d2f116 Fix pep8 whinning.                                                    ​ Oct 24 2019, Ilektra Christidi\n| | ● ff4cb75 First s2_observations unit test and relevant test data.               ​ Oct 23 2019, Ilektra Christidi\n| | ● ca55e98 Re-arrange and document part of s2_observations.                      ​ Oct 23 2019, Ilektra Christidi\n| |/  \n| | ● 845f4f1 (origin/kaska_sar_class, multiply-org/kaska_sar_class, McWhity/kaska_sar_class) .. ​ Oct 29 2019, José Gómez-Dans\n| | ● 0764afb Expose S1 object to main module                                       ​ Oct 29 2019, José Gómez-Dans\n| | ● 3282361 Added main inversion loop                                             ​ Oct 29 2019, José Gómez-Dans\n| | ●   f74b304 Updated master                                                      ​ Oct 28 2019, José Gómez-Dans\n| | |\\  \n| |_|/  \n|/| |   \n● | | 641542a Merge pull request #77 from UCL/master20191028                        ​ Oct 28 2019, Tim Spain\n● | | 0a24fce Fix one final conflict                                                ​ Oct 28 2019, Tim Spain\n● | |   aa40767 Merge branch 'temporal' into master20191028                         ​ Oct 28 2019, Tim Spain\n|\\ \\ \\  \n| |/ /  \n|/| |   \n| | ● d254fdb Moving kaska_sar to its own class 1/1                                 ​ Oct 28 2019, José Gómez-Dans\n| |/  \n|/|   \n| | ● 8dd02d0 (origin/temporal, multiply-org/temporal, McWhity/temporal) Added te.. ​ Oct 28 2019, José Gómez-Dans\n| | ● 6435370 Updated from master                                                   ​ Oct 28 2019, José Gómez-Dans\n| | ● ebbb76b Update from master                                                    ​ Oct 28 2019, José Gómez-Dans\n| |/  \n| ● f094588 Changed ordering of interpolation/smoothing                             ​ Oct 1 2019, José Gómez-Dans\n| ● 5fcc351 Updated cloud threshold to 10                                           ​ Oct 1 2019, José Gómez-Dans\n| ● a9e3af1 Changed cloud threshold removed trace                                   ​ Sep 30 2019, José Gómez-Dans\n| ● 3b066fa Mask issue fix                                                          ​ Sep 30 2019, José Gómez-Dans\n| ● 0ffd3e7 blocksize and clean up of temporary files                               ​ Sep 30 2019, José Gómez-Dans\n| ● b21f1e3 Expose dask and blocksize                                               ​ Sep 30 2019, José Gómez-Dans\n| ● 9697e13 Minor cosmetic changes                                                  ​ Sep 30 2019, José Gómez-Dans\n| ● 8e22d72 Cleaned up a bit esp. cloud mask                                        ​ Sep 30 2019, José Gómez-Dans\n| ● d3cd175 Changed smoothness                                                      ​ Sep 27 2019, José Gómez-Dans\n| ● 8b5a45d Ported issue 57                                                         ​ Sep 24 2019, José Gómez-Dans\n| ● e2d7120 Pathlib typo                                                            ​ Sep 24 2019, Jose Gomez-Dans\n| ● 0758150 Folder for saving fixed images, otherwise complications in stitch       ​ Sep 18 2019, Jose Gomez-Dans\n| ● 6aaf614 Fixed small typo                                                        ​ Sep 13 2019, Jose Gomez-Dans\n| ● 7445fb0 Fixes interpolation of nans                                             ​ Sep 12 2019, José Gómez-Dans\n| ●   e934c99 fixed conflict                                                        ​ Sep 12 2019, José Gómez-Dans\n| |\\  \n| | ●   17f541b Merge pull request #56 from UCL/issue51                             ​ Sep 12 2019, José Gómez-Dans\n| | |\\  \n| ● | | ada4cf1 Not using uncertainty, just fix it, saves reading data in           ​ Sep 12 2019, José Gómez-Dans\n| ● | | f18e08c This is issue51                                                     ​ Sep 12 2019, José Gómez-Dans\n| ● | | 00324b0 Updating from issue51                                               ​ Sep 12 2019, José Gómez-Dans\n| ● | | d2f45fc Get the right dates to save single observations                     ​ Sep 12 2019, José Gómez-Dans\n| |/ /  \n| ● | 1fb9902 Fixes interpolation of 0s                                             ​ Sep 12 2019, José Gómez-Dans\n| ● | 1458f67 dask fix                                                              ​ Sep 12 2019, José Gómez-Dans\n| ● | 1fa1caa Fixes to save temporary inversion                                     ​ Sep 12 2019, José Gómez-Dans\n| | | ● b1750a1 (origin/yapf, multiply-org/yapf, McWhity/yapf) Add the current li.. ​ Oct 24 2019, Tim Spain\n| | | ● eae7e9e Make changes flagged by smoothn                                     ​ Oct 15 2019, Tim Spain\n| | | ● 20867c2 Revert \"Make the changes flagged by PEP8Speaks.\"                    ​ Oct 15 2019, Tim Spain\n| | | ● b4c9afd Make the changes flagged by PEP8Speaks.                             ​ Oct 15 2019, Tim Spain\n| | | ● f549dfb Linted watercloudmodel.py with yapf.                                ​ Oct 15 2019, Tim Spain\n| | | ● 446a527 Linted utils.py with yapf.                                          ​ Oct 15 2019, Tim Spain\n| | | ● e17f28a Linted smoothn.py with yapf.                                        ​ Oct 15 2019, Tim Spain\n| | | ● 35cf9cb Linted s2_observations.py with yapf.                                ​ Oct 15 2019, Tim Spain\n| | | ● 431118c Linted s1_observations.py with yapf.                                ​ Oct 15 2019, Tim Spain\n| | | ● e20487b Linted parmap.py with yapf.                                         ​ Oct 15 2019, Tim Spain\n| | | ● 486209a Linted logger.py with yapf.                                         ​ Oct 15 2019, Tim Spain\n| | | ● 7273e9f Linted kaska_sar.py with yapf                                       ​ Oct 15 2019, Tim Spain\n| | | ● 11f5c52 Linted kaska.py with yapf                                           ​ Oct 15 2019, Tim Spain\n| | | ● 87ec580 Linted kaska.py with yapf                                           ​ Oct 15 2019, Tim Spain\n| | | ● 27c82f2 Linted inference_runner.py with yapf                                ​ Oct 15 2019, Tim Spain\n| | | ● 2cdbe70 Linted entry.py with yapf                                           ​ Oct 15 2019, Tim Spain\n| |_|/  \n|/| |   \n● | | 1909887 Merge pull request #65 from UCL/issue64                               ​ Oct 11 2019, David Pérez-Suárez\n● | |   e85a29c Merge branch 'master' into issue64                                  ​ Oct 11 2019, David Pérez-Suárez\n|\\ \\ \\  \n| ● | | bd5dca7 Merge pull request #67 from UCL/tidy-up-entry                       ​ Oct 11 2019, David Pérez-Suárez\n| ● | | 5c78a7a Add docstrings to run_process, fix some PEP8.                       ​ Oct 3 2019, Ilektra Christidi\n| ● | | f989600 Re-instate entry.py, because a run_process function is needed aft.. ​ Oct 3 2019, Ilektra Christidi\n| ● | | 625cbeb Remove duplicated function define_temporal_grid from kaska.py.      ​ Oct 3 2019, Ilektra Christidi\n| ● | | b4a3285 Use kaska's create_logger, adjust input arguments accordingly.      ​ Oct 3 2019, Ilektra Christidi\n| ● | | 89257e1 Expose dask_client argument to run_kaska, but not all the way to .. ​ Oct 1 2019, Ilektra Christidi\n| ● | | fc679e4 Remove temporal_grid creation from run_kaska: it's not used.        ​ Oct 1 2019, Ilektra Christidi\n| ● | | 92598c4 Clean up logger setup mess.                                         ​ Sep 30 2019, Ilektra Christidi\n| ● | | 5e459bd Merge entry.py functionality into run_kaska script, and delete en.. ​ Sep 30 2019, Ilektra Christidi\n| ● | | 9bd1227 Remove duplicated run_kaska.py                                      ​ Sep 30 2019, Ilektra Christidi\n● | | | 46c64fa Added block size indication again                                   ​ Sep 27 2019, Jose Gomez-Dans\n● | | | 99be931 Removed some unnecessary code and imports                           ​ Sep 27 2019, Jose Gomez-Dans\n● | | | f98900d Updated `run_process` to take dask client                           ​ Sep 27 2019, Jose Gomez-Dans\n● | | | 3d42614 Removes unnecessary files                                           ​ Sep 27 2019, Jose Gomez-Dans\n|/ / /  \n● | | c23e69c Merge pull request #62 from UCL/issue61                               ​ Sep 27 2019, José Gómez-Dans\n● | | 80d090e Expose block_size to main runner                                      ​ Sep 27 2019, Jose Gomez-Dans\n● | | 04c7660 Merge pull request #58 from UCL/issue57                               ​ Sep 25 2019, José Gómez-Dans\n● | |   a4ea033 Merge branch 'master' into issue57                                  ​ Sep 24 2019, José Gómez-Dans\n|\\ \\ \\  \n| ● \\ \\   34433c6 Merge pull request #52 from UCL/issue51                           ​ Sep 13 2019, José Gómez-Dans\n| |\\ \\ \\  \n| | ● | | f77e550 Fixed typo                                                        ​ Sep 13 2019, José Gómez-Dans\n| | | |/  \n| | |/|   \n| | ● | e2c3fee Linted                                                              ​ Sep 10 2019, Jose Gomez-Dans\n| | ● | 64abfd5 Deals with tiles where not masked pixels exist                      ​ Sep 10 2019, Jose Gomez-Dans\n| | ● | fc5f561 Check the number of unmasked pixels in chunk                        ​ Sep 10 2019, Jose Gomez-Dans\n| ● | | 1869b87 Dask map no longer takes iterators (#55)                            ​ Sep 13 2019, David Pérez-Suárez\n| ● | | 9fe5c12 Bizarre copy/paste bug removed                                      ​ Sep 12 2019, José Gómez-Dans\n| ● | | 6441e38 Dask map no longer takes iterators                                  ​ Sep 12 2019, José Gómez-Dans\n| | |/  \n| |/|   \n● | | 2fddc36 Some further edits to track master                                    ​ Sep 24 2019, José Gómez-Dans\n● | | e52d40a Ensure inversion acknowledges state mask                              ​ Sep 24 2019, José Gómez-Dans\n|/ /  \n| | ● e140b1e (origin/issue37, multiply-org/issue37, McWhity/issue37) Low hanging.. ​ Sep 11 2019, José Gómez-Dans\n| |/  \n|/|   \n● | 520ab88 Sensible logging (#53)                                                  ​ Sep 11 2019, David Pérez-Suárez\n● | b267a0b Update kaska/entry.py                                                   ​ Sep 11 2019, José Gómez-Dans\n● | f12e170 Added logging infrastructure                                            ​ Sep 10 2019, José Gómez-Dans\n● | 2ea12df Typo                                                                    ​ Sep 10 2019, José Gómez-Dans\n● | 0f23386 Added common logger. Needs testing                                      ​ Sep 10 2019, Jose Gomez-Dans\n● | 5aa7112 Updated logger                                                          ​ Sep 10 2019, Jose Gomez-Dans\n● | 1310b37 Merge branch 'master' into sensible_logging                             ​ Sep 10 2019, Jose Gomez-Dans\n|\\| \n| ●   e9fbc2e Merge pull request #50 from UCL/gitignore_new                         ​ Sep 10 2019, José Gómez-Dans\n| |\\  \n| | ● 02edfa3 Added Eclipse, macos, linux and windows                               ​ Sep 10 2019, Jose Gomez-Dans\n| | ● 9f76ba4 Added vim and emacs                                                   ​ Sep 9 2019, Jose Gomez-Dans\n| | ● afc2422 Improved gitignore                                                    ​ Sep 9 2019, Jose Gomez-Dans\n| ● | f675133 Merge pull request #28 from UCL/entry_point                           ​ Sep 9 2019, José Gómez-Dans\n| ● | a723973 Fixed typo                                                            ​ Sep 9 2019, Jose Gomez-Dans\n| ● | f5486f7 Need to save outputs                                                  ​ Sep 9 2019, Jose Gomez-Dans\n| ● |   ea3185d Merge branch 'master' into entry_point                              ​ Sep 9 2019, José Gómez-Dans\n| |\\ \\  \n| | ● \\   07cae78 Merge pull request #44 from UCL/nn_librarydocs                    ​ Sep 9 2019, José Gómez-Dans\n| | |\\ \\  \n| | | |/  \n| | |/|   \n| | | ● b1c8938 Added documentation and linting                                     ​ Sep 5 2019, Jose Gomez-Dans\n| | ● |   10a44d4 Merge pull request #45 from UCL/issue43                           ​ Sep 9 2019, José Gómez-Dans\n| | |\\ \\  \n| | | ● | 7d0aee5 Clearer naming, documentation and linting                         ​ Sep 6 2019, Jose Gomez-Dans\n| | | |/  \n| | ● |   1ce8236 Merge pull request #47 from UCL/rasterise_vector                  ​ Sep 9 2019, José Gómez-Dans\n| | |\\ \\  \n| | | ● | 7decd3c Linting of tests and changes to documentation                     ​ Sep 9 2019, Jose Gomez-Dans\n| | | ● | 2443930 Passes tests. Addresses #46                                       ​ Sep 8 2019, José Gómez-Dans\n| | | ● | 663c517 Added vector rasteriser                                           ​ Sep 8 2019, Jose Gomez-Dans\n| | | |/  \n| | ● | 5dd2866 Merge pull request #49 from UCL/fix_nn_loader                       ​ Sep 9 2019, José Gómez-Dans\n| | ● | 7097a32 Fixes npz loader issues                                             ​ Sep 8 2019, Jose Gomez-Dans\n| | |/  \n| ● | 4ef3a65 Little debugging stuff - kaska now runs end-to-end, but takes forev.. ​ Aug 22 2019, Ilektra Christidi\n| ● | 6a75ce0 Input arguments added to entry script.                                ​ Aug 21 2019, Ilektra Christidi\n| ● | 32c3db3 Move hardcoded dates and paths out of run_process and into the entr.. ​ Aug 20 2019, Ilektra Christidi\n| ● | 235eb9c Restore reading data files from package, that was lost in the mergi.. ​ Aug 20 2019, Ilektra Christidi\n| ● | e13697e Rename script and add python definition in the beginning.             ​ Aug 20 2019, Ilektra Christidi\n| ● |   e8119de Merge branch 'master' into entry_point                              ​ Aug 20 2019, Ilektra Christidi\n| |\\ \\  \n| ● | | 7ddb2b5 Moves kaska main to its own entry point                             ​ Aug 19 2019, David Perez-Suarez\n● | | | 0e0307c Logger functionality                                                ​ Sep 6 2019, Jose Gomez-Dans\n| |_|/  \n|/| |   \n● | | 5619288 Merge pull request #30 from UCL/sar_wcm                               ​ Sep 3 2019, Ilektra Christidi\n● | |   aec66d6 Merge branch 'master' into sar_wcm                                  ​ Sep 3 2019, Ilektra Christidi\n|\\ \\ \\  \n| ● | | f242c1d Merge pull request #31 from UCL/develop                             ​ Sep 3 2019, Ilektra Christidi\n| ● | |   da5bb32 Merge branch 'master' into develop                                ​ Sep 3 2019, Tim Spain\n| |\\ \\ \\  \n| | | |/  \n| | |/|   \n| ● | | 31a5871 Add file existence check and info output back into NNParameterInv.. ​ Sep 2 2019, Ilektra Christidi\n| ● | | f0d3ba8 Now tested                                                          ​ Aug 16 2019, José Gómez-Dans\n| ● | | 386aa11 Set up problem interface                                            ​ Aug 16 2019, José Gómez-Dans\n| ● | | 7499fa0 Removed commented out stuff                                         ​ Aug 16 2019, Jose Gomez-Dans\n| ● | | dbec108 Made sort of working function. Needs remote testing                 ​ Aug 16 2019, Jose Gomez-Dans\n| ● | | 3a8d818 updated                                                             ​ Aug 16 2019, José Gómez-Dans\n| ● | | 11d0622 process tile function                                               ​ Aug 16 2019, José Gómez-Dans\n| ● | | 6391aba added as system going down                                          ​ Aug 16 2019, José Gómez-Dans\n| ● | | c32701a Can be imported into something sensible                             ​ Aug 15 2019, José Gómez-Dans\n| ● | | 22a5b58 added tests                                                         ​ Aug 15 2019, José Gómez-Dans\n| ● | | fdedb1b Added get_chunks                                                    ​ Aug 15 2019, José Gómez-Dans\n| ● | | 2d39339 Fixed imports                                                       ​ Aug 15 2019, José Gómez-Dans\n| ● | | 79adc11 Changed setup.cfg to deal with installed packages                   ​ Aug 15 2019, José Gómez-Dans\n| ● | | 19c1b92 Added some small NN emulator/inverter library                       ​ Aug 15 2019, José Gómez-Dans\n| ● | | c8a6333 Removed kaska_out                                                   ​ Aug 13 2019, José Gómez-Dans\n| ● | | fab1430 Changed import to follow python3 convention                         ​ Aug 13 2019, José Gómez-Dans\n| ● | |   01e5749 Merge branch 'master' into develop                                ​ Aug 13 2019, José Gómez-Dans\n| |\\ \\ \\  \n| | | |/  \n| | |/|   \n| ● | | 8725a1c Add to previous commit!                                             ​ Aug 12 2019, José Gómez-Dans\n| ● | | 324233c Dump S2 outputs on GeoTIFF files                                    ​ Aug 12 2019, José Gómez-Dans\n| ● | | de0a910 Added some documentation                                            ​ Aug 7 2019, José Gómez-Dans\n| ● | | a00a6a0 Fixed file listing bug                                              ​ Jul 25 2019, José Gómez-Dans\n● | | |   a10fd99 Merge branch 'master' into sar_wcm                                ​ Sep 3 2019, Tim Spain\n|\\ \\ \\ \\  \n| | |_|/  \n| |/| |   \n| ● | | c22842d Merge pull request #19 from UCL/neural_nets                         ​ Aug 20 2019, Ilektra Christidi\n| ● | |   3e415f6 Merge branch 'master' into neural_nets                            ​ Aug 19 2019, Ilektra Christidi\n| |\\ \\ \\  \n| | | |/  \n| | |/|   \n| | ● | 6613316 Moving tests inside library (#26)                                   ​ Aug 13 2019, David Pérez-Suárez\n| | ● | 742776b Updates tests to use relative imports                               ​ Aug 12 2019, David Perez-Suarez\n| | ● | d8944a4 tests moved under project folder                                    ​ Aug 12 2019, David Perez-Suarez\n| | ● |   39d3a81 Merge pull request #24 from UCL/gitignore                         ​ Aug 6 2019, José Gómez-Dans\n| | |\\ \\  \n| | | ● | c17fe8a Changed .gitignore so file tracking is cleaner under vscode       ​ Aug 6 2019, José Gómez-Dans\n| | ● | |   426f845 Merge pull request #21 from UCL/testdata                        ​ Aug 5 2019, José Gómez-Dans\n| | |\\ \\ \\  \n| | | |/ /  \n| | |/| |   \n| | | ● | 2d496d0 Fixed typo                                                        ​ Jul 24 2019, José Gómez-Dans\n| | | ● | d7950b6 Change module search path                                         ​ Jul 24 2019, José Gómez-Dans\n| | | ● | 26a0adc Added NN test file                                                ​ Jul 16 2019, José Gómez-Dans\n| | | ● | b92e401 Now with relative paths                                           ​ Jul 16 2019, José Gómez-Dans\n| | | ● | 8a891f7 reproject_data test works locally                                 ​ Jul 16 2019, José Gómez-Dans\n| | | ● | c2879d5 Renamed test function                                             ​ Jul 16 2019, José Gómez-Dans\n| | | ● | fd77783 Added simple reproject test                                       ​ Jul 16 2019, José Gómez-Dans\n| | | ● | 92a4a00 Added some sample files for testing                               ​ Jul 16 2019, José Gómez-Dans\n| | ● | | 015e25b Merge pull request #22 from timspainUCL/condapep2                 ​ Jul 19 2019, José Gómez-Dans\n| | ● | | 702ff09 Add dots to relative paths for local subpackages                  ​ Jul 19 2019, Tim Spain\n| | ● | | b6d0f86 Hard coding the packages means cond build finds them.             ​ Jul 19 2019, Tim Spain\n| | ● | | 7504fda Conda build files                                                 ​ Jul 19 2019, Tim Spain\n| | ● | | 1905340 Add setup.py for package creation.                                ​ Jul 12 2019, Tim Spain\n| | |/ /  \n| ● | | 2b8f2dc This can now install using setup.cfg                                ​ Aug 15 2019, José Gómez-Dans\n● | | | c436fd8 This is needed to runt ests                                         ​ Aug 13 2019, José Gómez-Dans\n● | | | aaf5d59 Moved tests to new test folder location                             ​ Aug 13 2019, José Gómez-Dans\n● | | | e171417 Trying to move tests to new format                                  ​ Aug 13 2019, José Gómez-Dans\n● | | | a9bf6b0 Removed LAI*cab to just LAI                                         ​ Aug 8 2019, José Gómez-Dans\n● | | | 6d25c16 Operation on images                                                 ​ Aug 8 2019, José Gómez-Dans\n● | | | 8695149 Working pixel by pixel                                              ​ Aug 7 2019, José Gómez-Dans\n● | | | bf3366e Line wrapper                                                        ​ Aug 7 2019, José Gómez-Dans\n● | | | 8efbfb2 More ROI spelunking                                                 ​ Aug 7 2019, José Gómez-Dans\n● | | | b37af71 Merged from develop                                                 ​ Aug 7 2019, José Gómez-Dans\n● | | | d61c6e6 Allow selecting a ROI in the S1 observations                        ​ Aug 7 2019, José Gómez-Dans\n● | | | 1f262c7 Added SAR processing example testbed                                ​ Aug 7 2019, José Gómez-Dans\n● | | | 1fb5a81 kaska/kaska.py                                                      ​ Aug 7 2019, José Gómez-Dans\n● | | | 266995d Some minor changes. Canot get cost function to compile with numba   ​ Aug 7 2019, José Gómez-Dans\n● | | | ac64f2b Try numba.jit on the WCM stuff                                      ​ Aug 6 2019, José Gómez-Dans\n● | | | 9014bbe Fixed missing srcSRS parameter                                      ​ Aug 6 2019, José Gómez-Dans\n● | | | 841cf2e Clean up git tracking                                               ​ Aug 6 2019, José Gómez-Dans\n● | | | 25b9bee Reader for Sentinel 1 LMU netCDF files                              ​ Aug 6 2019, José Gómez-Dans\n● | | | 0c20cab Moved define temporal grid into utils                               ​ Aug 6 2019, José Gómez-Dans\n● | | | 08ab1ed Added tests for WCM and cost function                               ​ Aug 5 2019, José Gómez-Dans\n● | | | 52bbf0b Added WCM codes                                                     ​ Aug 5 2019, José Gómez-Dans\n● | | | 8d71c2b Changed running period and save results for testing                 ​ Jul 25 2019, José Gómez-Dans\n● | | | bac444e Bug in reading in files                                             ​ Jul 25 2019, José Gómez-Dans\n|/ / /  \n● | |   35446ce Updated setup.cfg                                                   ​ Jul 25 2019, José Gómez-Dans\n|\\ \\ \\  \n| ● | | 61adf9e Correct syntax for package_data.                                    ​ Jul 16 2019, Ilektra Christidi\n| | |/  \n| |/|   \n● | | 1bddd9a Using NNets provided by package                                       ​ Jul 25 2019, José Gómez-Dans\n● | | da000ee Updated from master to install package                                ​ Jul 25 2019, José Gómez-Dans\n|/ /  \n● | f018c03 Added prosail 2layer NN                                                 ​ Jul 16 2019, José Gómez-Dans\n● | 227d8f2 Added new NN emulator                                                   ​ Jul 16 2019, José Gómez-Dans\n● | f4157f9 Added inverter NN config file to package. Addresses #3                  ​ Jul 16 2019, José Gómez-Dans\n|/  \n●   955b63f Updated Jose's local develop to track remote                            ​ Jul 15 2019, José Gómez-Dans\n|\\  \n| ● 9846191 Merge pull request #16 from timspainUCL/testsmoothn                     ​ Jul 11 2019, José Gómez-Dans\n● | f805953 Output saving module                                                    ​ Jul 15 2019, José Gómez-Dans\n● | 472d045 Added parallel map                                                      ​ Jul 15 2019, José Gómez-Dans\n● | 27f72f9 Added some TODO comments                                                ​ Jul 10 2019, José Gómez-Dans\n● | 3f5af8b First dodgy pass code version                                           ​ Jul 10 2019, José Gómez-Dans\n| | ● 38d09ad (origin/smoothn, McWhity/smoothn) Factor out the initialization of .. ​ Jul 26 2019, Tim Spain\n| | ● 36f7e3b Factor out the initialization of z                                    ​ Jul 26 2019, Tim Spain\n| | ● 8af4017 Factor out calculation of the smoothness bounds                       ​ Jul 26 2019, Tim Spain\n| | ● 7ae86d9 Break out the definition of the lambda tensor                         ​ Jul 26 2019, Tim Spain\n| | ● 5804391 Remove 'MATLAB' from the error messages                               ​ Jul 26 2019, Tim Spain\n| | ● a948562 Make things more PEP 8 compliant                                      ​ Jul 26 2019, Tim Spain\n| | ● 6edda81 Tidy up exit cases, remove magic numbers                              ​ Jul 26 2019, Tim Spain\n| | ● dc30062 Remove semicolons;                                                    ​ Jul 25 2019, Tim Spain\n| | ● 4903de8 Preprocessing of data moved to a function                             ​ Jul 25 2019, Tim Spain\n| | ● 3900450 Refactor weight prep into functions                                   ​ Jul 25 2019, Tim Spain\n| | ● b3fa65e Add tests for masked data arrays, and the cauchy and talworth weigh.. ​ Jul 25 2019, Tim Spain\n| | ● b11cb20 Add masked array testing                                              ​ Jul 11 2019, Tim Spain\n| | ● 374e889 Comment spelling                                                      ​ Jul 11 2019, Tim Spain\n| | ● 76f88b9 Factor out the conversion of standard deviations to weights           ​ Jul 11 2019, Tim Spain\n| | ● fdd5258 Test for sd versus weights                                            ​ Jul 11 2019, Tim Spain\n| |/  \n| ● f2446f1 Update test_smoothn.py                                                  ​ Jul 11 2019, Tim Spain\n| ● cbe2a9e test_smoothn.py bounds                                                  ​ Jul 11 2019, Tim Spain\n| ● 8844b63 pytest, not py.test                                                     ​ Jul 11 2019, Tim Spain\n| ● f6d2566 Run pytest as a module                                                  ​ Jul 11 2019, Tim Spain\n| ● f19f6cd Add pytest to conda                                                     ​ Jul 10 2019, Tim Spain\n| ● a7774b0 Run pytest through conda                                                ​ Jul 10 2019, Tim Spain\n| ● ee28e04 Add dependencies to conda                                               ​ Jul 10 2019, Tim Spain\n| ● 70564d7 Remove gdal                                                             ​ Jul 10 2019, Tim Spain\n| ● 74c714b Conda installation                                                      ​ Jul 10 2019, Tim Spain\n| ● 4aef1b9 Use conda                                                               ​ Jul 10 2019, Tim Spain\n| ● 6cfd322 Add gdal to dependencies                                                ​ Jul 10 2019, Tim Spain\n| ● 81e72d7 Add kaska to PYTHONPATH                                                 ​ Jul 10 2019, Tim Spain\n| ● 07d1a96 Update pyproject.toml                                                   ​ Jul 10 2019, Tim Spain\n| ● c6a9364 Update setuptools                                                       ​ Jul 10 2019, Tim Spain\n| ● addba81 Add setuptools to requirements                                          ​ Jul 10 2019, Tim Spain\n| ● 91c22d4 Update tox.ini                                                          ​ Jul 10 2019, Tim Spain\n| ● 898ee3b Update tox.ini                                                          ​ Jul 10 2019, Tim Spain\n| ● 458785d Update tox.ini                                                          ​ Jul 10 2019, Tim Spain\n| ● 28ba652 Update tox.ini to 3.7                                                   ​ Jul 10 2019, Tim Spain\n| ● cff3c6f Update travis.yml                                                       ​ Jul 10 2019, Tim Spain\n| ● 2447c56 Update Travis for newer pip                                             ​ Jul 10 2019, Tim Spain\n| ●   a544060 Merge pull request #2 from jgomezdans/develop                         ​ Jul 10 2019, Tim Spain\n| |\\  \n| |/  \n|/|   \n● | de3e749 Moved NNParameterInversion into its own submodule                       ​ Jul 5 2019, José Gómez-Dans\n● | 118f84b Deleted file                                                            ​ Jul 5 2019, José Gómez-Dans\n● |   4a68f88 Merge pull request #15 from timspainUCL/pep517mk2                     ​ Jul 5 2019, José Gómez-Dans\n|\\ \\  \n| ● | f496dad Delete the pre-PEP517/8 setup.py                                      ​ Jul 5 2019, Tim Spain\n| ● | 919b487 Add install requirements to the setup file.                           ​ Jul 3 2019, Tim Spain\n| ● | 0295135 Attempt to use declarative setup.cfg                                  ​ Jul 3 2019, Tim Spain\n| ● | 7f4e95c Merge pull request #1 from jgomezdans/develop                         ​ Jul 5 2019, Tim Spain\n● | | 34fb6ac Cleaner logs and less warnings                                        ​ Jul 5 2019, José Gómez-Dans\n● | | eae46c8 Added logging code at top                                             ​ Jul 5 2019, José Gómez-Dans\n● | | 4da0f02 Added some logging code at the top                                    ​ Jul 5 2019, José Gómez-Dans\n|/ /  \n● | 6e3cb53 Update pip install on travis                                            ​ Jul 5 2019, José Gómez-Dans\n● | a5774a3 Fixed a couple of import bugs and typos                                 ​ Jul 4 2019, José Gómez-Dans\n● | 247fe98 Changes docs, logs and so on                                            ​ Jul 4 2019, José Gómez-Dans\n● | 9d98821 Changed imports                                                         ​ Jul 4 2019, José Gómez-Dans\n● | 898e55a Added logging to ANN inversion                                          ​ Jul 4 2019, José Gómez-Dans\n● | fdc9904 Moved common funcs to utils                                             ​ Jul 4 2019, José Gómez-Dans\n● | 55e1584 Moved NNParameterInversion to its own file.                             ​ Jul 4 2019, José Gómez-Dans\n| ● 622951b Test vaguely simulating the real useage of smoothn.                     ​ Jul 9 2019, Tim Spain\n| ● 902f3c7 First smoothn test, from the MatLab examples                            ​ Jul 5 2019, Tim Spain\n| ● e75e197 Ignore Mac and Eclipse hidden files                                     ​ Jul 3 2019, Tim Spain\n|/  \n● fbfc1cf Move reproject_data to function. Addresses #6                             ​ Jul 2 2019, José Gómez-Dans\n● 9b94fe1 First pass inversion working                                              ​ Jul 2 2019, José Gómez-Dans\n● 69f668e Pre processing mostly done                                                ​ Jun 12 2019, José Gómez-Dans\n● 4d1e4fe Added smoothn code                                                        ​ Jun 12 2019, José Gómez-Dans\n● 8ad8560 Deal with versioning                                                      ​ Jun 12 2019, José Gómez-Dans\n● c0c47c1 Added some requirement packages...                                        ​ May 30 2019, José Gómez-Dans\n● f7b6d50 Added cost function to this file                                          ​ May 30 2019, José Gómez-Dans\n● 4903954 A bit more updating..                                                     ​ May 30 2019, José Gómez-Dans\n● 586befc Can subset observation scanning if passed a time grid                     ​ May 29 2019, José Gómez-Dans\n● dba7264 Updated                                                                   ​ May 29 2019, Jose Gomez-Dans\n● a8c6578 Updates to pass on code to UCL system                                     ​ May 29 2019, Jose Gomez-Dans\n● 4722549 Wrong location of SIAC angle files                                        ​ May 10 2019, Jose Gomez-Dans\n● 131f577 clean ups                                                                 ​ May 10 2019, Jose Gomez-Dans\n● 49292ff Cosmetic changes                                                          ​ May 10 2019, Jose Gomez-Dans\n● 098bcf0 Reads a time series of S2 files                                           ​ May 10 2019, Jose Gomez-Dans\n● c798e3e Added observations reader                                                 ​ May 10 2019, Jose Gomez-Dans\n● 5da22ee Added Feng's TwoNN library                                                ​ May 10 2019, Jose Gomez-Dans\n● 6c3ee43 Only consider py36, probably later 3.7                                    ​ May 10 2019, Jose Gomez-Dans\n● 177ccff First commit from cookiecutter                                            ​ May 10 2019, Jose Gomez-Dans\n\n",
+			"settings":
+			{
+				"buffer_size": 59009,
+				"line_ending": "Unix",
+				"name": "GRAPH",
+				"read_only": true,
+				"scratch": true
+			}
+		},
+		{
+			"contents": "\n  ROOT:    /media/tweiss/Work/GIT/GitHub/UCL/kaska\n\n  BRANCH:  On branch `sar_quick` tracking `origin/sar_quick`.\n           You're ahead by 5.\n  HEAD:    c826075 move to UniRo\n\n  LOCAL:\n    4e43706 master (origin/master)\n  ▸ c826075 sar_quick (origin/sar_quick, ahead 5)\n    5f2353a sar_quick_lmu\n\n  ** Press [e] to toggle display of remote branches. **\n\n  #############\n  ## ACTIONS ##\n  #############\n\n  [c] checkout                                  [p] push selected to remote\n  [b] create from selected branch               [P] push all branches to remote\n  [d] delete                                    [h] fetch remote branches\n  [D] delete (force)                            [m] merge selected into active branch\n  [R] rename (local)                            [M] fetch and merge into active branch\n  [t] configure tracking\n\n  [f] diff against active                       [l] show branch log\n  [H] diff history against active               [g] show branch log graph\n  [E] edit branch description\n\n  [e]         toggle display of remote branches\n  [tab]       transition to next dashboard\n  [SHIFT-tab] transition to previous dashboard\n  [r]         refresh\n  [?]         toggle this help menu\n\n-\n\n",
+			"settings":
+			{
+				"buffer_size": 1208,
+				"line_ending": "Unix",
+				"name": "BRANCHES: kaska",
+				"read_only": true,
+				"scratch": true
+			},
+			"undo_stack":
+			[
+				[
+					4,
+					1,
+					"gs_new_content_and_regions",
+					{
+						"content": "\n  ROOT:    /media/tweiss/Work/GIT/GitHub/UCL/kaska\n\n  BRANCH:  On branch `sar_quick` tracking `origin/sar_quick`.\n           You're ahead by 5.\n  HEAD:    c826075 move to UniRo\n\n  LOCAL:\n    4e43706 master (origin/master)\n  ▸ c826075 sar_quick (origin/sar_quick, ahead 5)\n    5f2353a sar_quick_lmu\n\n  ** Press [e] to toggle display of remote branches. **\n\n  #############\n  ## ACTIONS ##\n  #############\n\n  [c] checkout                                  [p] push selected to remote\n  [b] create from selected branch               [P] push all branches to remote\n  [d] delete                                    [h] fetch remote branches\n  [D] delete (force)                            [m] merge selected into active branch\n  [R] rename (local)                            [M] fetch and merge into active branch\n  [t] configure tracking\n\n  [f] diff against active                       [l] show branch log\n  [H] diff history against active               [g] show branch log graph\n  [E] edit branch description\n\n  [e]         toggle display of remote branches\n  [tab]       transition to next dashboard\n  [SHIFT-tab] transition to previous dashboard\n  [r]         refresh\n  [?]         toggle this help menu\n\n-\n\n",
+						"regions":
+						{
+							"branch_list":
+							[
+								188,
+								298
+							],
+							"branch_status":
+							[
+								64,
+								144
+							],
+							"git_root":
+							[
+								12,
+								51
+							],
+							"head":
+							[
+								156,
+								177
+							],
+							"help":
+							[
+								356,
+								1207
+							],
+							"remotes":
+							[
+								298,
+								356
+							]
+						}
+					},
+					"AQAAAAAAAAAAAAAAuAQAAAAAAAAAAAAA",
+					"AQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/"
+				]
+			]
+		}
+	],
+	"build_system": "Packages/User/python_repl.sublime-build",
+	"build_system_choices":
+	[
+		[
+			[
+				[
+					"Packages/Makefile/Make.sublime-build",
+					""
+				],
+				[
+					"Packages/Makefile/Make.sublime-build",
+					"Clean"
+				],
+				[
+					"Packages/Python/Python.sublime-build",
+					""
+				],
+				[
+					"Packages/Python/Python.sublime-build",
+					"Syntax Check"
+				],
+				[
+					"Packages/SublimeREPL/sublimerepl_build_system_hack.sublime-build",
+					""
+				],
+				[
+					"Packages/User/python_repl.sublime-build",
+					""
+				],
+				[
+					"Packages/User/python_repl.sublime-build",
+					"python2.7"
+				],
+				[
+					"Packages/User/python_repl.sublime-build",
+					"python2.7_extra_window"
+				],
+				[
+					"Packages/User/python_repl.sublime-build",
+					"python3.6"
+				],
+				[
+					"Packages/User/python_repl.sublime-build",
+					"python3.6_new"
+				],
+				[
+					"Packages/User/python_repl.sublime-build",
+					"python3.6_new_old"
+				],
+				[
+					"Packages/User/python_repl.sublime-build",
+					"python3.6_extra_window"
+				],
+				[
+					"Packages/User/python_repl.sublime-build",
+					"ipython3.6"
+				]
+			],
+			[
+				"Packages/User/python_repl.sublime-build",
+				"python3.6"
+			]
+		],
+		[
+			[
+				[
+					"Packages/Makefile/Make.sublime-build",
+					""
+				],
+				[
+					"Packages/Makefile/Make.sublime-build",
+					"Clean"
+				],
+				[
+					"Packages/SublimeREPL/sublimerepl_build_system_hack.sublime-build",
+					""
+				],
+				[
+					"Packages/User/python_repl.sublime-build",
+					""
+				],
+				[
+					"Packages/User/python_repl.sublime-build",
+					"python2.7"
+				],
+				[
+					"Packages/User/python_repl.sublime-build",
+					"python2.7_extra_window"
+				],
+				[
+					"Packages/User/python_repl.sublime-build",
+					"python3.6"
+				],
+				[
+					"Packages/User/python_repl.sublime-build",
+					"python3.6_new"
+				],
+				[
+					"Packages/User/python_repl.sublime-build",
+					"python3.6_new_old"
+				],
+				[
+					"Packages/User/python_repl.sublime-build",
+					"python3.6_extra_window"
+				],
+				[
+					"Packages/User/python_repl.sublime-build",
+					"ipython3.6"
+				]
+			],
+			[
+				"Packages/User/python_repl.sublime-build",
+				"python3.6"
+			]
+		],
+		[
+			[
+				[
+					"Packages/Python/Python.sublime-build",
+					""
+				],
+				[
+					"Packages/Python/Python.sublime-build",
+					"Syntax Check"
+				],
+				[
+					"Packages/SublimeREPL/sublimerepl_build_system_hack.sublime-build",
+					""
+				],
+				[
+					"Packages/User/python_repl.sublime-build",
+					""
+				],
+				[
+					"Packages/User/python_repl.sublime-build",
+					"python2.7"
+				],
+				[
+					"Packages/User/python_repl.sublime-build",
+					"python2.7_extra_window"
+				],
+				[
+					"Packages/User/python_repl.sublime-build",
+					"python3.6"
+				],
+				[
+					"Packages/User/python_repl.sublime-build",
+					"python3.6_extra_window"
+				],
+				[
+					"Packages/User/python_repl.sublime-build",
+					"ipython3.6"
+				]
+			],
+			[
+				"Packages/User/python_repl.sublime-build",
+				"python3.6_extra_window"
+			]
+		],
+		[
+			[
+				[
+					"Packages/Python/Python.sublime-build",
+					""
+				],
+				[
+					"Packages/Python/Python.sublime-build",
+					"Syntax Check"
+				],
+				[
+					"Packages/SublimeREPL/sublimerepl_build_system_hack.sublime-build",
+					""
+				],
+				[
+					"Packages/User/python_repl.sublime-build",
+					""
+				],
+				[
+					"Packages/User/python_repl.sublime-build",
+					"python2.7"
+				],
+				[
+					"Packages/User/python_repl.sublime-build",
+					"python2.7_extra_window"
+				],
+				[
+					"Packages/User/python_repl.sublime-build",
+					"python3.6"
+				],
+				[
+					"Packages/User/python_repl.sublime-build",
+					"python3.6_new"
+				],
+				[
+					"Packages/User/python_repl.sublime-build",
+					"python3.6_extra_window"
+				],
+				[
+					"Packages/User/python_repl.sublime-build",
+					"ipython3.6"
+				]
+			],
+			[
+				"Packages/User/python_repl.sublime-build",
+				"python3.6_new"
+			]
+		],
+		[
+			[
+				[
+					"Packages/Python/Python.sublime-build",
+					""
+				],
+				[
+					"Packages/Python/Python.sublime-build",
+					"Syntax Check"
+				],
+				[
+					"Packages/SublimeREPL/sublimerepl_build_system_hack.sublime-build",
+					""
+				],
+				[
+					"Packages/User/python_repl.sublime-build",
+					""
+				],
+				[
+					"Packages/User/python_repl.sublime-build",
+					"python2.7"
+				],
+				[
+					"Packages/User/python_repl.sublime-build",
+					"python2.7_extra_window"
+				],
+				[
+					"Packages/User/python_repl.sublime-build",
+					"python3.6"
+				],
+				[
+					"Packages/User/python_repl.sublime-build",
+					"python3.6_new"
+				],
+				[
+					"Packages/User/python_repl.sublime-build",
+					"python3.6_new_old"
+				],
+				[
+					"Packages/User/python_repl.sublime-build",
+					"python3.6_extra_window"
+				],
+				[
+					"Packages/User/python_repl.sublime-build",
+					"ipython3.6"
+				]
+			],
+			[
+				"Packages/User/python_repl.sublime-build",
+				"python3.6"
+			]
+		]
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"git stat",
+				"git: status"
+			],
+			[
+				"git tag",
+				"git: tag"
+			],
+			[
+				"package install",
+				"Package Control: Install Package"
+			],
+			[
+				"status",
+				"git: status"
+			],
+			[
+				"push",
+				"git: push to branch name"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"install ",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 150.0,
+		"history":
+		[
+			"import urllib.request,os,hashlib; h = '6f4c264a24d933ce70df5dedcf1dcaee' + 'ebe013ee18cced0ef93d5f746d80ef60'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by) "
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/media/tweiss/Work/GIT/GitHub/UCL/kaska",
+		"/media/tweiss/Work/GIT/GitHub/UCL/kaska/kaska",
+		"/media/tweiss/Work/GIT/GitHub/UCL/kaska/scripts"
+	],
+	"file_history":
+	[
+		"/media/tweiss/Work/GIT/GitHub/UCL/kaska/kaska/paper3_plot_scatter.py",
+		"/media/tweiss/Work/GIT/GitHub/UCL/kaska/kaska/paper3_plotting.py",
+		"/media/tweiss/Work/GIT/GitHub/UCL/kaska/kaska/paper3_mask.py",
+		"/media/tweiss/Work/GIT/GitHub/UCL/kaska/kaska/paper3_plot_esu.py",
+		"/media/tweiss/Work/GIT/GitHub/UCL/kaska/kaska/paper3_run_area_calculations.py",
+		"/media/tweiss/Work/GIT/GitHub/UCL/kaska/kaska/watercloudmodel_vwc_rms.py",
+		"/media/tweiss/Work/GIT/GitHub/UCL/kaska/kaska/watercloudmodel.py",
+		"/media/tweiss/Work/GIT/GitHub/UCL/kaska/kaska/kaska_jose_again.py",
+		"/media/tweiss/Work/GIT/GitHub/UCL/kaska/kaska/z_helper.py",
+		"/media/tweiss/Work/GIT/GitHub/UCL/kaska/kaska/kaska_sar_ssrt_vwc.py",
+		"/media/tweiss/Work/GIT/GitHub/UCL/kaska/kaska/kaska_ssrt_tau_rms.py",
+		"/media/tweiss/Work/GIT/GitHub/UCL/kaska/kaska/kaska_ssrt_tau_rms_maize.py",
+		"/media/tweiss/Work/GIT/GitHub/UCL/kaska/kaska/entry.py",
+		"/media/tweiss/Work/GIT/GitHub/UCL/kaska/kaska/paper3_plot_old.py",
+		"/media/tweiss/Work/GIT/GitHub/UCL/kaska/kaska/paper3_inspection.py",
+		"/media/tweiss/Work/GIT/GitHub/UCL/kaska/kaska/paper3_reproject.py",
+		"/media/tweiss/Work/GIT/GitHub/UCL/kaska/kaska/paper3_scatterplot.py",
+		"/media/tweiss/Work/GIT/GitHub/UCL/kaska/kaska/paper3_inspection_esu.py",
+		"/media/tweiss/Work/GIT/GitHub/UCL/kaska/kaska/kaska_sar.py",
+		"/media/tweiss/Work/GIT/GitHub/UCL/kaska/kaska/utils.py",
+		"/media/tweiss/Work/GIT/GitHub/UCL/kaska/kaska/kaska_sar_ssrt.py",
+		"/media/tweiss/Work/GIT/GitHub/UCL/kaska/kaska/load_npy.py",
+		"/media/tweiss/Work/GIT/GitHub/UCL/kaska/kaska/kaska_sar_ssrt_jose.py",
+		"/media/tweiss/Work/GIT/GitHub/UCL/kaska/kaska/kaska_sar_ssrt_new_version.py",
+		"/media/tweiss/Work/GIT/GitHub/UCL/kaska/kaska/kaska_ssrt_again.py",
+		"/media/tweiss/Work/GIT/GitHub/UCL/kaska/kaska/kaska_ssrt_tau.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/combine_extract_sentinel_and_field_data_running_kafka_ucl.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/z_helper.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/z_rt_model_calculations.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/z_dense_s1_time_series_plot_2.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/z_dense_s1_time_series_plot.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/z_optimization_vwc.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/z_dense_s1_time_series_paper3_vwc.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/z_rt_model_calculations_paper_3_vwc_final.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/sense_sensitivity.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/z_rt_model_plot_time_series.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/z_rt_model_calculations_paper_3_vwc.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/z_dense_s1_time_series_plot_1.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/z_optimization.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/plot_entropy_anisotorpy.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/sense/surface/oh2004.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/sense/core.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/sense/canopy.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/sense/dielectric/__init__.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/sense/dielectric/dobson85.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/sense/dielectric/epsmodel.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/sense/util.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/sense/surface/scatter.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/sense/scatterer.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/sense/model.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/sense/__init__.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/sense/surface/__init__.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/sense/soil.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/setup.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/sense/surface/dubois95.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/sense/surface/oh1992.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/plot_sensitivity.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/z_dense_sensitivity_plot.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/try.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/doc/fig10-10.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/feng_backsactter_input.py",
+		"/media/tweiss/Daten/combine_extract_sentinel_and_field_data_running_kafka_2.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/test_output2.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/z_dense_s1_time_series.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/combine_extract_sentinel_and_field_data_running_kafka_ucl_puh.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/versuch.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/z_dense_s1_time_series_plot_3.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/z_dense_s1_time_series_plot_ratio.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/plot_ratio.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/emulator_ssrt_S2.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/feng.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/rho_diff .py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/run_sense_jose.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/try_sense_module_backscatter_input.py",
+		"/media/tweiss/Daten/combine_extract_sentinel_and_field_data_running_kafka_consortium.py",
+		"/media/tweiss/Work/GIT/GitHub/UCL/kaska/test_output.py",
+		"/media/tweiss/Work/validity_range.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/z_dense_s1_time_series_sensitivity.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/z_dense_sensitivity_plot_residium.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/try_sense_module.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/z_rt_model_review_plot.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/z_rt_model_vali_boxplot_taylor.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/z_dense_s1_time_series_sensitivity_old.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/z_rt_2018.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/z_rt_model_statistic_problem.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/sense/surface/i2em.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/versuch_losschen.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/zz_delete_not_needed_anymore_paper_plot_vallidation.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/paper_plot_ben.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/check_incidence_angle.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/z_EGU2018_poster.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/validation_plots.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/versuch_oh-dubois.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/paper_plot_final_mano.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/sense/surface/watercloud.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/EGU_poster.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/paper_plot.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/sense/version.py",
+		"/media/tweiss/Work/GIT/GitHub/PMarzahn/pygeo/sense/paper_plot_scatterplot.py",
+		"/home/tweiss/.config/sublime-text-3/Packages/SublimeREPL/config/Python/Main.sublime-menu",
+		"/media/tweiss/Daten/combine_extract_sentinel_and_field_data_running_kafka.py_consortium"
+	],
+	"find":
+	{
+		"height": 34.0
+	},
+	"find_in_files":
+	{
+		"height": 116.0,
+		"where_history":
+		[
+			""
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"cost_function_vwc",
+			"vwcb",
+			"spatial",
+			"mask",
+			"scatterplot",
+			"taylor",
+			"spatial",
+			"boxplot_sm_area",
+			"precip",
+			"0.38",
+			"taylor",
+			"figsize",
+			"plt.savefig",
+			"esu",
+			"taylor",
+			"pdb",
+			"plot2",
+			"mean_all_bias",
+			"scat",
+			"pdb",
+			"fontsize",
+			"-16",
+			"pdb",
+			"field",
+			"taylor",
+			"boxplot",
+			"spatial",
+			"plot_taylor",
+			"taylor_plot",
+			"ccoef",
+			"plot_taylor",
+			"plot_scat",
+			"rms",
+			"f, ax",
+			"self.plot(",
+			"self.plot",
+			"spatial",
+			"spatial_cal",
+			"spatial",
+			"yy",
+			"spatial",
+			"eich",
+			"Eich",
+			"eich",
+			"eichen",
+			"pdb",
+			"sm_std",
+			"pdb",
+			"unc",
+			"extract",
+			"rgb",
+			"ax",
+			"axis(1",
+			"boxplot",
+			"sm_api",
+			"boxplot",
+			"'b_0515",
+			"pdb.set_trace(",
+			"boxplot",
+			"vv",
+			"b_0515",
+			"omega",
+			"VV [dB]",
+			"'Date",
+			"Date",
+			"plt.title('ome",
+			"plt.title",
+			"plt.title(omega",
+			"spatial_calculation",
+			"scatterplot",
+			"z_helper",
+			"esu_size_tiff",
+			"mask_fields",
+			"time_contrainst",
+			"plot",
+			"cmap",
+			"m_",
+			"_m",
+			"m_",
+			"analysis",
+			"date",
+			"scatter",
+			"times",
+			"ndwi1_mag",
+			"mag",
+			"save",
+			"Paper3_down",
+			"ndwi",
+			"version",
+			"pdb",
+			"ticklabs",
+			"pdb",
+			"version",
+			"versions",
+			"years",
+			"cmap",
+			"pdb",
+			"year",
+			"pdb.set",
+			"pdb.set_",
+			"pol",
+			"sar_inference_data",
+			"pdb",
+			"version",
+			"sar_inference_data",
+			"vwc_data",
+			"inference_prepro",
+			"vwc_data",
+			"read_vwc",
+			"ndwi",
+			"vwc",
+			"state_mask",
+			"mask",
+			"raster",
+			"rasterize",
+			"mask",
+			"py",
+			"ndwi",
+			"ndwi1",
+			"inference_pre",
+			"interp1d",
+			"local",
+			"s2_lai",
+			"norm_multi",
+			"reproject",
+			"save_to_tif",
+			".tif",
+			"reproject"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"analysis_m"
+		],
+		"reverse": false,
+		"scrollbar_highlights": true,
+		"show_context": true,
+		"use_buffer2": true,
+		"use_gitignore": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 59009,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								66,
+								66
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content"
+							],
+							"color_scheme": "Packages/User/GitSavvy/GitSavvy.log_graph_view.color_scheme.hidden-tmTheme",
+							"default_dir": "/media/tweiss/Work/GIT/GitHub/UCL/kaska/kaska",
+							"git_savvy.log_graph_view": true,
+							"git_savvy.log_graph_view.all_branches": true,
+							"git_savvy.log_graph_view.apply_filters": "",
+							"git_savvy.log_graph_view.branches":
+							[
+							],
+							"git_savvy.log_graph_view.decoration": "sparse",
+							"git_savvy.log_graph_view.filter_by_author": "",
+							"git_savvy.log_graph_view.filters": "",
+							"git_savvy.log_graph_view.follow": "HEAD",
+							"git_savvy.log_graph_view.paths":
+							[
+							],
+							"git_savvy.log_graph_view.show_commit_info_panel": false,
+							"git_savvy.log_graph_view.show_tags": true,
+							"git_savvy.repo_path": "/media/tweiss/Work/GIT/GitHub/UCL/kaska",
+							"syntax": "Packages/GitSavvy/syntax/graph.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"stack_multiselect": false,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"selected": true,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1208,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								227,
+								227
+							]
+						],
+						"settings":
+						{
+							"__vi_external_disable": false,
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content"
+							],
+							"default_dir": "/media/tweiss/Work/GIT/GitHub/UCL/kaska/kaska",
+							"git_gutter_is_enabled": false,
+							"git_savvy.branch_view": true,
+							"git_savvy.help_hidden": false,
+							"git_savvy.interface": "branch",
+							"git_savvy.repo_path": "/media/tweiss/Work/GIT/GitHub/UCL/kaska",
+							"git_savvy.tabbable": true,
+							"syntax": "Packages/GitSavvy/syntax/branch.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"stack_multiselect": false,
+					"type": "text"
+				}
+			]
+		},
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 34.0
+	},
+	"input":
+	{
+		"height": 45.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			],
+			[
+				1,
+				0,
+				2,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			0.593728927849,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.GitSavvy":
+	{
+		"height": 144.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"output.mdpopups":
+	{
+		"height": 0.0
+	},
+	"output.show_commit_info":
+	{
+		"height": 144.0
+	},
+	"output.unsaved_changes":
+	{
+		"height": 144.0
+	},
+	"pinned_build_system": "",
+	"project": "kaska.sublime-project",
+	"replace":
+	{
+		"height": 64.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 380.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 1,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 437.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
