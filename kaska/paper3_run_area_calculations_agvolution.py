@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 import os
-import osr
-import gdal
+# import osr
+from osgeo import gdal
 import datetime
 import numpy as np
 from netCDF4 import Dataset
@@ -19,186 +19,49 @@ import pdb
 from z_helper import *
 import matplotlib.pyplot as plt
 from netCDF4 import date2num
+from netCDF4 import num2date
 import glob
 from paper3_plotting import *
 from paper3_plot_scatter import *
 from paper3_plot_esu import *
 from pandas.plotting import register_matplotlib_converters
+from agv_plot_input_output import *
+from sm_helper_data_preparation import get_sm_input, inference_preprocessing
+from sm_run_SenSARP import run_SenSARP
 
+def get_api_folder(api_folder):
 
-def ndwi1_mag(ndwi1):
-    vwc = 13.2*ndwi1**2+1.62*ndwi1
-    return vwc
-
-def ndwi1_cos_maize(ndwi1):
-    vwc = 9.39*ndwi1+1.26
-    return vwc
-
-def save_to_tif(fname, Array, GeoT):
-    if os.path.exists(fname):
-        os.remove(fname)
-    ds = gdal.GetDriverByName('GTiff').Create(fname, Array.shape[2], Array.shape[1], Array.shape[0], gdal.GDT_Float32)
-    ds.SetGeoTransform(GeoT)
-    wkt = 'GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.01745329251994328,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4326"]]'
-    ds.SetProjection(wkt)
-    for i, image in enumerate(Array):
-        # ds.GetRasterBand(i+1).SetMetadata({'date': prior_time[i]})
-        ds.GetRasterBand(i+1).WriteArray( image )
-    ds.FlushCache()
-    return fname
-
-def get_sar(s1_nc_file, version):
-    s1_data = namedtuple('s1_data', 'time lat lon satellite  relorbit orbitdirection ang_name vv_name, vh_name')
-    data = Dataset(s1_nc_file)
-    relorbit            = data['relorbit'][:]
-    localIncidenceAngle = data['theta'][:]
-    satellite           = data['satellite'][:]
-    orbitdirection      = data['orbitdirection'][:]
-    time                = data['time'][:]
-    lat = data['lat'][:]
-    lon = data['lon'][:]
-
-    vv_name = s1_nc_file.replace('.nc', '_vv'+version+'.tif')
-    vh_name = s1_nc_file.replace('.nc', '_vh'+version+'.tif')
-    ang_name = s1_nc_file.replace('.nc', '_ang'+version+'.tif')
-
-    if not os.path.exists(vv_name):
-        gg = gdal.Open('NETCDF:"%s":sigma0_vv"%s"'%(s1_nc_file,version))
-        geo = gg.GetGeoTransform()
-        sigma0_vv = data['sigma0_vv'+version][:]
-        save_to_tif(vv_name, sigma0_vv, geo)
-
-    if not os.path.exists(vh_name):
-        gg = gdal.Open('NETCDF:"%s":sigma0_vh"%s"'%(s1_nc_file,version))
-        geo = gg.GetGeoTransform()
-        sigma0_vh = data['sigma0_vh'+version][:]
-        save_to_tif(vh_name, sigma0_vh, geo)
-
-    if not os.path.exists(ang_name):
-        gg = gdal.Open('NETCDF:"%s":theta'%s1_nc_file)
-        geo = gg.GetGeoTransform()
-        localIncidenceAngle = data['theta'][:]
-        save_to_tif(ang_name, localIncidenceAngle, geo)
-
-    return s1_data(time, lat, lon, satellite, relorbit, orbitdirection, ang_name, vv_name, vh_name)
-
-def get_api(api_nc_file,year):
-    api_data = namedtuple('api_data', 'time lat lon api')
-    data = Dataset(api_nc_file)
-
-    xxx = date2num(datetime.datetime.strptime(year+'0201', '%Y%m%d'), units ='hours since 2000-01-01 00:00:00', calendar='gregorian')
-    yyy = date2num(datetime.datetime.strptime(year+'1001', '%Y%m%d'), units ='hours since 2000-01-01 00:00:00', calendar='gregorian')
-
-    time = data['time'][np.where(data['time'][:]==xxx)[0][0]:np.where(data['time'][:]==yyy)[0][0]]
-    lat = data['lat'][:]
-    lon = data['lon'][:]
-
-    api_name = api_nc_file.replace('.nc', '_api'+year+'.tif')
-
-    if not os.path.exists(api_name):
-        gg = gdal.Open('NETCDF:"%s":api'%api_nc_file)
-        geo = gg.GetGeoTransform()
-        save_to_tif(api_name, data['api'][np.where(data['time'][:]==xxx)[0][0]:np.where(data['time'][:]==yyy)[0][0],:,:], geo)
-
-    return api_data(time, lat, lon, api_name)
-
-def read_sar(sar_data, state_mask):
-    s1_data = namedtuple('s1_data', 'time lat lon satellite  relorbit orbitdirection ang vv vh')
-    ang = reproject_data(sar_data.ang_name, output_format="MEM", target_img=state_mask)
-    vv  = reproject_data(sar_data.vv_name, output_format="MEM", target_img=state_mask)
-    vh  = reproject_data(sar_data.vh_name, output_format="MEM", target_img=state_mask)
-
-    time = [datetime.datetime(1970,1,1) + datetime.timedelta(days=float(i)) for i in  sar_data.time]
-
-    return s1_data(time, sar_data.lat, sar_data.lon, sar_data.satellite, sar_data.relorbit, sar_data.orbitdirection, ang, vv, vh)
-
-def read_vwc(vwc_data, state_mask):
-    s2_data = namedtuple('s2_vwc', 'time vwc ndwi')
-    filelist = glob.glob(vwc_data+'*.tif')
+    filelist = glob.glob(api_folder+'**/**/*.nc', recursive = True)
     filelist.sort()
+
+    for file in filelist:
+        data = Dataset(file)
+        api_name = file.replace('.nc', '.tif')
+
+        if not os.path.exists(api_name):
+            gg = gdal.Open('NETCDF:"%s":ssm'%file)
+            geo = gg.GetGeoTransform()
+            save_to_tif(api_name, data['ssm'], geo)
+def read_api_ssm(api_folder, state_mask):
+    api_ssm = namedtuple('api_data', 'time api')
+    filelist = glob.glob(api_folder+'**/*.tif', recursive = True)
+    filelist.sort()
+
     time = []
-    vwc = []
-    ndwi = []
+    api = []
+
     for file in filelist:
         g = gdal.Open(file)
-        ndwi_array = reproject_data(file, output_format="MEM", target_img=state_mask)
-        ndwi_array = ndwi_array.ReadAsArray()
-        vwc_array = ndwi1_mag(ndwi_array)
-        time.append(datetime.datetime.strptime(file.split('/')[-1][14:22], '%Y%m%d'))
-        vwc.append(vwc_array)
-        ndwi.append(ndwi_array)
+        ssm_array = reproject_data(file, output_format="MEM", target_img=state_mask)
+        ssm_array = ssm_array.ReadAsArray()
+        porosity = 0.45
+        ssm_array_absolute = ssm_array*porosity
+        # ssm_array_absolute = ssm_array/100 * porosity
 
-    return s2_data(time, vwc, ndwi)
+        time.append(datetime.datetime.strptime(file.split('/')[-1][13:21], '%Y%m%d'))
+        api.append(ssm_array_absolute)
 
-def read_api(api_data, state_mask):
-    s1_data = namedtuple('api_data', 'time lat lon api')
-
-    api = reproject_data(api_data.api, output_format="MEM", target_img=state_mask)
-    time = [datetime.datetime(2000,1,1) + datetime.timedelta(hours=float(i)) for i in  api_data.time]
-
-    return s1_data(time, api_data.lat, api_data.lon, api)
-
-def read_api_2(api_data, state_mask):
-    s1_data = namedtuple('api_data', 'time lat lon api')
-
-def inference_preprocessing(s1_data, vwc_data, api_data, state_mask, orbit1=None, orbit2=None):
-    """Resample S2 smoothed output to match S1 observations
-    times"""
-    # Move everything to DoY to simplify interpolation
-
-    sar_inference_data = namedtuple('sar_inference_data', 'time lat lon satellite  relorbit orbitdirection ang vv vh vwc api time_mask ndwi')
-
-
-    vwc_doys = np.array([ int(i.strftime('%j')) for i in vwc_data.time])
-    s1_doys = np.array([ int(i.strftime('%j')) for i in s1_data.time])
-
-
-    time = np.array(s1_data.time)
-    for jj in range(len(s1_data.time)):
-        time[jj] = s1_data.time[jj].replace(microsecond=0).replace(second=0).replace(minute=0)
-
-    index=[]
-    xxx = np.array(api_data.time)
-    for jj in range(len(time)):
-        oje = np.where(xxx==time[jj])
-        try:
-            ojet = oje[0][0]
-            index.append(ojet)
-        except IndexError:
-            pass
-    api_doys = np.array([ int(i.strftime('%j')) for i in np.array(api_data.time)[index]])
-
-    f = interp1d(vwc_doys, np.array(vwc_data.vwc), axis=0, bounds_error=False)
-    vwc_s1 = f(s1_doys)
-
-    f = interp1d(vwc_doys, np.array(vwc_data.ndwi), axis=0, bounds_error=False)
-    ndwi_s1 = f(s1_doys)
-
-    api_s1 = api_data.api.ReadAsArray()[index]
-    f = interp1d(api_doys, api_s1, axis=0, bounds_error=False)
-    api_s1 = f(s1_doys)
-
-    if s1_data.time[0].year == 2017:
-        time_mask = (s1_doys >= 80) & (s1_doys <= 273)
-    elif s1_data.time[0].year == 2018:
-        time_mask = (s1_doys >= 80) & (s1_doys <= 273)
-    else:
-        print('no time mask')
-
-    if orbit1 != None:
-        rel_orbit1 = s1_data.relorbit==orbit1
-        if orbit2 != None:
-            rel_orbit2 = s1_data.relorbit==orbit2
-            xxx = np.logical_and(rel_orbit1,time_mask)
-            yyy = np.logical_and(rel_orbit2,time_mask)
-            time_mask = np.logical_or(xxx,yyy)
-
-    sar_inference_data = sar_inference_data(s1_data.time, s1_data.lat, s1_data.lon,
-                                            s1_data.satellite, s1_data.relorbit,
-                                            s1_data.orbitdirection, s1_data.ang,
-                                            s1_data.vv, s1_data.vh, vwc_s1, api_s1, time_mask, ndwi_s1)
-
-    return sar_inference_data
+    return api_ssm(time, api)
 
 
 def do_one_pixel_field(vv, vh, vwc, vwc_std, theta, time, sm, sm_std, b, b_std, omega, rms, rms_std, orbits, unc):
@@ -218,6 +81,7 @@ def do_one_pixel_field(vv, vh, vwc, vwc_std, theta, time, sm, sm_std, b, b_std, 
         # orbit_mask = (orbits == 44) | (orbits == 168)
         # orbit_mask = (orbits == 95) | (orbits == 117)
         orbit_mask = (orbits == 44) | (orbits == 95) | (orbits == 117) | (orbits == 168)
+        orbit_mask = (orbits == 146) | (orbits == 168) | (orbits == 44) | (orbits == 95)
         # orbit_mask = (orbits == 168)
         # orbit_mask = (orbits == 44) | (orbits == 95) | (orbits == 117)
         ovv, ovh, ovwc, ovwc_std, otheta, otime = vv[orbit_mask], vh[orbit_mask], vwc[orbit_mask], vwc_std[orbit_mask], theta[orbit_mask], time[orbit_mask]
@@ -293,9 +157,9 @@ def do_inversion(sar_inference_data, state_mask, year=None, version=None, passes
     rms_outputs  = np.zeros(out_shape )
 
     g = gdal.Open(state_mask)
-    state_mask = g.ReadAsArray().astype(np.int)
+    state_mask = g.ReadAsArray()
     # state_mask = state_mask > 0
-    state_mask = state_mask >= 0
+    state_mask = state_mask >= 1
 
     vv_all = sar_inference_data.vv.ReadAsArray()[sar_inference_data.time_mask]
     vh_all    = sar_inference_data.vh.ReadAsArray()[sar_inference_data.time_mask]
@@ -326,15 +190,15 @@ def do_inversion(sar_inference_data, state_mask, year=None, version=None, passes
 
     sm_retrieved = sm_all * np.nan
 
-    if not os.path.exists('/media/tweiss/Work/Paper3_down/'+passes):
-        os.makedirs('/media/tweiss/Work/Paper3_down/'+passes)
+    if not os.path.exists('/media/AUF/userdata/agvolution/inversion/'+passes):
+        os.makedirs('/media/AUF/userdata/agvolution/inversion/'+passes)
 
 
-    np.save('/media/tweiss/Work/Paper3_down/'+passes+'/'+year+version+'_input_vv.npy', vv_all)
-    np.save('/media/tweiss/Work/Paper3_down/'+passes+'/'+year+version+'_input_vwc.npy', vwc_all)
-    np.save('/media/tweiss/Work/Paper3_down/'+passes+'/'+year+version+'_input_sm_api.npy', sm_all)
-    np.save('/media/tweiss/Work/Paper3_down/'+passes+'/'+year+version+'_input_ndwi.npy', ndwi_all)
-    np.save('/media/tweiss/Work/Paper3_down/'+passes+'/'+year+version+'_input_theta.npy', theta_all)
+    np.save('/media/AUF/userdata/agvolution/inversion/'+passes+'/'+year+version+'_input_vv.npy', vv_all)
+    np.save('/media/AUF/userdata/agvolution/inversion/'+passes+'/'+year+version+'_input_vwc.npy', vwc_all)
+    np.save('/media/AUF/userdata/agvolution/inversion/'+passes+'/'+year+version+'_input_sm_api.npy', sm_all)
+    np.save('/media/AUF/userdata/agvolution/inversion/'+passes+'/'+year+version+'_input_ndwi.npy', ndwi_all)
+    np.save('/media/AUF/userdata/agvolution/inversion/'+passes+'/'+year+version+'_input_theta.npy', theta_all)
 
     for z in range(len(state_mask)):
         print(z)
@@ -383,6 +247,7 @@ def do_inversion(sar_inference_data, state_mask, year=None, version=None, passes
                     norm = (vwc- np.nanmin(vwc)) / (np.nanmax(vwc) - np.nanmin(vwc))
                     norm_ref = np.abs(norm-1)
                     b = b * norm_ref
+                pdb.set_trace()
 
                 if passes == 'unc_15':
                     unc = 1.5
@@ -456,7 +321,7 @@ def do_inversion(sar_inference_data, state_mask, year=None, version=None, passes
                 sm = sm_all[:,z,zz]
                 print(unc)
                 print(sm_std[0])
-                # pdb.set_trace()
+
                 times, svwc, sb, sms, srms, ps, orbit_mask = do_one_pixel_field(vv, vh, vwc, vwc_std, theta, time_all, sm, sm_std, b, b_std, omega, rms, rms_std, orbits,unc=unc)
 
                 vwc_outputs[:,z,zz] = svwc
@@ -464,11 +329,11 @@ def do_inversion(sar_inference_data, state_mask, year=None, version=None, passes
                 b_outputs[:,z,zz]  = sb
                 rms_outputs[:,z,zz]  = srms
 
-    np.save('/media/tweiss/Work/Paper3_down/'+passes+'/'+year+version+'_sm'+'.npy', sm_outputs)
-    np.save('/media/tweiss/Work/Paper3_down/'+passes+'/'+year+version+'_vwc'+'.npy', vwc_outputs)
-    np.save('/media/tweiss/Work/Paper3_down/'+passes+'/'+year+version+'_b'+'.npy', b_outputs)
-    np.save('/media/tweiss/Work/Paper3_down/'+passes+'/'+year+version+'_rms'+'.npy', rms_outputs)
-    np.save('/media/tweiss/Work/Paper3_down/'+passes+'/'+year+version+'_times.npy',times)
+    np.save('/media/AUF/userdata/agvolution/inversion/'+passes+'/'+year+version+'_sm'+'.npy', sm_outputs)
+    np.save('/media/AUF/userdata/agvolution/inversion/'+passes+'/'+year+version+'_vwc'+'.npy', vwc_outputs)
+    np.save('/media/AUF/userdata/agvolution/inversion/'+passes+'/'+year+version+'_b'+'.npy', b_outputs)
+    np.save('/media/AUF/userdata/agvolution/inversion/'+passes+'/'+year+version+'_rms'+'.npy', rms_outputs)
+    np.save('/media/AUF/userdata/agvolution/inversion/'+passes+'/'+year+version+'_times.npy',times)
 
     return 'done'
 
@@ -519,30 +384,43 @@ class KaSKASAR(object):
                 self.orbit2 = orbit2
 
     def sentinel1_inversion(self):
-        sar = get_sar(s1_ncfile, version)
-        s1_data = read_sar(sar, self.state_mask)
 
-        vwc_data = read_vwc(s2_vwc, self.state_mask)
+        path_s1data = '/media/AUF/GG/Geodatenverzeichnis-Uni/Fernerkundung/Satellitenbilder/Sentinel1/'
+        output_folder = '/media/AUF/userdata/agvolution_new'
+        sample_config_file = os.path.expanduser('~/sar-pre-processing/docs/notebooks/sample_config_file') #todo: change this location for automation
+        name_tag = 'agvolution_new'
+        year = '2023'
+        lr_lat = 53.49579
+        lr_lon = 13.11798
+        ul_lat = 53.62974
+        ul_lon = 12.87880
+        multi_speck = '5'
 
-        api = get_api(rad_api,year)
-        api_data = read_api(api, self.state_mask)
+        run_SenSARP(path_s1data,output_folder,sample_config_file,name_tag,year=year,lr_lat=lr_lat,lr_lon=lr_lon,ul_lat=ul_lat,ul_lon=ul_lon,multi_speck=multi_speck)
 
-        sar_inference_data = inference_preprocessing(s1_data, vwc_data, api_data, self.state_mask,self.orbit1,self.orbit2)
+        s1_data, vwc_data, api_data = get_sm_input(s1_ncfile,version,s2_vwc,rad_api,self.state_mask,year)
 
+
+        # api = get_api_folder(rad_api)
+        # api_data = read_api_ssm(rad_api, self.state_mask)
+        output_folder = '/media/tweiss/data/test_data/output'
+        pdb.set_trace()
+        sar_inference_data = inference_preprocessing(s1_data, vwc_data, api_data, output_folder)
+        pdb.set_trace()
 
         xxx = do_inversion(sar_inference_data, self.state_mask, year, version, passes)
 
         # gg = gdal.Open('NETCDF:"%s":sigma0_vv_multi'%self.s1_ncfile)
         # geo = gg.GetGeoTransform()
-
+        #
         # projction = 'GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.01745329251994328,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4326"]]'
-
+        #
         # time = [i.strftime('%Y-%m-%d') for i in np.array(sar_inference_data.time)[sar_inference_data.time_mask]]
-
+        #
         # sm_name  = self.s1_ncfile.replace('.nc', '_sar_sm.tif')
         # sr_name  = self.s1_ncfile.replace('.nc', '_sar_sr.tif')
         # lai_name = self.s1_ncfile.replace('.nc', '_sar_lai.tif')
-
+        #
         # save_output(sm_name,  sm_outputs,  geo, projction, time)
         # save_output(sr_name,  sr_outputs,  geo, projction, time)
         # save_output(lai_name, lai_outputs, geo, projction, time)
@@ -553,8 +431,8 @@ class KaSKASAR(object):
 if __name__ == '__main__':
 
 
-    years = ['2017','2018']
-    # years = ['2017']
+    # years = ['2017','2018']
+    year = '2023'
     versions = ['_multi', '_single']
     versions = ['_multi']
 
@@ -580,30 +458,38 @@ if __name__ == '__main__':
     start = datetime.datetime.now()
     for passes in pas:
 
-        for year in years:
-            for version in versions:
-                s1_ncfile = '/media/tweiss/Work/Paper3_down/data/MNI_'+year+'_new_final_paper3.nc'
-                state_mask = '/media/tweiss/Work/Paper3_down/GIS/clc_class2.tif'
-                # state_mask = '/media/tweiss/Work/Paper3_down/GIS/'+year+'_ESU_Field_buffer_30.tif'
-                rad_api = '/media/tweiss/Work/Paper3_down/data/RADOLAN_API_v1.0.0.nc'
+        for version in versions:
+            s1_ncfile = '/media/tweiss/data/test_data/agvolution.nc'
+            # rad_api = '/media/AUF/GG/Geodatenverzeichnis-Uni/Fernerkundung/Satellitenbilder/SSM/'
 
-                s2_vwc = '/media/tweiss/Work/Paper3_down/data/'+year+'/tif1/'
+            state_mask = '/media/tweiss/data/test_data/fields_1.tif'
 
-                # sarsar = KaSKASAR(s1_ncfile, state_mask, s2_vwc, rad_api, year, version, passes)
+            rad_api = '/media/tweiss/data/test_data/API_RADOLAN_19768.01021216689_-0.05_6.996020755659563_5.0cm_2022-202306_2023-11-08T07:12:30.nc'
 
-                # sarsar.sentinel1_inversion()
-        plot1 = datetime.datetime.now()
+            s2_vwc = '/media/tweiss/data/test_data/tif/'
+
+            sarsar = KaSKASAR(s1_ncfile, state_mask, s2_vwc, rad_api, year, version, passes)
+            sarsar.sentinel1_inversion()
+            pass
+        # todo: path right now hard coded in different classes, this need to be changed!!!!
+        path = '/media/AUF/userdata/agvolution/inversion/'
+        # year = '2017'
+        # path = '/media/tweiss/data/Arbeit_einordnen/mni/'
+
+        plot_input_output(path, passes,year)
+
+        # plot1 = datetime.datetime.now()
         # plot_scatter(years, esus, passes, esu_size_tiff)
-        plot2 = datetime.datetime.now()
+        # plot2 = datetime.datetime.now()
         # plot_paper_3(years, esus, passes,time_contrainst)
-        plot3 = datetime.datetime.now()
-        plot_esu(years, esus, passes, esu_size_tiff)
+        # plot3 = datetime.datetime.now()
+        # plot_esu(years, esus, passes, esu_size_tiff)
 
     end = datetime.datetime.now()
     print('start:'+str(start))
-    print('start plot 1:'+str(plot1))
-    print('start plot 2:'+str(plot2))
-    print('start plot 3:'+str(plot3))
+    # print('start plot 1:'+str(plot1))
+    # print('start plot 2:'+str(plot2))
+    # print('start plot 3:'+str(plot3))
     print('end:'+str(end))
 
 pdb.set_trace()
