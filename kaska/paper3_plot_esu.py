@@ -1,6 +1,6 @@
 import numpy as np
 import pdb
-import gdal
+from osgeo import gdal
 import matplotlib.pyplot as plt
 from z_helper import *
 import datetime
@@ -117,7 +117,7 @@ class plot_esu(object):
 
                     g = gdal.Open('/media/tweiss/Work/Paper3_down/GIS/'+year+esu_size_tiff)
                     state_mask = g.ReadAsArray().astype(np.int)
-                    
+
                     state_mask = self.state_mask(year,field,esu,state_mask)
                     data_field = data.filter(like=field).filter(like=esu)
                     if year == '2018':

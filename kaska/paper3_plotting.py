@@ -1,6 +1,6 @@
 import numpy as np
 import pdb
-import gdal
+from osgeo import gdal
 import matplotlib.pyplot as plt
 from z_helper import *
 import datetime
