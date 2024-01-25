@@ -56,3 +56,7 @@ subprocess.call('gdal_rasterize -at -of GTiff -a FID_ -te 694748 5345900 703600 
 
 # esu 2017
 subprocess.call('gdal_rasterize -at -of GTiff -a FID_ -te 694748 5345900 703600 5354600 -tr 10 10 -ot Byte -co \"COMPRESS=DEFLATE\" '+'/media/tweiss/Work/z_final_mni_data_2017/ESU.shp'+' /media/tweiss/Work/Paper3_down/GIS/2017_ESU.tif', shell=True)
+
+# agvolution
+subprocess.call('gdal_rasterize -at -of GTiff -a fid -te 758967 5937147 768056 5945451 -tr 10 10 -ot Byte -co \"COMPRESS=DEFLATE\" '+'/media/tweiss/data/Arbeit_einordnen/agvolution/sensor_data_agvolution/farm_one/test.shp'+' /media/AUF/userdata/agvolution/fields_1.tif', shell=True)
+
